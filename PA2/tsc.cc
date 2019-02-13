@@ -117,7 +117,10 @@ int Client::connectTo()
     std::string reply = SayHello(user);
     std::cout << "Greeter received: " << reply << std::endl;
 
-    return 1; // return 1 if success, otherwise return -1
+    if(reply == "") 
+        return -1; // return 1 if success, otherwise return -1
+    else 
+        return 1;
 }
 
 IReply Client::processCommand(std::string& input)

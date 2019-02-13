@@ -113,11 +113,10 @@ int Client::connectTo()
     // (use of InsecureChannelCredentials()).
     std::string server_address = hostname + ":" + port;
     setChannel(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
-    std::string user(username);
-    std::string reply = SayHello(user);
-    std::cout << "Greeter received: " << reply << std::endl;
 
-    if(reply == "") 
+    std::string reply = SayHello(username);
+
+    if(reply == "RPC failed") 
         return -1; // return 1 if success, otherwise return -1
     else 
         return 1;

@@ -26,7 +26,7 @@ class TestServiceImpl final : public Test::Service {
 };
 
 void RunServer() {
-  std::string server_address("080027FF5D0B:50051");
+  std::string server_address("localhost:50051");
   TestServiceImpl service;
 
   ServerBuilder builder;

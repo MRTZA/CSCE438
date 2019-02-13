@@ -7,14 +7,53 @@
 #include <grpc++/grpc++.h>
 #include "client.h"
 
+#include "tns.grpc.pb.h"
+
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::Status;
+using tns::TestRequest;
+using tns::TestReply;
+using tns::Test;
+
 class Client : public IClient
 {
     public:
         Client(const std::string& hname,
                const std::string& uname,
                const std::string& p)
-            :hostname(hname), username(uname), port(p)
-            {}
+            :hostname(hname), username(uname), port(p){}
+
+        // Assembles the client's payload, sends it and presents the response back
+        // from the server.
+        std::string SayHello(const std::string& user) {
+            // Data we are sending to the server.
+            TestRequest request;
+            request.set_name(user);
+
+            // Container for the data we expect from the server.
+            TestReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = stub_->SayHello(&context, request, &reply);
+
+            // Act upon its status.
+            if (status.ok()) {
+            return reply.message();
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+            return "RPC failed";
+            }
+        }
+
+        void setChannel(std::shared_ptr<Channel> channel) {
+            stub_ = Test::NewStub(channel);
+        }
     protected:
         virtual int connectTo();
         virtual IReply processCommand(std::string& input);
@@ -27,6 +66,7 @@ class Client : public IClient
         // You can have an instance of the client stub
         // as a member variable.
         //std::unique_ptr<NameOfYourStubClass::Stub> stub_;
+        std::unique_ptr<Test::Stub> stub_;
 };
 
 int main(int argc, char** argv) {
@@ -66,6 +106,16 @@ int Client::connectTo()
     // a member variable in your own Client class.
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
+
+    // Instantiate the client. It requires a channel, out of which the actual RPCs
+    // are created. This channel models a connection to an endpoint (in this case,
+    // localhost at port 50051). We indicate that the channel isn't authenticated
+    // (use of InsecureChannelCredentials()).
+    std::string server_address = hostname + ":" + port;
+    setChannel(grpc::CreateChannel(server_address, grpc::InsecureChannelCredentials()));
+    std::string user(username);
+    std::string reply = SayHello(user);
+    std::cout << "Greeter received: " << reply << std::endl;
 
     return 1; // return 1 if success, otherwise return -1
 }

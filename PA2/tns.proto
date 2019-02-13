@@ -1,2 +1,21 @@
 syntax = "proto3";
 
+package tns;
+
+// The greeting service definition.
+service Test {
+    // Sends multiple greetings
+    rpc SayHello (TestRequest) returns (TestReply) {}
+  }
+  
+  // The request message containing the user's name and how many greetings
+  // they want.
+  message TestRequest {
+    string name = 1;
+  }
+  
+  // A response message containing a greeting
+  message TestReply {
+    string message = 1;
+  }
+

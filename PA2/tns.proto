@@ -4,7 +4,7 @@ package tns;
 
 // The greeting service definition.
 service Test {
-    // Sends multiple greetings
+    // Sends greetings
     rpc SayHello (TestRequest) returns (TestReply) {}
   }
   
@@ -18,4 +18,51 @@ service Test {
   message TestReply {
     string message = 1;
   }
+
+// The LIST service definition
+service tinyNetworkingService {
+  // Send all users/following users
+  rpc List (ListRequest) returns (ListReply) {}
+  rpc Follow (FollowRequest) returns (FollowReply) {}
+  rpc Unfollow (FollowRequest) returns (FollowReply) {}
+}
+
+// user sends their name so server can find them
+message ListRequest {
+  string name = 1;
+}
+
+// server sends back two comma serperated lists
+message ListReply {
+  string all = 1;
+  string following = 2;
+
+  enum IStatus {
+    SUCCESS = 0;
+    FAILURE_ALREADY_EXISTS = 1;
+    FAILURE_NOT_EXISTS = 2;
+    FAILURE_INVALID_USERNAME = 3;
+    FAILURE_INVALID = 4;
+    FAILURE_UNKNOWN = 5;
+  }
+  IStatus status = 3;
+}
+
+message FollowRequest {
+  string user = 1; // user sending request
+  string name = 2; // user to either follow or unfollow
+}
+
+// server sends back the status of command execution
+message FollowReply {
+  enum IStatus {
+    SUCCESS = 0;
+    FAILURE_ALREADY_EXISTS = 1;
+    FAILURE_NOT_EXISTS = 2;
+    FAILURE_INVALID_USERNAME = 3;
+    FAILURE_INVALID = 4;
+    FAILURE_UNKNOWN = 5;
+  }
+  IStatus status = 1;
+}
 

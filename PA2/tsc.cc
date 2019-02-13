@@ -1,7 +1,7 @@
 #include <iostream>
 //#include <memory>
 //#include <thread>
-//#include <vector>
+#include <vector>
 #include <string>
 #include <unistd.h>
 #include <grpc++/grpc++.h>
@@ -15,6 +15,14 @@ using grpc::Status;
 using tns::TestRequest;
 using tns::TestReply;
 using tns::Test;
+using tns::tinyNetworkingService;
+
+using tns::ListRequest;
+using tns::ListReply;
+
+using tns::FollowRequest;
+using tns::FollowReply;
+
 
 class Client : public IClient
 {
@@ -51,8 +59,39 @@ class Client : public IClient
             }
         }
 
+        std::vector<std::string> List(const std::string& user, IReply* ireply) {
+            // Data we are sending to the server.
+            ListRequest request;
+            request.set_name(user);
+
+            // Container for the data we expect from the server.
+            ListReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = tns_stub_->List(&context, request, &reply);
+
+            std::vector<std::string> returnVec;
+            // Act upon its status.
+            if (status.ok()) {
+                returnVec.push_back(reply.all());
+                returnVec.push_back(reply.following());
+                ireply->comm_status = (IStatus)reply.status();
+                return returnVec;
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+                        returnVec.push_back("RPC failed");
+            return returnVec;
+            }
+        }
+
         void setChannel(std::shared_ptr<Channel> channel) {
             stub_ = Test::NewStub(channel);
+            tns_stub_ = tinyNetworkingService::NewStub(channel);
         }
     protected:
         virtual int connectTo();
@@ -67,6 +106,7 @@ class Client : public IClient
         // as a member variable.
         //std::unique_ptr<NameOfYourStubClass::Stub> stub_;
         std::unique_ptr<Test::Stub> stub_;
+        std::unique_ptr<tinyNetworkingService::Stub> tns_stub_;
 };
 
 int main(int argc, char** argv) {
@@ -138,7 +178,7 @@ IReply Client::processCommand(std::string& input)
 	//
 	// - JOIN/LEAVE and "<username>" are separated by one space.
 	// ------------------------------------------------------------
-	
+
     // ------------------------------------------------------------
 	// GUIDE 2:
 	// Then, you should create a variable of IReply structure
@@ -171,6 +211,16 @@ IReply Client::processCommand(std::string& input)
 	// ------------------------------------------------------------
     
     IReply ire;
+    if(input != "LIST") {
+        ire.comm_status = FAILURE_INVALID;
+    } else if(input == "LIST") {
+        std::vector<std::string> result = List(username, &ire);
+        std::vector<std::string> temp;
+        temp.push_back(result[0]);
+        ire.all_users = temp;
+        temp[0] = result[1];
+        ire.following_users = temp;
+    }
     return ire;
 }
 

@@ -37,7 +37,7 @@ namespace protobuf_tns_2eproto {
 struct TableStruct {
   static const ::google::protobuf::internal::ParseTableField entries[];
   static const ::google::protobuf::internal::AuxillaryParseTableField aux[];
-  static const ::google::protobuf::internal::ParseTable schema[6];
+  static const ::google::protobuf::internal::ParseTable schema[10];
   static const ::google::protobuf::internal::FieldMetadata field_metadata[];
   static const ::google::protobuf::internal::SerializationTable serialization_table[];
   static const ::google::protobuf::uint32 offsets[];
@@ -55,6 +55,14 @@ void InitDefaultsFollowRequestImpl();
 void InitDefaultsFollowRequest();
 void InitDefaultsFollowReplyImpl();
 void InitDefaultsFollowReply();
+void InitDefaultsUpdateRequestImpl();
+void InitDefaultsUpdateRequest();
+void InitDefaultsUpdateReplyImpl();
+void InitDefaultsUpdateReply();
+void InitDefaultsPostRequestImpl();
+void InitDefaultsPostRequest();
+void InitDefaultsPostReplyImpl();
+void InitDefaultsPostReply();
 inline void InitDefaults() {
   InitDefaultsTestRequest();
   InitDefaultsTestReply();
@@ -62,6 +70,10 @@ inline void InitDefaults() {
   InitDefaultsListReply();
   InitDefaultsFollowRequest();
   InitDefaultsFollowReply();
+  InitDefaultsUpdateRequest();
+  InitDefaultsUpdateReply();
+  InitDefaultsPostRequest();
+  InitDefaultsPostReply();
 }
 }  // namespace protobuf_tns_2eproto
 namespace tns {
@@ -77,12 +89,24 @@ extern ListReplyDefaultTypeInternal _ListReply_default_instance_;
 class ListRequest;
 class ListRequestDefaultTypeInternal;
 extern ListRequestDefaultTypeInternal _ListRequest_default_instance_;
+class PostReply;
+class PostReplyDefaultTypeInternal;
+extern PostReplyDefaultTypeInternal _PostReply_default_instance_;
+class PostRequest;
+class PostRequestDefaultTypeInternal;
+extern PostRequestDefaultTypeInternal _PostRequest_default_instance_;
 class TestReply;
 class TestReplyDefaultTypeInternal;
 extern TestReplyDefaultTypeInternal _TestReply_default_instance_;
 class TestRequest;
 class TestRequestDefaultTypeInternal;
 extern TestRequestDefaultTypeInternal _TestRequest_default_instance_;
+class UpdateReply;
+class UpdateReplyDefaultTypeInternal;
+extern UpdateReplyDefaultTypeInternal _UpdateReply_default_instance_;
+class UpdateRequest;
+class UpdateRequestDefaultTypeInternal;
+extern UpdateRequestDefaultTypeInternal _UpdateRequest_default_instance_;
 }  // namespace tns
 namespace tns {
 
@@ -135,6 +159,56 @@ inline bool FollowReply_IStatus_Parse(
     const ::std::string& name, FollowReply_IStatus* value) {
   return ::google::protobuf::internal::ParseNamedEnum<FollowReply_IStatus>(
     FollowReply_IStatus_descriptor(), name, value);
+}
+enum UpdateReply_IStatus {
+  UpdateReply_IStatus_SUCCESS = 0,
+  UpdateReply_IStatus_FAILURE_ALREADY_EXISTS = 1,
+  UpdateReply_IStatus_FAILURE_NOT_EXISTS = 2,
+  UpdateReply_IStatus_FAILURE_INVALID_USERNAME = 3,
+  UpdateReply_IStatus_FAILURE_INVALID = 4,
+  UpdateReply_IStatus_FAILURE_UNKNOWN = 5,
+  UpdateReply_IStatus_UpdateReply_IStatus_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  UpdateReply_IStatus_UpdateReply_IStatus_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool UpdateReply_IStatus_IsValid(int value);
+const UpdateReply_IStatus UpdateReply_IStatus_IStatus_MIN = UpdateReply_IStatus_SUCCESS;
+const UpdateReply_IStatus UpdateReply_IStatus_IStatus_MAX = UpdateReply_IStatus_FAILURE_UNKNOWN;
+const int UpdateReply_IStatus_IStatus_ARRAYSIZE = UpdateReply_IStatus_IStatus_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* UpdateReply_IStatus_descriptor();
+inline const ::std::string& UpdateReply_IStatus_Name(UpdateReply_IStatus value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    UpdateReply_IStatus_descriptor(), value);
+}
+inline bool UpdateReply_IStatus_Parse(
+    const ::std::string& name, UpdateReply_IStatus* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<UpdateReply_IStatus>(
+    UpdateReply_IStatus_descriptor(), name, value);
+}
+enum PostReply_IStatus {
+  PostReply_IStatus_SUCCESS = 0,
+  PostReply_IStatus_FAILURE_ALREADY_EXISTS = 1,
+  PostReply_IStatus_FAILURE_NOT_EXISTS = 2,
+  PostReply_IStatus_FAILURE_INVALID_USERNAME = 3,
+  PostReply_IStatus_FAILURE_INVALID = 4,
+  PostReply_IStatus_FAILURE_UNKNOWN = 5,
+  PostReply_IStatus_PostReply_IStatus_INT_MIN_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32min,
+  PostReply_IStatus_PostReply_IStatus_INT_MAX_SENTINEL_DO_NOT_USE_ = ::google::protobuf::kint32max
+};
+bool PostReply_IStatus_IsValid(int value);
+const PostReply_IStatus PostReply_IStatus_IStatus_MIN = PostReply_IStatus_SUCCESS;
+const PostReply_IStatus PostReply_IStatus_IStatus_MAX = PostReply_IStatus_FAILURE_UNKNOWN;
+const int PostReply_IStatus_IStatus_ARRAYSIZE = PostReply_IStatus_IStatus_MAX + 1;
+
+const ::google::protobuf::EnumDescriptor* PostReply_IStatus_descriptor();
+inline const ::std::string& PostReply_IStatus_Name(PostReply_IStatus value) {
+  return ::google::protobuf::internal::NameOfEnum(
+    PostReply_IStatus_descriptor(), value);
+}
+inline bool PostReply_IStatus_Parse(
+    const ::std::string& name, PostReply_IStatus* value) {
+  return ::google::protobuf::internal::ParseNamedEnum<PostReply_IStatus>(
+    PostReply_IStatus_descriptor(), name, value);
 }
 // ===================================================================
 
@@ -875,6 +949,523 @@ class FollowReply : public ::google::protobuf::Message /* @@protoc_insertion_poi
   friend struct ::protobuf_tns_2eproto::TableStruct;
   friend void ::protobuf_tns_2eproto::InitDefaultsFollowReplyImpl();
 };
+// -------------------------------------------------------------------
+
+class UpdateRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:tns.UpdateRequest) */ {
+ public:
+  UpdateRequest();
+  virtual ~UpdateRequest();
+
+  UpdateRequest(const UpdateRequest& from);
+
+  inline UpdateRequest& operator=(const UpdateRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  UpdateRequest(UpdateRequest&& from) noexcept
+    : UpdateRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline UpdateRequest& operator=(UpdateRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UpdateRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const UpdateRequest* internal_default_instance() {
+    return reinterpret_cast<const UpdateRequest*>(
+               &_UpdateRequest_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    6;
+
+  void Swap(UpdateRequest* other);
+  friend void swap(UpdateRequest& a, UpdateRequest& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline UpdateRequest* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  UpdateRequest* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const UpdateRequest& from);
+  void MergeFrom(const UpdateRequest& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(UpdateRequest* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string name = 1;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  #if LANG_CXX11
+  void set_name(::std::string&& value);
+  #endif
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // int32 posts = 2;
+  void clear_posts();
+  static const int kPostsFieldNumber = 2;
+  ::google::protobuf::int32 posts() const;
+  void set_posts(::google::protobuf::int32 value);
+
+  // @@protoc_insertion_point(class_scope:tns.UpdateRequest)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::int32 posts_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_tns_2eproto::TableStruct;
+  friend void ::protobuf_tns_2eproto::InitDefaultsUpdateRequestImpl();
+};
+// -------------------------------------------------------------------
+
+class UpdateReply : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:tns.UpdateReply) */ {
+ public:
+  UpdateReply();
+  virtual ~UpdateReply();
+
+  UpdateReply(const UpdateReply& from);
+
+  inline UpdateReply& operator=(const UpdateReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  UpdateReply(UpdateReply&& from) noexcept
+    : UpdateReply() {
+    *this = ::std::move(from);
+  }
+
+  inline UpdateReply& operator=(UpdateReply&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const UpdateReply& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const UpdateReply* internal_default_instance() {
+    return reinterpret_cast<const UpdateReply*>(
+               &_UpdateReply_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    7;
+
+  void Swap(UpdateReply* other);
+  friend void swap(UpdateReply& a, UpdateReply& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline UpdateReply* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  UpdateReply* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const UpdateReply& from);
+  void MergeFrom(const UpdateReply& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(UpdateReply* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  typedef UpdateReply_IStatus IStatus;
+  static const IStatus SUCCESS =
+    UpdateReply_IStatus_SUCCESS;
+  static const IStatus FAILURE_ALREADY_EXISTS =
+    UpdateReply_IStatus_FAILURE_ALREADY_EXISTS;
+  static const IStatus FAILURE_NOT_EXISTS =
+    UpdateReply_IStatus_FAILURE_NOT_EXISTS;
+  static const IStatus FAILURE_INVALID_USERNAME =
+    UpdateReply_IStatus_FAILURE_INVALID_USERNAME;
+  static const IStatus FAILURE_INVALID =
+    UpdateReply_IStatus_FAILURE_INVALID;
+  static const IStatus FAILURE_UNKNOWN =
+    UpdateReply_IStatus_FAILURE_UNKNOWN;
+  static inline bool IStatus_IsValid(int value) {
+    return UpdateReply_IStatus_IsValid(value);
+  }
+  static const IStatus IStatus_MIN =
+    UpdateReply_IStatus_IStatus_MIN;
+  static const IStatus IStatus_MAX =
+    UpdateReply_IStatus_IStatus_MAX;
+  static const int IStatus_ARRAYSIZE =
+    UpdateReply_IStatus_IStatus_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  IStatus_descriptor() {
+    return UpdateReply_IStatus_descriptor();
+  }
+  static inline const ::std::string& IStatus_Name(IStatus value) {
+    return UpdateReply_IStatus_Name(value);
+  }
+  static inline bool IStatus_Parse(const ::std::string& name,
+      IStatus* value) {
+    return UpdateReply_IStatus_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  // string timeline = 1;
+  void clear_timeline();
+  static const int kTimelineFieldNumber = 1;
+  const ::std::string& timeline() const;
+  void set_timeline(const ::std::string& value);
+  #if LANG_CXX11
+  void set_timeline(::std::string&& value);
+  #endif
+  void set_timeline(const char* value);
+  void set_timeline(const char* value, size_t size);
+  ::std::string* mutable_timeline();
+  ::std::string* release_timeline();
+  void set_allocated_timeline(::std::string* timeline);
+
+  // .tns.UpdateReply.IStatus status = 2;
+  void clear_status();
+  static const int kStatusFieldNumber = 2;
+  ::tns::UpdateReply_IStatus status() const;
+  void set_status(::tns::UpdateReply_IStatus value);
+
+  // @@protoc_insertion_point(class_scope:tns.UpdateReply)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr timeline_;
+  int status_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_tns_2eproto::TableStruct;
+  friend void ::protobuf_tns_2eproto::InitDefaultsUpdateReplyImpl();
+};
+// -------------------------------------------------------------------
+
+class PostRequest : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:tns.PostRequest) */ {
+ public:
+  PostRequest();
+  virtual ~PostRequest();
+
+  PostRequest(const PostRequest& from);
+
+  inline PostRequest& operator=(const PostRequest& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  PostRequest(PostRequest&& from) noexcept
+    : PostRequest() {
+    *this = ::std::move(from);
+  }
+
+  inline PostRequest& operator=(PostRequest&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PostRequest& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const PostRequest* internal_default_instance() {
+    return reinterpret_cast<const PostRequest*>(
+               &_PostRequest_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    8;
+
+  void Swap(PostRequest* other);
+  friend void swap(PostRequest& a, PostRequest& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline PostRequest* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  PostRequest* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const PostRequest& from);
+  void MergeFrom(const PostRequest& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(PostRequest* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  // accessors -------------------------------------------------------
+
+  // string name = 1;
+  void clear_name();
+  static const int kNameFieldNumber = 1;
+  const ::std::string& name() const;
+  void set_name(const ::std::string& value);
+  #if LANG_CXX11
+  void set_name(::std::string&& value);
+  #endif
+  void set_name(const char* value);
+  void set_name(const char* value, size_t size);
+  ::std::string* mutable_name();
+  ::std::string* release_name();
+  void set_allocated_name(::std::string* name);
+
+  // string post = 2;
+  void clear_post();
+  static const int kPostFieldNumber = 2;
+  const ::std::string& post() const;
+  void set_post(const ::std::string& value);
+  #if LANG_CXX11
+  void set_post(::std::string&& value);
+  #endif
+  void set_post(const char* value);
+  void set_post(const char* value, size_t size);
+  ::std::string* mutable_post();
+  ::std::string* release_post();
+  void set_allocated_post(::std::string* post);
+
+  // @@protoc_insertion_point(class_scope:tns.PostRequest)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  ::google::protobuf::internal::ArenaStringPtr name_;
+  ::google::protobuf::internal::ArenaStringPtr post_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_tns_2eproto::TableStruct;
+  friend void ::protobuf_tns_2eproto::InitDefaultsPostRequestImpl();
+};
+// -------------------------------------------------------------------
+
+class PostReply : public ::google::protobuf::Message /* @@protoc_insertion_point(class_definition:tns.PostReply) */ {
+ public:
+  PostReply();
+  virtual ~PostReply();
+
+  PostReply(const PostReply& from);
+
+  inline PostReply& operator=(const PostReply& from) {
+    CopyFrom(from);
+    return *this;
+  }
+  #if LANG_CXX11
+  PostReply(PostReply&& from) noexcept
+    : PostReply() {
+    *this = ::std::move(from);
+  }
+
+  inline PostReply& operator=(PostReply&& from) noexcept {
+    if (GetArenaNoVirtual() == from.GetArenaNoVirtual()) {
+      if (this != &from) InternalSwap(&from);
+    } else {
+      CopyFrom(from);
+    }
+    return *this;
+  }
+  #endif
+  static const ::google::protobuf::Descriptor* descriptor();
+  static const PostReply& default_instance();
+
+  static void InitAsDefaultInstance();  // FOR INTERNAL USE ONLY
+  static inline const PostReply* internal_default_instance() {
+    return reinterpret_cast<const PostReply*>(
+               &_PostReply_default_instance_);
+  }
+  static PROTOBUF_CONSTEXPR int const kIndexInFileMessages =
+    9;
+
+  void Swap(PostReply* other);
+  friend void swap(PostReply& a, PostReply& b) {
+    a.Swap(&b);
+  }
+
+  // implements Message ----------------------------------------------
+
+  inline PostReply* New() const PROTOBUF_FINAL { return New(NULL); }
+
+  PostReply* New(::google::protobuf::Arena* arena) const PROTOBUF_FINAL;
+  void CopyFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void MergeFrom(const ::google::protobuf::Message& from) PROTOBUF_FINAL;
+  void CopyFrom(const PostReply& from);
+  void MergeFrom(const PostReply& from);
+  void Clear() PROTOBUF_FINAL;
+  bool IsInitialized() const PROTOBUF_FINAL;
+
+  size_t ByteSizeLong() const PROTOBUF_FINAL;
+  bool MergePartialFromCodedStream(
+      ::google::protobuf::io::CodedInputStream* input) PROTOBUF_FINAL;
+  void SerializeWithCachedSizes(
+      ::google::protobuf::io::CodedOutputStream* output) const PROTOBUF_FINAL;
+  ::google::protobuf::uint8* InternalSerializeWithCachedSizesToArray(
+      bool deterministic, ::google::protobuf::uint8* target) const PROTOBUF_FINAL;
+  int GetCachedSize() const PROTOBUF_FINAL { return _cached_size_; }
+  private:
+  void SharedCtor();
+  void SharedDtor();
+  void SetCachedSize(int size) const PROTOBUF_FINAL;
+  void InternalSwap(PostReply* other);
+  private:
+  inline ::google::protobuf::Arena* GetArenaNoVirtual() const {
+    return NULL;
+  }
+  inline void* MaybeArenaPtr() const {
+    return NULL;
+  }
+  public:
+
+  ::google::protobuf::Metadata GetMetadata() const PROTOBUF_FINAL;
+
+  // nested types ----------------------------------------------------
+
+  typedef PostReply_IStatus IStatus;
+  static const IStatus SUCCESS =
+    PostReply_IStatus_SUCCESS;
+  static const IStatus FAILURE_ALREADY_EXISTS =
+    PostReply_IStatus_FAILURE_ALREADY_EXISTS;
+  static const IStatus FAILURE_NOT_EXISTS =
+    PostReply_IStatus_FAILURE_NOT_EXISTS;
+  static const IStatus FAILURE_INVALID_USERNAME =
+    PostReply_IStatus_FAILURE_INVALID_USERNAME;
+  static const IStatus FAILURE_INVALID =
+    PostReply_IStatus_FAILURE_INVALID;
+  static const IStatus FAILURE_UNKNOWN =
+    PostReply_IStatus_FAILURE_UNKNOWN;
+  static inline bool IStatus_IsValid(int value) {
+    return PostReply_IStatus_IsValid(value);
+  }
+  static const IStatus IStatus_MIN =
+    PostReply_IStatus_IStatus_MIN;
+  static const IStatus IStatus_MAX =
+    PostReply_IStatus_IStatus_MAX;
+  static const int IStatus_ARRAYSIZE =
+    PostReply_IStatus_IStatus_ARRAYSIZE;
+  static inline const ::google::protobuf::EnumDescriptor*
+  IStatus_descriptor() {
+    return PostReply_IStatus_descriptor();
+  }
+  static inline const ::std::string& IStatus_Name(IStatus value) {
+    return PostReply_IStatus_Name(value);
+  }
+  static inline bool IStatus_Parse(const ::std::string& name,
+      IStatus* value) {
+    return PostReply_IStatus_Parse(name, value);
+  }
+
+  // accessors -------------------------------------------------------
+
+  // .tns.PostReply.IStatus status = 1;
+  void clear_status();
+  static const int kStatusFieldNumber = 1;
+  ::tns::PostReply_IStatus status() const;
+  void set_status(::tns::PostReply_IStatus value);
+
+  // @@protoc_insertion_point(class_scope:tns.PostReply)
+ private:
+
+  ::google::protobuf::internal::InternalMetadataWithArena _internal_metadata_;
+  int status_;
+  mutable int _cached_size_;
+  friend struct ::protobuf_tns_2eproto::TableStruct;
+  friend void ::protobuf_tns_2eproto::InitDefaultsPostReplyImpl();
+};
 // ===================================================================
 
 
@@ -1305,9 +1896,287 @@ inline void FollowReply::set_status(::tns::FollowReply_IStatus value) {
   // @@protoc_insertion_point(field_set:tns.FollowReply.status)
 }
 
+// -------------------------------------------------------------------
+
+// UpdateRequest
+
+// string name = 1;
+inline void UpdateRequest::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& UpdateRequest::name() const {
+  // @@protoc_insertion_point(field_get:tns.UpdateRequest.name)
+  return name_.GetNoArena();
+}
+inline void UpdateRequest::set_name(const ::std::string& value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:tns.UpdateRequest.name)
+}
+#if LANG_CXX11
+inline void UpdateRequest::set_name(::std::string&& value) {
+  
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:tns.UpdateRequest.name)
+}
+#endif
+inline void UpdateRequest::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:tns.UpdateRequest.name)
+}
+inline void UpdateRequest::set_name(const char* value, size_t size) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:tns.UpdateRequest.name)
+}
+inline ::std::string* UpdateRequest::mutable_name() {
+  
+  // @@protoc_insertion_point(field_mutable:tns.UpdateRequest.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* UpdateRequest::release_name() {
+  // @@protoc_insertion_point(field_release:tns.UpdateRequest.name)
+  
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void UpdateRequest::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    
+  } else {
+    
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:tns.UpdateRequest.name)
+}
+
+// int32 posts = 2;
+inline void UpdateRequest::clear_posts() {
+  posts_ = 0;
+}
+inline ::google::protobuf::int32 UpdateRequest::posts() const {
+  // @@protoc_insertion_point(field_get:tns.UpdateRequest.posts)
+  return posts_;
+}
+inline void UpdateRequest::set_posts(::google::protobuf::int32 value) {
+  
+  posts_ = value;
+  // @@protoc_insertion_point(field_set:tns.UpdateRequest.posts)
+}
+
+// -------------------------------------------------------------------
+
+// UpdateReply
+
+// string timeline = 1;
+inline void UpdateReply::clear_timeline() {
+  timeline_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& UpdateReply::timeline() const {
+  // @@protoc_insertion_point(field_get:tns.UpdateReply.timeline)
+  return timeline_.GetNoArena();
+}
+inline void UpdateReply::set_timeline(const ::std::string& value) {
+  
+  timeline_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:tns.UpdateReply.timeline)
+}
+#if LANG_CXX11
+inline void UpdateReply::set_timeline(::std::string&& value) {
+  
+  timeline_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:tns.UpdateReply.timeline)
+}
+#endif
+inline void UpdateReply::set_timeline(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  timeline_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:tns.UpdateReply.timeline)
+}
+inline void UpdateReply::set_timeline(const char* value, size_t size) {
+  
+  timeline_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:tns.UpdateReply.timeline)
+}
+inline ::std::string* UpdateReply::mutable_timeline() {
+  
+  // @@protoc_insertion_point(field_mutable:tns.UpdateReply.timeline)
+  return timeline_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* UpdateReply::release_timeline() {
+  // @@protoc_insertion_point(field_release:tns.UpdateReply.timeline)
+  
+  return timeline_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void UpdateReply::set_allocated_timeline(::std::string* timeline) {
+  if (timeline != NULL) {
+    
+  } else {
+    
+  }
+  timeline_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), timeline);
+  // @@protoc_insertion_point(field_set_allocated:tns.UpdateReply.timeline)
+}
+
+// .tns.UpdateReply.IStatus status = 2;
+inline void UpdateReply::clear_status() {
+  status_ = 0;
+}
+inline ::tns::UpdateReply_IStatus UpdateReply::status() const {
+  // @@protoc_insertion_point(field_get:tns.UpdateReply.status)
+  return static_cast< ::tns::UpdateReply_IStatus >(status_);
+}
+inline void UpdateReply::set_status(::tns::UpdateReply_IStatus value) {
+  
+  status_ = value;
+  // @@protoc_insertion_point(field_set:tns.UpdateReply.status)
+}
+
+// -------------------------------------------------------------------
+
+// PostRequest
+
+// string name = 1;
+inline void PostRequest::clear_name() {
+  name_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& PostRequest::name() const {
+  // @@protoc_insertion_point(field_get:tns.PostRequest.name)
+  return name_.GetNoArena();
+}
+inline void PostRequest::set_name(const ::std::string& value) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:tns.PostRequest.name)
+}
+#if LANG_CXX11
+inline void PostRequest::set_name(::std::string&& value) {
+  
+  name_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:tns.PostRequest.name)
+}
+#endif
+inline void PostRequest::set_name(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:tns.PostRequest.name)
+}
+inline void PostRequest::set_name(const char* value, size_t size) {
+  
+  name_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:tns.PostRequest.name)
+}
+inline ::std::string* PostRequest::mutable_name() {
+  
+  // @@protoc_insertion_point(field_mutable:tns.PostRequest.name)
+  return name_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* PostRequest::release_name() {
+  // @@protoc_insertion_point(field_release:tns.PostRequest.name)
+  
+  return name_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void PostRequest::set_allocated_name(::std::string* name) {
+  if (name != NULL) {
+    
+  } else {
+    
+  }
+  name_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), name);
+  // @@protoc_insertion_point(field_set_allocated:tns.PostRequest.name)
+}
+
+// string post = 2;
+inline void PostRequest::clear_post() {
+  post_.ClearToEmptyNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline const ::std::string& PostRequest::post() const {
+  // @@protoc_insertion_point(field_get:tns.PostRequest.post)
+  return post_.GetNoArena();
+}
+inline void PostRequest::set_post(const ::std::string& value) {
+  
+  post_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), value);
+  // @@protoc_insertion_point(field_set:tns.PostRequest.post)
+}
+#if LANG_CXX11
+inline void PostRequest::set_post(::std::string&& value) {
+  
+  post_.SetNoArena(
+    &::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::move(value));
+  // @@protoc_insertion_point(field_set_rvalue:tns.PostRequest.post)
+}
+#endif
+inline void PostRequest::set_post(const char* value) {
+  GOOGLE_DCHECK(value != NULL);
+  
+  post_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), ::std::string(value));
+  // @@protoc_insertion_point(field_set_char:tns.PostRequest.post)
+}
+inline void PostRequest::set_post(const char* value, size_t size) {
+  
+  post_.SetNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(),
+      ::std::string(reinterpret_cast<const char*>(value), size));
+  // @@protoc_insertion_point(field_set_pointer:tns.PostRequest.post)
+}
+inline ::std::string* PostRequest::mutable_post() {
+  
+  // @@protoc_insertion_point(field_mutable:tns.PostRequest.post)
+  return post_.MutableNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline ::std::string* PostRequest::release_post() {
+  // @@protoc_insertion_point(field_release:tns.PostRequest.post)
+  
+  return post_.ReleaseNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited());
+}
+inline void PostRequest::set_allocated_post(::std::string* post) {
+  if (post != NULL) {
+    
+  } else {
+    
+  }
+  post_.SetAllocatedNoArena(&::google::protobuf::internal::GetEmptyStringAlreadyInited(), post);
+  // @@protoc_insertion_point(field_set_allocated:tns.PostRequest.post)
+}
+
+// -------------------------------------------------------------------
+
+// PostReply
+
+// .tns.PostReply.IStatus status = 1;
+inline void PostReply::clear_status() {
+  status_ = 0;
+}
+inline ::tns::PostReply_IStatus PostReply::status() const {
+  // @@protoc_insertion_point(field_get:tns.PostReply.status)
+  return static_cast< ::tns::PostReply_IStatus >(status_);
+}
+inline void PostReply::set_status(::tns::PostReply_IStatus value) {
+  
+  status_ = value;
+  // @@protoc_insertion_point(field_set:tns.PostReply.status)
+}
+
 #ifdef __GNUC__
   #pragma GCC diagnostic pop
 #endif  // __GNUC__
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
+// -------------------------------------------------------------------
+
 // -------------------------------------------------------------------
 
 // -------------------------------------------------------------------
@@ -1335,6 +2204,16 @@ template <> struct is_proto_enum< ::tns::FollowReply_IStatus> : ::google::protob
 template <>
 inline const EnumDescriptor* GetEnumDescriptor< ::tns::FollowReply_IStatus>() {
   return ::tns::FollowReply_IStatus_descriptor();
+}
+template <> struct is_proto_enum< ::tns::UpdateReply_IStatus> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::tns::UpdateReply_IStatus>() {
+  return ::tns::UpdateReply_IStatus_descriptor();
+}
+template <> struct is_proto_enum< ::tns::PostReply_IStatus> : ::google::protobuf::internal::true_type {};
+template <>
+inline const EnumDescriptor* GetEnumDescriptor< ::tns::PostReply_IStatus>() {
+  return ::tns::PostReply_IStatus_descriptor();
 }
 
 }  // namespace protobuf

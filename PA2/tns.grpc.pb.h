@@ -166,6 +166,20 @@ class tinyNetworkingService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::FollowReply>> PrepareAsyncUnfollow(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::FollowReply>>(PrepareAsyncUnfollowRaw(context, request, cq));
     }
+    virtual ::grpc::Status Update(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::tns::UpdateReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>> AsyncUpdate(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>>(AsyncUpdateRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>> PrepareAsyncUpdate(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>>(PrepareAsyncUpdateRaw(context, request, cq));
+    }
+    virtual ::grpc::Status Post(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::tns::PostReply* response) = 0;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>> AsyncPost(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>>(AsyncPostRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>> PrepareAsyncPost(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>>(PrepareAsyncPostRaw(context, request, cq));
+    }
   private:
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::ListReply>* AsyncListRaw(::grpc::ClientContext* context, const ::tns::ListRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::ListReply>* PrepareAsyncListRaw(::grpc::ClientContext* context, const ::tns::ListRequest& request, ::grpc::CompletionQueue* cq) = 0;
@@ -173,6 +187,10 @@ class tinyNetworkingService final {
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::FollowReply>* PrepareAsyncFollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::FollowReply>* AsyncUnfollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) = 0;
     virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::FollowReply>* PrepareAsyncUnfollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>* AsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::UpdateReply>* PrepareAsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>* AsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) = 0;
+    virtual ::grpc::ClientAsyncResponseReaderInterface< ::tns::PostReply>* PrepareAsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) = 0;
   };
   class Stub final : public StubInterface {
    public:
@@ -198,6 +216,20 @@ class tinyNetworkingService final {
     std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::FollowReply>> PrepareAsyncUnfollow(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) {
       return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::FollowReply>>(PrepareAsyncUnfollowRaw(context, request, cq));
     }
+    ::grpc::Status Update(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::tns::UpdateReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>> AsyncUpdate(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>>(AsyncUpdateRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>> PrepareAsyncUpdate(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>>(PrepareAsyncUpdateRaw(context, request, cq));
+    }
+    ::grpc::Status Post(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::tns::PostReply* response) override;
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::PostReply>> AsyncPost(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::PostReply>>(AsyncPostRaw(context, request, cq));
+    }
+    std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::PostReply>> PrepareAsyncPost(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+      return std::unique_ptr< ::grpc::ClientAsyncResponseReader< ::tns::PostReply>>(PrepareAsyncPostRaw(context, request, cq));
+    }
 
    private:
     std::shared_ptr< ::grpc::ChannelInterface> channel_;
@@ -207,9 +239,15 @@ class tinyNetworkingService final {
     ::grpc::ClientAsyncResponseReader< ::tns::FollowReply>* PrepareAsyncFollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::tns::FollowReply>* AsyncUnfollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) override;
     ::grpc::ClientAsyncResponseReader< ::tns::FollowReply>* PrepareAsyncUnfollowRaw(::grpc::ClientContext* context, const ::tns::FollowRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>* AsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>* PrepareAsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::tns::PostReply>* AsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) override;
+    ::grpc::ClientAsyncResponseReader< ::tns::PostReply>* PrepareAsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) override;
     const ::grpc::internal::RpcMethod rpcmethod_List_;
     const ::grpc::internal::RpcMethod rpcmethod_Follow_;
     const ::grpc::internal::RpcMethod rpcmethod_Unfollow_;
+    const ::grpc::internal::RpcMethod rpcmethod_Update_;
+    const ::grpc::internal::RpcMethod rpcmethod_Post_;
   };
   static std::unique_ptr<Stub> NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options = ::grpc::StubOptions());
 
@@ -221,6 +259,8 @@ class tinyNetworkingService final {
     virtual ::grpc::Status List(::grpc::ServerContext* context, const ::tns::ListRequest* request, ::tns::ListReply* response);
     virtual ::grpc::Status Follow(::grpc::ServerContext* context, const ::tns::FollowRequest* request, ::tns::FollowReply* response);
     virtual ::grpc::Status Unfollow(::grpc::ServerContext* context, const ::tns::FollowRequest* request, ::tns::FollowReply* response);
+    virtual ::grpc::Status Update(::grpc::ServerContext* context, const ::tns::UpdateRequest* request, ::tns::UpdateReply* response);
+    virtual ::grpc::Status Post(::grpc::ServerContext* context, const ::tns::PostRequest* request, ::tns::PostReply* response);
   };
   template <class BaseClass>
   class WithAsyncMethod_List : public BaseClass {
@@ -282,7 +322,47 @@ class tinyNetworkingService final {
       ::grpc::Service::RequestAsyncUnary(2, context, request, response, new_call_cq, notification_cq, tag);
     }
   };
-  typedef WithAsyncMethod_List<WithAsyncMethod_Follow<WithAsyncMethod_Unfollow<Service > > > AsyncService;
+  template <class BaseClass>
+  class WithAsyncMethod_Update : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_Update() {
+      ::grpc::Service::MarkMethodAsync(3);
+    }
+    ~WithAsyncMethod_Update() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Update(::grpc::ServerContext* context, const ::tns::UpdateRequest* request, ::tns::UpdateReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestUpdate(::grpc::ServerContext* context, ::tns::UpdateRequest* request, ::grpc::ServerAsyncResponseWriter< ::tns::UpdateReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(3, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  template <class BaseClass>
+  class WithAsyncMethod_Post : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithAsyncMethod_Post() {
+      ::grpc::Service::MarkMethodAsync(4);
+    }
+    ~WithAsyncMethod_Post() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Post(::grpc::ServerContext* context, const ::tns::PostRequest* request, ::tns::PostReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    void RequestPost(::grpc::ServerContext* context, ::tns::PostRequest* request, ::grpc::ServerAsyncResponseWriter< ::tns::PostReply>* response, ::grpc::CompletionQueue* new_call_cq, ::grpc::ServerCompletionQueue* notification_cq, void *tag) {
+      ::grpc::Service::RequestAsyncUnary(4, context, request, response, new_call_cq, notification_cq, tag);
+    }
+  };
+  typedef WithAsyncMethod_List<WithAsyncMethod_Follow<WithAsyncMethod_Unfollow<WithAsyncMethod_Update<WithAsyncMethod_Post<Service > > > > > AsyncService;
   template <class BaseClass>
   class WithGenericMethod_List : public BaseClass {
    private:
@@ -330,6 +410,40 @@ class tinyNetworkingService final {
     }
     // disable synchronous version of this method
     ::grpc::Status Unfollow(::grpc::ServerContext* context, const ::tns::FollowRequest* request, ::tns::FollowReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_Update : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_Update() {
+      ::grpc::Service::MarkMethodGeneric(3);
+    }
+    ~WithGenericMethod_Update() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Update(::grpc::ServerContext* context, const ::tns::UpdateRequest* request, ::tns::UpdateReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+  };
+  template <class BaseClass>
+  class WithGenericMethod_Post : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithGenericMethod_Post() {
+      ::grpc::Service::MarkMethodGeneric(4);
+    }
+    ~WithGenericMethod_Post() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable synchronous version of this method
+    ::grpc::Status Post(::grpc::ServerContext* context, const ::tns::PostRequest* request, ::tns::PostReply* response) final override {
       abort();
       return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
     }
@@ -394,9 +508,49 @@ class tinyNetworkingService final {
     // replace default version of method with streamed unary
     virtual ::grpc::Status StreamedUnfollow(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::tns::FollowRequest,::tns::FollowReply>* server_unary_streamer) = 0;
   };
-  typedef WithStreamedUnaryMethod_List<WithStreamedUnaryMethod_Follow<WithStreamedUnaryMethod_Unfollow<Service > > > StreamedUnaryService;
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_Update : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_Update() {
+      ::grpc::Service::MarkMethodStreamed(3,
+        new ::grpc::internal::StreamedUnaryHandler< ::tns::UpdateRequest, ::tns::UpdateReply>(std::bind(&WithStreamedUnaryMethod_Update<BaseClass>::StreamedUpdate, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_Update() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status Update(::grpc::ServerContext* context, const ::tns::UpdateRequest* request, ::tns::UpdateReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedUpdate(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::tns::UpdateRequest,::tns::UpdateReply>* server_unary_streamer) = 0;
+  };
+  template <class BaseClass>
+  class WithStreamedUnaryMethod_Post : public BaseClass {
+   private:
+    void BaseClassMustBeDerivedFromService(const Service *service) {}
+   public:
+    WithStreamedUnaryMethod_Post() {
+      ::grpc::Service::MarkMethodStreamed(4,
+        new ::grpc::internal::StreamedUnaryHandler< ::tns::PostRequest, ::tns::PostReply>(std::bind(&WithStreamedUnaryMethod_Post<BaseClass>::StreamedPost, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+    ~WithStreamedUnaryMethod_Post() override {
+      BaseClassMustBeDerivedFromService(this);
+    }
+    // disable regular version of this method
+    ::grpc::Status Post(::grpc::ServerContext* context, const ::tns::PostRequest* request, ::tns::PostReply* response) final override {
+      abort();
+      return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+    }
+    // replace default version of method with streamed unary
+    virtual ::grpc::Status StreamedPost(::grpc::ServerContext* context, ::grpc::ServerUnaryStreamer< ::tns::PostRequest,::tns::PostReply>* server_unary_streamer) = 0;
+  };
+  typedef WithStreamedUnaryMethod_List<WithStreamedUnaryMethod_Follow<WithStreamedUnaryMethod_Unfollow<WithStreamedUnaryMethod_Update<WithStreamedUnaryMethod_Post<Service > > > > > StreamedUnaryService;
   typedef Service SplitStreamedService;
-  typedef WithStreamedUnaryMethod_List<WithStreamedUnaryMethod_Follow<WithStreamedUnaryMethod_Unfollow<Service > > > StreamedService;
+  typedef WithStreamedUnaryMethod_List<WithStreamedUnaryMethod_Follow<WithStreamedUnaryMethod_Unfollow<WithStreamedUnaryMethod_Update<WithStreamedUnaryMethod_Post<Service > > > > > StreamedService;
 };
 
 }  // namespace tns

@@ -2,6 +2,9 @@
 #include <memory>
 #include <string>
 #include <vector>
+#include <algorithm>
+#include <mutex>
+#include <condition_variable>
 
 #include <grpc++/grpc++.h>
 
@@ -23,6 +26,8 @@ using tns::ListReply;
 
 using tns::FollowRequest;
 using tns::FollowReply;
+using std::cout;
+using std::endl;
 
 /*
 * struct to hold user data
@@ -36,6 +41,7 @@ struct user {
 
 /* global variable of all users */
 std::vector<user *> users;
+pthread_mutex_t m;
 
 // Logic and data behind the server's behavior.
 class TestServiceImpl final : public Test::Service {
@@ -43,12 +49,25 @@ class TestServiceImpl final : public Test::Service {
                   TestReply* reply) {
     std::string prefix("Hello ");
 
+    pthread_mutex_lock(&m);
+
+    // if user exists dont add them
+    for(auto u : users) {
+      if(u->name == request->name()) {
+        pthread_mutex_unlock(&m);
+        reply->set_message(prefix + request->name());
+        return Status::OK;
+      }
+    }
+
     /* update server info on users */
     user *temp = new user();
     temp->name = request->name();
     users.push_back(temp);
 
     reply->set_message(prefix + request->name());
+
+    pthread_mutex_unlock(&m);
     return Status::OK;
   }
 };
@@ -57,6 +76,8 @@ class TestServiceImpl final : public Test::Service {
 class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status List(ServerContext* context, const ListRequest* request,
                   ListReply* reply) {
+
+    pthread_mutex_lock(&m);
 
     /* get server info on users */
     std::string allUsers = "";
@@ -73,6 +94,86 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     reply->set_all(allUsers);
     reply->set_following(followingUsers);
     reply->set_status(tns::ListReply_IStatus_SUCCESS);
+
+    pthread_mutex_unlock(&m);
+    return Status::OK;
+  }
+
+  Status Follow(ServerContext* context, const FollowRequest* request,
+                  FollowReply* reply) {
+    
+    pthread_mutex_lock(&m);
+
+    bool success = false;
+    /* get server info on users */
+    for(auto u : users) {
+      if(u->name == request->user()) { // Found the user who sent request
+        for(auto f : users) { // find the user who we are trying to follow
+          if(f->name == request->name()) {
+            u->following.push_back(f);
+            f->followers.push_back(u);
+            success = true;
+          }
+        }
+      }
+    }
+    
+    pthread_mutex_unlock(&m);
+
+    if(success)
+      reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+    else
+      reply->set_status(tns::FollowReply_IStatus_FAILURE_NOT_EXISTS);
+    return Status::OK;
+  }
+
+  Status Unfollow(ServerContext* context, const FollowRequest* request,
+                  FollowReply* reply) {
+    bool success = false;
+    // User who is unfollowing and who is being unfollowed.
+    user* us;
+    user* fs;
+
+    pthread_mutex_lock(&m);
+    /* get server info on users */
+    for(auto u : users) {
+      if(u->name == request->user()) { // Found the user who sent request
+        for(auto f : u->following) { // find the user who we are trying to follow
+          if(f->name == request->name()) {
+            us = u;
+            fs = f;
+            success = true;
+          }
+        }
+      }
+    }
+
+    pthread_mutex_unlock(&m);
+
+    if(success)
+      reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+    else {
+      reply->set_status(tns::FollowReply_IStatus_FAILURE_NOT_EXISTS);
+      return Status::OK;
+    }
+    
+    pthread_mutex_lock(&m);
+
+    for(int i = 0; i < us->following.size(); i++) {
+      if(us->following.at(i) == fs) {
+        us->following.erase(us->following.begin() + i);
+        break;
+      }
+    }
+
+    for(int i = 0; i < fs->followers.size(); i++) {
+      if(fs->followers.at(i) == us) {
+        fs->followers.erase(fs->followers.begin() + i);
+        break;
+      }
+    }
+
+    pthread_mutex_unlock(&m);
     return Status::OK;
   }
 };
@@ -102,6 +203,8 @@ void RunServer() {
 }
 
 int main(int argc, char** argv) {
+  pthread_mutex_init(&m, nullptr);
+
   RunServer();
 
   return 0;

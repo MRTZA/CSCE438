@@ -25,6 +25,8 @@ service tinyNetworkingService {
   rpc List (ListRequest) returns (ListReply) {}
   rpc Follow (FollowRequest) returns (FollowReply) {}
   rpc Unfollow (FollowRequest) returns (FollowReply) {}
+  rpc Update (UpdateRequest) returns (UpdateReply) {}
+  rpc Post (PostRequest) returns (PostReply) {}
 }
 
 // user sends their name so server can find them
@@ -55,6 +57,42 @@ message FollowRequest {
 
 // server sends back the status of command execution
 message FollowReply {
+  enum IStatus {
+    SUCCESS = 0;
+    FAILURE_ALREADY_EXISTS = 1;
+    FAILURE_NOT_EXISTS = 2;
+    FAILURE_INVALID_USERNAME = 3;
+    FAILURE_INVALID = 4;
+    FAILURE_UNKNOWN = 5;
+  }
+  IStatus status = 1;
+}
+
+message UpdateRequest {
+  string name = 1;
+  int32 posts = 2;
+}
+
+message UpdateReply {
+  string timeline = 1;
+
+  enum IStatus {
+    SUCCESS = 0;
+    FAILURE_ALREADY_EXISTS = 1;
+    FAILURE_NOT_EXISTS = 2;
+    FAILURE_INVALID_USERNAME = 3;
+    FAILURE_INVALID = 4;
+    FAILURE_UNKNOWN = 5;
+  }
+  IStatus status = 2;
+}
+
+message PostRequest {
+  string name = 1;
+  string post = 2;
+}
+
+message PostReply {
   enum IStatus {
     SUCCESS = 0;
     FAILURE_ALREADY_EXISTS = 1;

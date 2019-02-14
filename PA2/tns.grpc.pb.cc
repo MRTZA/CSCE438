@@ -63,6 +63,8 @@ static const char* tinyNetworkingService_method_names[] = {
   "/tns.tinyNetworkingService/List",
   "/tns.tinyNetworkingService/Follow",
   "/tns.tinyNetworkingService/Unfollow",
+  "/tns.tinyNetworkingService/Update",
+  "/tns.tinyNetworkingService/Post",
 };
 
 std::unique_ptr< tinyNetworkingService::Stub> tinyNetworkingService::NewStub(const std::shared_ptr< ::grpc::ChannelInterface>& channel, const ::grpc::StubOptions& options) {
@@ -74,6 +76,8 @@ tinyNetworkingService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterfac
   : channel_(channel), rpcmethod_List_(tinyNetworkingService_method_names[0], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Follow_(tinyNetworkingService_method_names[1], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   , rpcmethod_Unfollow_(tinyNetworkingService_method_names[2], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Update_(tinyNetworkingService_method_names[3], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
+  , rpcmethod_Post_(tinyNetworkingService_method_names[4], ::grpc::internal::RpcMethod::NORMAL_RPC, channel)
   {}
 
 ::grpc::Status tinyNetworkingService::Stub::List(::grpc::ClientContext* context, const ::tns::ListRequest& request, ::tns::ListReply* response) {
@@ -112,6 +116,30 @@ tinyNetworkingService::Stub::Stub(const std::shared_ptr< ::grpc::ChannelInterfac
   return ::grpc::internal::ClientAsyncResponseReaderFactory< ::tns::FollowReply>::Create(channel_.get(), cq, rpcmethod_Unfollow_, context, request, false);
 }
 
+::grpc::Status tinyNetworkingService::Stub::Update(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::tns::UpdateReply* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Update_, context, request, response);
+}
+
+::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>* tinyNetworkingService::Stub::AsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::tns::UpdateReply>::Create(channel_.get(), cq, rpcmethod_Update_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::tns::UpdateReply>* tinyNetworkingService::Stub::PrepareAsyncUpdateRaw(::grpc::ClientContext* context, const ::tns::UpdateRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::tns::UpdateReply>::Create(channel_.get(), cq, rpcmethod_Update_, context, request, false);
+}
+
+::grpc::Status tinyNetworkingService::Stub::Post(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::tns::PostReply* response) {
+  return ::grpc::internal::BlockingUnaryCall(channel_.get(), rpcmethod_Post_, context, request, response);
+}
+
+::grpc::ClientAsyncResponseReader< ::tns::PostReply>* tinyNetworkingService::Stub::AsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::tns::PostReply>::Create(channel_.get(), cq, rpcmethod_Post_, context, request, true);
+}
+
+::grpc::ClientAsyncResponseReader< ::tns::PostReply>* tinyNetworkingService::Stub::PrepareAsyncPostRaw(::grpc::ClientContext* context, const ::tns::PostRequest& request, ::grpc::CompletionQueue* cq) {
+  return ::grpc::internal::ClientAsyncResponseReaderFactory< ::tns::PostReply>::Create(channel_.get(), cq, rpcmethod_Post_, context, request, false);
+}
+
 tinyNetworkingService::Service::Service() {
   AddMethod(new ::grpc::internal::RpcServiceMethod(
       tinyNetworkingService_method_names[0],
@@ -128,6 +156,16 @@ tinyNetworkingService::Service::Service() {
       ::grpc::internal::RpcMethod::NORMAL_RPC,
       new ::grpc::internal::RpcMethodHandler< tinyNetworkingService::Service, ::tns::FollowRequest, ::tns::FollowReply>(
           std::mem_fn(&tinyNetworkingService::Service::Unfollow), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      tinyNetworkingService_method_names[3],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< tinyNetworkingService::Service, ::tns::UpdateRequest, ::tns::UpdateReply>(
+          std::mem_fn(&tinyNetworkingService::Service::Update), this)));
+  AddMethod(new ::grpc::internal::RpcServiceMethod(
+      tinyNetworkingService_method_names[4],
+      ::grpc::internal::RpcMethod::NORMAL_RPC,
+      new ::grpc::internal::RpcMethodHandler< tinyNetworkingService::Service, ::tns::PostRequest, ::tns::PostReply>(
+          std::mem_fn(&tinyNetworkingService::Service::Post), this)));
 }
 
 tinyNetworkingService::Service::~Service() {
@@ -148,6 +186,20 @@ tinyNetworkingService::Service::~Service() {
 }
 
 ::grpc::Status tinyNetworkingService::Service::Unfollow(::grpc::ServerContext* context, const ::tns::FollowRequest* request, ::tns::FollowReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status tinyNetworkingService::Service::Update(::grpc::ServerContext* context, const ::tns::UpdateRequest* request, ::tns::UpdateReply* response) {
+  (void) context;
+  (void) request;
+  (void) response;
+  return ::grpc::Status(::grpc::StatusCode::UNIMPLEMENTED, "");
+}
+
+::grpc::Status tinyNetworkingService::Service::Post(::grpc::ServerContext* context, const ::tns::PostRequest* request, ::tns::PostReply* response) {
   (void) context;
   (void) request;
   (void) response;

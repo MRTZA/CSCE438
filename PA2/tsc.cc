@@ -1,6 +1,7 @@
-#include <iostream>
+//#include <iostream>
 //#include <memory>
 //#include <thread>
+#include <iostream>
 #include <vector>
 #include <string>
 #include <unistd.h>
@@ -22,6 +23,8 @@ using tns::ListReply;
 
 using tns::FollowRequest;
 using tns::FollowReply;
+using std::cout;
+using std::endl;
 
 
 class Client : public IClient
@@ -86,6 +89,58 @@ class Client : public IClient
                         << std::endl;
                         returnVec.push_back("RPC failed");
             return returnVec;
+            }
+        }
+
+        IStatus Follow(const std::string& user, const std::string& name) {
+            // Data we are sending to the server.
+            FollowRequest request;
+            request.set_user(user);
+            request.set_name(name);
+
+            // Container for the data we expect from the server.
+            FollowReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = tns_stub_->Follow(&context, request, &reply);
+
+            // Act upon its status.
+            if (status.ok()) {
+                return (IStatus)reply.status();
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+            return FAILURE_UNKNOWN;
+            }
+        }
+
+        IStatus Unfollow(const std::string& user, const std::string& name) {
+            // Data we are sending to the server.
+            FollowRequest request;
+            request.set_user(user);
+            request.set_name(name);
+
+            // Container for the data we expect from the server.
+            FollowReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = tns_stub_->Unfollow(&context, request, &reply);
+
+            // Act upon its status.
+            if (status.ok()) {
+                return (IStatus)reply.status();
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+            return FAILURE_UNKNOWN;
             }
         }
 
@@ -211,16 +266,25 @@ IReply Client::processCommand(std::string& input)
 	// ------------------------------------------------------------
     
     IReply ire;
-    if(input != "LIST") {
-        ire.comm_status = FAILURE_INVALID;
-    } else if(input == "LIST") {
+    //if(input != "LIST" || input.substr(0,6) != "FOLLOW ") {
+    //    ire.comm_status = FAILURE_INVALID;
+    //} else 
+    if(input == "LIST") {
         std::vector<std::string> result = List(username, &ire);
         std::vector<std::string> temp;
         temp.push_back(result[0]);
         ire.all_users = temp;
         temp[0] = result[1];
         ire.following_users = temp;
+    } else if(input.substr(0,7) == "FOLLOW ") {
+        ire.comm_status = Follow(username, input.substr(7,input.length()));
+    } else if(input.substr(0,9) == "UNFOLLOW ") {
+        ire.comm_status = Unfollow(username, input.substr(9,input.length()));
     }
+    else {
+        ire.comm_status = FAILURE_INVALID;
+    }
+    
     return ire;
 }
 

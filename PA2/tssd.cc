@@ -187,7 +187,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status Update(ServerContext* context, const UpdateRequest* request,
                   UpdateReply* reply) {
     
-    std::cout << request->name() << "is requesting update, they see " << request->posts() << "posts" << std::endl;
+    std::cout << request->name() << " is requesting update, they see " << request->posts() << " posts" << std::endl;
     pthread_mutex_lock(&m);
 
     std::string replyString = "";
@@ -250,7 +250,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status Post(ServerContext* context, const PostRequest* request,
                   PostReply* reply) {
 
-    std::cout << request->name() << "submitted a post" << std::endl;
+    std::cout << request->name() << " submitted a post" << std::endl;
 
     // build the post
     std::string post = "";

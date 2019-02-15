@@ -406,13 +406,13 @@ void* updateThreadFunction(void* update) {
     IReply ire;
 	for(;;) {
         std::vector<std::string> posts = updateData->Update(updateData->getUsername(), readPostSeen(), &ire);
+        
+        std::cout << "recieved update" << std::endl;
 
         for(int i = 0; i < posts.size(); i++) {
             displayPostMessage(posts[i]);
             setPostSeen();
         }
-
-        sleep(1);
     }
 }
 

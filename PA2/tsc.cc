@@ -249,7 +249,6 @@ class Client : public IClient
             } else {
             std::cout << status.error_code() << ": " << status.error_message()
                         << std::endl;
-                        returnVec.push_back("RPC failed");
             return FAILURE_UNKNOWN;
             }
         }
@@ -420,7 +419,7 @@ void* updateThreadFunction(void* update) {
 void* postThreadFunction(void* post) {
     Client *postData = static_cast<Client*>(post);
 	for(;;) {
-        std::string message = postData->getPostMessage();
+        std::string message = getPostMessage();
 
         postData->Post(postData->getUsername(), message);
     }

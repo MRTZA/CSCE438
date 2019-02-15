@@ -2,6 +2,7 @@
 //#include <memory>
 //#include <thread>
 #include <iostream>
+#include <sstream>
 #include <vector>
 #include <string>
 #include <unistd.h>
@@ -187,7 +188,7 @@ class Client : public IClient
                     return reply.timeline;
                 }
 
-                stringstream ss(reply.timeline);
+                std::stringstream ss(reply.timeline);
                 while(ss.good()) {
                     std::string substr;
                     getline(ss,substr,',');

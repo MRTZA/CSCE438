@@ -238,6 +238,10 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
                   FollowReply* reply) {
     
     //pthread_mutex_lock(&m);
+    if(request->name() == request->user()) {
+      reply->set_status(tns::FollowReply_IStatus_FAILURE_ALREADY_EXISTS);
+      return Status::OK;
+    }
 
     bool success = false;
     /* get server info on users */

@@ -194,9 +194,9 @@ class Client : public IClient
             ClientContext context;
 
             // The actual RPC.
-            std::cout << "atempting update" << std::endl;
+            // std::cout << "atempting update" << std::endl;
             Status status = tns_stub_->Update(&context, request, &reply);
-            std::cout << "finished update" << std::endl;
+            // std::cout << "finished update" << std::endl;
 
             std::vector<std::string> returnVec;
 
@@ -409,12 +409,14 @@ void* updateThreadFunction(void* update) {
         IReply ire;
         std::vector<std::string> posts = updateData->Update(updateData->getUsername(), readPostSeen(), &ire);
         
-        std::cout << "recieved update of " << posts.size() << " posts" << std::endl;
-
+        // std::cout << "recieved update of " << posts.size() << " posts" << std::endl;
+        
         for(int i = 0; i < posts.size(); i++) { 
             displayPostMessage(posts[i]);
             setPostSeen();
         }
+
+        sleep(2);
     }
 }
 

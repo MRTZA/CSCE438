@@ -187,7 +187,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status Update(ServerContext* context, const UpdateRequest* request,
                   UpdateReply* reply) {
     
-    std::cout << request->name() << " is requesting update, they see " << request->posts() << " posts" << std::endl;
+    // std::cout << request->name() << " is requesting update, they see " << request->posts() << " posts" << std::endl;
     //pthread_mutex_lock(&m);
 
     std::string replyString = "";
@@ -204,7 +204,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);
       //pthread_mutex_unlock(&m);
-      std::cout << request->name() << " is finished requesting update" << std::endl;
+      // std::cout << request->name() << " is finished requesting update" << std::endl;
       return Status::OK; 
     }
     
@@ -245,7 +245,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
     reply->set_timeline(replyString);
     //pthread_mutex_unlock(&m);
-    std::cout << request->name() << " is finished requesting update" << std::endl;
+    // std::cout << request->name() << " is finished requesting update" << std::endl;
     return Status::OK;
   }
 

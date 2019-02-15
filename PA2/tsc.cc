@@ -188,7 +188,8 @@ class Client : public IClient
                     return reply.timeline;
                 }
 
-                std::stringstream ss(reply.timeline);
+                std::string readIn = reply.timeline;
+                std::stringstream ss(readIn);
                 while(ss.good()) {
                     std::string substr;
                     getline(ss,substr,',');

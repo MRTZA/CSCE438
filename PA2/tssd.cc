@@ -26,6 +26,13 @@ using tns::ListReply;
 
 using tns::FollowRequest;
 using tns::FollowReply;
+
+using tns::UpdateRequest;
+using tns::UpdateReply;
+
+using tns::PostRequest;
+using tns::PostReply;
+
 using std::cout;
 using std::endl;
 

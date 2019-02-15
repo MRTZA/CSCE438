@@ -211,10 +211,32 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     // they need a certain number of updates
     for(int i = timeline.size() - request->posts(); i < timeline.size(); i++) {
       if(i == timeline.size() -1) {
-        replyString += timeline[i];
+        // check if its the user's own post
+        std::sender = "";
+        for(int j = 0; j < timeline[i].length(); j++) {
+          if(timeline[i] == '(') {
+            break;
+          }
+          sender += str(timeline[i]);
+        }
+
+        if(sender == request->name()) {
+          replyString += timeline[i];
+        }
       }
       else {
-        replyString += timeline[i] + ",";
+        // check if its the user's own post
+        std::sender = "";
+        for(int j = 0; j < timeline[i].length(); j++) {
+          if(timeline[i] == '(') {
+            break;
+          }
+          sender += str(timeline[i]);
+        }
+
+        if(sender == request->name()) {
+          replyString += timeline[i] + ",";
+        }
       }
     }
 

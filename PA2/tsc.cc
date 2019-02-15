@@ -181,15 +181,15 @@ class Client : public IClient
                 ireply->comm_status = (IStatus)reply.status();
                 
                 // parse the reply string of posts
-                if(reply.timeline == "") {
+                if(reply.timeline() == "") {
                     return returnVec;
                 }
-                if(reply.timeline.find(",") == std::string::npos) {
-                    return reply.timeline;
+                if(reply.timeline().find(",") == std::string::npos) {
+                    returnVec.push_back(reply.timeline());
+                    return returnVec;
                 }
-
-                std::string readIn = reply.timeline;
-                std::stringstream ss(readIn);
+            
+                std::stringstream ss(reply.timeline());
                 while(ss.good()) {
                     std::string substr;
                     getline(ss,substr,',');

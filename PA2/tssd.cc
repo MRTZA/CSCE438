@@ -1,9 +1,13 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
+#include <stdio.h>
 #include <memory>
 #include <string>
 #include <vector>
 #include <algorithm>
 #include <mutex>
+#include <ctime>
 #include <condition_variable>
 
 #include <grpc++/grpc++.h>
@@ -49,6 +53,130 @@ struct user {
 /* global variable of all users */
 std::vector<user *> users;
 pthread_mutex_t m;
+
+void restoreFromFile() {
+  std::ifstream file("server.txt");
+  if(file.is_open()) {
+    std::string line;
+    // Ignore the first line because it is a timestamp
+    file.ignore(10000,'\n');
+    
+    // Read through the file once to get all the users created.
+    while(std::getline(file, line)) {
+      
+      // Add the users we read from the file
+      user *newUser = new user();
+      newUser->name = line;
+      users.push_back(newUser);
+      
+      // Ignore the user information
+      file.ignore(10000,'\n');
+      file.ignore(10000,'\n');
+      file.ignore(10000,'\n');
+    }
+
+    // for(auto u : users)
+    //   cout << u->name << endl;
+
+
+    // Move back to the start of the file to 
+    file.clear();
+    file.seekg(0, std::ios::beg);
+
+    // Ignore the first line again
+    file.ignore(10000,'\n');
+    while(std::getline(file, line)) {
+      // Find pointer of our current user
+      std::string userString = line;
+      user *currentUser;
+      for(auto u : users)
+        if(u->name == userString)
+          currentUser = u;
+
+      std::getline(file, line);
+      std::stringstream following(line);
+      // Add the user who currentUser is following to their following vector
+      while(following.good()) {
+        std::string userToAdd;
+        getline(following,userToAdd,',');
+        if(userToAdd != "") {
+          for(auto u : users)
+            if(u->name == userToAdd)
+              currentUser->following.push_back(u);
+        }
+      }
+
+      std::getline(file, line);
+      std::stringstream followers(line);
+      // Add the users who follow current user to the followers vector
+      while(followers.good()) {
+        std::string userToAdd;
+        getline(followers,userToAdd,',');
+        if(userToAdd != "") {
+          for(auto u : users)
+            if(u->name == userToAdd)
+              currentUser->followers.push_back(u);
+        }
+      }
+
+      std::getline(file, line);
+      std::stringstream timeline(line);
+      // Add all the posts to the current users timeline
+      while(timeline.good()) {
+        std::string postToAdd;
+        getline(timeline,postToAdd,',');
+        if(postToAdd != "") {
+          currentUser->timeline.push_back(postToAdd);
+        }
+      }
+    }
+  }
+}
+
+void logServerState() {
+  //Delete the current server file so we can write our new one
+  remove("./server.txt");
+  std::ofstream file("server.txt", std::ios::out);
+  
+  // Get the current time into a string
+  time_t rawtime;
+  char buffer[80];
+  struct tm * timeinfo;
+  time(&rawtime);
+  timeinfo = localtime(&rawtime);
+  strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+  std::string time(buffer);
+  
+  // Output all the server info to the file.
+  if(file.is_open()) {
+    file << time << endl;
+    for(auto u : users) {
+      //Put users name into file
+      file << u->name << endl;
+      //Put who user is following into file
+      for(auto flg : u->following) 
+        file << flg->name << ",";
+      file << endl;
+      //Put who is following user into file
+      for(auto flr : u->followers) 
+        file << flr->name << ",";
+      file << endl;
+      //Put users timeline into file.
+      for(auto post : u->timeline)
+        file << post << ",";
+      file << endl;
+    }
+    file << "\0";
+    file.close();
+  }
+}
+
+void killServer(int signum) {
+  cout << endl << "Closing Server Saving Information" << endl;
+  logServerState();
+  exit(signum);
+}
+
 
 // Logic and data behind the server's behavior.
 class TestServiceImpl final : public Test::Service {
@@ -312,7 +440,8 @@ void RunServer() {
 
 int main(int argc, char** argv) {
   pthread_mutex_init(&m, nullptr);
-
+  signal(SIGINT, killServer);
+  restoreFromFile();
   RunServer();
 
   return 0;

@@ -45,19 +45,19 @@ pthread_mutex_t m;
 int postSeen = 0;
 
 int readPostSeen() {
-    pthread_mutex_lock(&m);
+    // pthread_mutex_lock(&m);
 
     return postSeen;
 
-    pthread_mutex_unlock(&m);
+    // pthread_mutex_unlock(&m);
 }
 
 void setPostSeen() {
-    pthread_mutex_lock(&m);
+    // pthread_mutex_lock(&m);
 
     postSeen++;
 
-    pthread_mutex_unlock(&m);
+    // pthread_mutex_unlock(&m);
 }   
 
 
@@ -424,7 +424,6 @@ void* postThreadFunction(void* post) {
 	for(;;) {
         std::string message = getPostMessage();
 
-        sleep(1);
         postData->Post(postData->getUsername(), message);
         setPostSeen();
     }

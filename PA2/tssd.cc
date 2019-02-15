@@ -263,7 +263,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     // update the users
     for(auto u : users) {
       if(u->name == request->name()) {
-        u->timeline.push_back(post)
+        u->timeline.push_back(post);
         for(auto f : u->followers) {
           f->timeline.push_back(post);
         }

@@ -227,6 +227,33 @@ class Client : public IClient
             }
         }
 
+        IStatus Post(const std::string& name, std::string message) {
+            // Data we are sending to the server.
+            PostRequest request;
+            request.set_name(name);
+            request.set_post(message);
+
+            // Container for the data we expect from the server.
+            PostReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = tns_stub_->Post(&context, request, &reply);
+
+            // Act upon its status.
+            if (status.ok()) {
+                return (IStatus)reply.status();
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+                        returnVec.push_back("RPC failed");
+            return FAILURE_UNKNOWN;
+            }
+        }
+
         void setChannel(std::shared_ptr<Channel> channel) {
             stub_ = Test::NewStub(channel);
             tns_stub_ = tinyNetworkingService::NewStub(channel);
@@ -374,9 +401,6 @@ IReply Client::processCommand(std::string& input)
     return ire;
 }
 
-struct postStruct {
-
-};
 
 void* updateThreadFunction(void* update) {
     Client *updateData = static_cast<Client*>(update);
@@ -395,7 +419,11 @@ void* updateThreadFunction(void* update) {
  
 void* postThreadFunction(void* post) {
     postStruct *postData = static_cast<postStruct*>(post);
-	for(;;) {}
+	for(;;) {
+        std::string message = postData->getPostMessage();
+
+        postData->Post(postData->getUsername(), message);
+    }
 }
 
 void Client::processTimeline()
@@ -419,10 +447,8 @@ void Client::processTimeline()
     pthread_t updateThread;
 	pthread_t postThread;
 
-    postStruct *postData = new postStruct();
-
     pthread_create(&updateThread, NULL, updateThreadFunction, (void*)this);
-	pthread_create(&postThread, NULL, postThreadFunction, (void*)postData);
+	pthread_create(&postThread, NULL, postThreadFunction, (void*)this);
 
     while(1) {}
 }

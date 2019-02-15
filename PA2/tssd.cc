@@ -212,7 +212,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     for(int i = timeline.size() - request->posts(); i < timeline.size(); i++) {
       if(i == timeline.size() -1) {
         // check if its the user's own post
-        std::sender = "";
+        std::string sender = "";
         for(int j = 0; j < timeline[i].length(); j++) {
           if(timeline[i] == '(') {
             break;
@@ -226,7 +226,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       }
       else {
         // check if its the user's own post
-        std::sender = "";
+        std::string sender = "";
         for(int j = 0; j < timeline[i].length(); j++) {
           if(timeline[i] == '(') {
             break;

@@ -56,12 +56,12 @@ class TestServiceImpl final : public Test::Service {
                   TestReply* reply) {
     std::string prefix("Hello ");
 
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     // if user exists dont add them
     for(auto u : users) {
       if(u->name == request->name()) {
-        pthread_mutex_unlock(&m);
+        //pthread_mutex_unlock(&m);
         reply->set_message(prefix + request->name());
         return Status::OK;
       }
@@ -74,7 +74,7 @@ class TestServiceImpl final : public Test::Service {
 
     reply->set_message(prefix + request->name());
 
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
     return Status::OK;
   }
 };
@@ -84,7 +84,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status List(ServerContext* context, const ListRequest* request,
                   ListReply* reply) {
 
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     /* get server info on users */
     std::string allUsers = "";
@@ -102,14 +102,14 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     reply->set_following(followingUsers);
     reply->set_status(tns::ListReply_IStatus_SUCCESS);
 
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
     return Status::OK;
   }
 
   Status Follow(ServerContext* context, const FollowRequest* request,
                   FollowReply* reply) {
     
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     bool success = false;
     /* get server info on users */
@@ -125,7 +125,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       }
     }
     
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
 
     if(success)
       reply->set_status(tns::FollowReply_IStatus_SUCCESS);
@@ -141,7 +141,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     user* us;
     user* fs;
 
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
     /* get server info on users */
     for(auto u : users) {
       if(u->name == request->user()) { // Found the user who sent request
@@ -155,7 +155,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       }
     }
 
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
 
     if(success)
       reply->set_status(tns::FollowReply_IStatus_SUCCESS);
@@ -164,7 +164,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       return Status::OK;
     }
     
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     for(int i = 0; i < us->following.size(); i++) {
       if(us->following.at(i) == fs) {
@@ -180,7 +180,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       }
     }
 
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
     return Status::OK;
   }
 
@@ -188,7 +188,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
                   UpdateReply* reply) {
     
     std::cout << request->name() << " is requesting update, they see " << request->posts() << " posts" << std::endl;
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     std::string replyString = "";
     std::vector<std::string> timeline;
@@ -203,12 +203,12 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       // they dont need any more updates
       reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);
-      pthread_mutex_unlock(&m);
+      //pthread_mutex_unlock(&m);
       std::cout << request->name() << " is finished requesting update" << std::endl;
       return Status::OK; 
     }
     
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
 
     // they need a certain number of updates
     for(int i = timeline.size() - request->posts(); i < timeline.size(); i++) {
@@ -244,7 +244,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
     reply->set_timeline(replyString);
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
     std::cout << request->name() << " is finished requesting update" << std::endl;
     return Status::OK;
   }
@@ -266,7 +266,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     post = request->name() + "(" + t_str + ")" + request->post();
 
-    pthread_mutex_lock(&m);
+    //pthread_mutex_lock(&m);
     // update the users
     for(auto u : users) {
       if(u->name == request->name()) {
@@ -279,7 +279,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     }
 
     reply->set_status(tns::PostReply_IStatus_SUCCESS);
-    pthread_mutex_unlock(&m);
+    //pthread_mutex_unlock(&m);
     std::cout << "finished submitting " << request->name() << "'s post" << std::endl;
     return Status::OK;
   }

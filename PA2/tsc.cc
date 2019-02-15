@@ -375,6 +375,7 @@ IReply Client::processCommand(std::string& input)
 struct updateStruct {
     std::string name;
     IReply ire;
+    Client* client;
 };
 
 struct postStruct {
@@ -384,7 +385,7 @@ struct postStruct {
 void* updateThreadFunction(void* update) {
     updateStruct *updateData = static_cast<updateStruct*>(update);
 	for(;;) {
-        std::vector<std::string> posts = Client::Update(updateData->name, readPostSeen(), updateData->ire);
+        std::vector<std::string> posts = client->Update(updateData->name, readPostSeen(), updateData->ire);
 
         for(int i = 0; i < posts.size(); i++) {
             displayPostMessage(posts[i]);
@@ -425,6 +426,7 @@ void Client::processTimeline()
     IReply ire;
     updateData->name = username;
     updateData->ire = ire;
+    updateData->client = this;
 
     postStruct *postData = new postStruct();
 

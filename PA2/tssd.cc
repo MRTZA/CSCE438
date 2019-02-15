@@ -200,7 +200,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     }
 
     if(timeline.size() == request->posts()) {
-      std::cout << request->name() << "'s timeline is up to date" << std::endl;
+      // std::cout << request->name() << "'s timeline is up to date" << std::endl;
       // they dont need any more updates
       reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);

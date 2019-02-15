@@ -343,7 +343,7 @@ IReply Client::processCommand(std::string& input)
     } else if(input.substr(0,9) == "UNFOLLOW ") {
         ire.comm_status = Unfollow(username, input.substr(9,input.length()));
     } else if(input.substr(0,8) == "TIMELINE") {
-        std::vector<string> = Update(username, postSeen, &ire);
+        std::vector<std::string> timeline = Update(username, postSeen, &ire);
     }
     else {
         ire.comm_status = FAILURE_INVALID;

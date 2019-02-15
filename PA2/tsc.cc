@@ -422,6 +422,7 @@ void* postThreadFunction(void* post) {
 	for(;;) {
         std::string message = getPostMessage();
 
+        sleep(1);
         postData->Post(postData->getUsername(), message);
         setPostSeen();
     }

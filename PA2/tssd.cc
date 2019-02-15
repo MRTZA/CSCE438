@@ -204,6 +204,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);
       pthread_mutex_unlock(&m);
+      std::cout << request->name() << " is finished requesting update" << std::endl;
       return Status::OK; 
     }
     
@@ -244,6 +245,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
     reply->set_timeline(replyString);
     pthread_mutex_unlock(&m);
+    std::cout << request->name() << " is finished requesting update" << std::endl;
     return Status::OK;
   }
 
@@ -270,7 +272,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       if(u->name == request->name()) {
         u->timeline.push_back(post);
         for(auto f : u->followers) {
-          std::cout << "adding post to " << request->name() << "'s follower's timeline" << std::endl;
+          std::cout << "adding post to " << request->name() << "'s followers' timeline" << std::endl;
           f->timeline.push_back(post);
         }
       }

@@ -381,7 +381,10 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
     std::string t_str(buffer);
 
-    post = request->name() + "(" + t_str + ") >> " + request->post();
+    std::string msg = request->post();
+    msg.erase(std::remove(msg.begin(), msg.end(), '\n'), msg.end());
+
+    post = request->name() + "(" + t_str + ") >> " + msg;
 
     pthread_mutex_lock(&m);
     // update the users

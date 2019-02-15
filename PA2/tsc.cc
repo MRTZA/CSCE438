@@ -383,7 +383,15 @@ struct postStruct {
 
 void* updateThreadFunction(void* update) {
     updateStruct *updateData = static_cast<updateStruct*>(update);
-	for(;;) {}
+	for(;;) {
+        std::vector<string> posts = Update(updateData->name, readPostSeen(), updateData->ire);
+
+        for(int i = 0; i < posts.size(); i++) {
+            displayPostMessage(posts[i]);
+        }
+
+        sleep(10);
+    }
 }
 
  
@@ -414,6 +422,9 @@ void Client::processTimeline()
 	pthread_t postThread;
 
     updateStruct *updateData = new updateStruct();
+    IReply ire;
+    updateData->name = username;
+    updateData->ire = ire;
 
     postStruct *postData = new postStruct();
 

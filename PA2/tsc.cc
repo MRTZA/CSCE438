@@ -403,13 +403,13 @@ IReply Client::processCommand(std::string& input)
 
 void* updateThreadFunction(void* update) {
     Client *updateData = static_cast<Client*>(update);
-    IReply ire;
 	for(;;) {
+        IReply ire;
         std::vector<std::string> posts = updateData->Update(updateData->getUsername(), readPostSeen(), &ire);
         
-        std::cout << "recieved update" << std::endl;
+        std::cout << "recieved update of " << posts.size() << " posts" << std::endl;
 
-        for(int i = 0; i < posts.size(); i++) {
+        for(int i = 0; i < posts.size(); i++) { 
             displayPostMessage(posts[i]);
             setPostSeen();
         }

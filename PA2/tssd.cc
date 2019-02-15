@@ -217,10 +217,10 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
           if(timeline[i] == "(") {
             break;
           }
-          sender.push_back(timeline[i]);
+          sender += timeline[i];
         }
 
-        if(sender == request->name()) {
+        if(sender != request->name()) {
           replyString += timeline[i];
         }
       }
@@ -231,10 +231,10 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
           if(timeline[i] == "(") {
             break;
           }
-          sender.push_back(timeline[i]);
+          sender += timeline[i];
         }
 
-        if(sender == request->name()) {
+        if(sender != request->name()) {
           replyString += timeline[i] + ",";
         }
       }

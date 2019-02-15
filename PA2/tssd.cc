@@ -176,6 +176,46 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     pthread_mutex_unlock(&m);
     return Status::OK;
   }
+
+  Status Update(ServerContext* context, const UpdateRequest* request,
+                  UpdateReply* reply) {
+
+    pthread_mutex_lock(&m);
+
+    std::string reply = "";
+    std::vector<std::string> timeline;
+    /* get server info on users */
+    for(auto u : users) {
+      if(u->name == request->user()) { // Found the user who sent request
+        timeline = u->timeline;
+      }
+    }
+
+    if(timeline.size() == request->posts()) {
+      // they dont need any more updates
+      reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+      reply->set_timeline(reply);
+      pthread_mutex_unlock(&m);
+      return Status::OK; 
+    }
+    
+    pthread_mutex_lock(&m);
+
+    // they need a certain number of updates
+    for(int i = timeline.size() - requests->posts(); i < timeline.size(); i++) {
+      if(i == timeline.size() -1) {
+        reply += timeline[i];
+      }
+      else {
+        reply += timeline[i] + ",";
+      }
+    }
+
+    reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+    reply->set_timeline(reply);
+    pthread_mutex_unlock(&m);
+    return Status::OK;
+  }
 };
 
 void RunServer() {

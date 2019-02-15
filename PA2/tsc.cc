@@ -2,6 +2,7 @@
 //#include <memory>
 //#include <thread>
 #include <iostream>
+#include <algorithm>
 #include <sstream>
 #include <vector>
 #include <string>

@@ -186,7 +186,8 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
   Status Update(ServerContext* context, const UpdateRequest* request,
                   UpdateReply* reply) {
-
+    
+    std::cout << request->name() << "is requesting update, they see " << request->posts() << "posts" << std::endl;
     pthread_mutex_lock(&m);
 
     std::string replyString = "";
@@ -253,11 +254,13 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     // build the post
     std::string post = "";
-    time_t timer;
-    time(&timer); // gets current time
-
-    std::string t_str(std::ctime(&timer));
-    t_str[t_str.size()-1] = '\0';
+    time_t rawTime;
+    char buffer[80];
+    struct tm * timeinfo;
+    time(&rawTime);
+    timeinfo = localtime(&rawTime);
+    strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
+    std::string t_srt(buffer);
 
     post = request->name() + "(" + t_str + ")" + request->post();
 
@@ -267,7 +270,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       if(u->name == request->name()) {
         u->timeline.push_back(post);
         for(auto f : u->followers) {
-          std::cout << "adding post to " << request->name() << "'s follower's timeline";
+          std::cout << "adding post to " << request->name() << "'s follower's timeline" << std::endl;
           f->timeline.push_back(post);
         }
       }
@@ -275,6 +278,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     reply->set_status(tns::PostReply_IStatus_SUCCESS);
     pthread_mutex_unlock(&m);
+    std::cout << "finished submitting " request->name() << "'s post" << std::endl;
     return Status::OK;
   }
 };

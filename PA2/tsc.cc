@@ -6,6 +6,8 @@
 #include <vector>
 #include <string>
 #include <unistd.h>
+#include <pthread.h>
+#include <mutex>
 #include <grpc++/grpc++.h>
 #include "client.h"
 
@@ -34,11 +36,29 @@ using tns::PostReply;
 using std::cout;
 using std::endl;
 
+pthread_mutex_t m;
+
 /* Global variable: 
 * to keep track of the posts printed for the client
 * helps to check for updates against the server
 */
 int postSeen = 0;
+
+int readPostSeen() {
+    pthread_mutex_lock(&m);
+
+    return postSeen;
+
+    pthread_mutex_unlock(&m);
+}
+
+void setPostSeen() {
+    pthread_mutex_lock(&m);
+
+    postSeen++;
+
+    pthread_mutex_unlock(&m);
+}   
 
 
 class Client : public IClient
@@ -352,6 +372,26 @@ IReply Client::processCommand(std::string& input)
     return ire;
 }
 
+struct updateStruct {
+    std::string name;
+    IReply ire;
+};
+
+struct postStruct {
+
+};
+
+void* updateThreadFunction(void* update) {
+    updateStruct *update = static_cast<updateStruct*>(update);
+	for(;;) {}
+}
+
+ 
+void* postThreadFunction(void* post) {
+    postStruct *post = static_cast<postStruct*>(post);
+	for(;;) {}
+}
+
 void Client::processTimeline()
 {
 	// ------------------------------------------------------------
@@ -370,5 +410,15 @@ void Client::processTimeline()
     // and you can terminate the client program by pressing
     // CTRL-C (SIGINT)
 	// ------------------------------------------------------------
+    pthread_t updateThread;
+	pthread_t postThread;
+
+    updateStruct *updateData = new updateStruct();
+
+    postStruct *postData = new postStruct();
+
+    pthread_create(&updateThread, NULL, updateThreadFunction, (void*)updateData);
+	pthread_create(&postThread, NULL, postThreadFunction, (void*)postData);
+
     while(1) {}
 }

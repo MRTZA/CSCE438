@@ -193,7 +193,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     std::vector<std::string> timeline;
     /* get server info on users */
     for(auto u : users) {
-      if(u->name == request->user()) { // Found the user who sent request
+      if(u->name == request->name()) { // Found the user who sent request
         timeline = u->timeline;
       }
     }

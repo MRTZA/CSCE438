@@ -385,7 +385,7 @@ struct postStruct {
 void* updateThreadFunction(void* update) {
     updateStruct *updateData = static_cast<updateStruct*>(update);
 	for(;;) {
-        std::vector<std::string> posts = client->Update(updateData->name, readPostSeen(), updateData->ire);
+        std::vector<std::string> posts = updateData->client->Update(updateData->name, readPostSeen(), updateData->ire);
 
         for(int i = 0; i < posts.size(); i++) {
             displayPostMessage(posts[i]);

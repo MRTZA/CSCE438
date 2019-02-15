@@ -69,6 +69,8 @@ class Client : public IClient
                const std::string& p)
             :hostname(hname), username(uname), port(p){}
 
+        std::string getUsername() { return username; }
+
         // Assembles the client's payload, sends it and presents the response back
         // from the server.
         std::string SayHello(const std::string& user) {
@@ -380,7 +382,7 @@ void* updateThreadFunction(void* update) {
     Client *updateData = static_cast<Client*>(update);
     IReply ire;
 	for(;;) {
-        std::vector<std::string> posts = updateData->Update(updateData->username, readPostSeen(), &ire);
+        std::vector<std::string> posts = updateData->Update(updateData->getUsername(), readPostSeen(), &ire);
 
         for(int i = 0; i < posts.size(); i++) {
             displayPostMessage(posts[i]);

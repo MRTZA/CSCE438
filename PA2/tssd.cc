@@ -217,7 +217,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
           if(timeline[i] == '(') {
             break;
           }
-          sender += str(timeline[i]);
+          sender.push_back(timeline[i]);
         }
 
         if(sender == request->name()) {
@@ -231,7 +231,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
           if(timeline[i] == '(') {
             break;
           }
-          sender += str(timeline[i]);
+          sender.push_back(timeline[i]);
         }
 
         if(sender == request->name()) {

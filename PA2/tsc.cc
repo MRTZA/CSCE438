@@ -411,14 +411,18 @@ void* updateThreadFunction(void* update) {
         std::vector<std::string> posts = updateData->Update(updateData->getUsername(), readPostSeen(), &ire);
         
         // std::cout << "recieved update of " << posts.size() << " posts" << std::endl;
-        
-        int num = std::max((int)posts.size()-20, 0);
-        for(int i = posts.size(); i > num; i--) { 
-            displayPostMessage(posts[i]);
-        }
 
-        for(int i = 0; i < posts.size(); i++) {
-            setPostSeen();
+        if(posts.size() != 0) {
+            int num = std::max((int)posts.size()-20, 0);
+            for(int i = posts.size(); i >= num; i--) { 
+                displayPostMessage(posts[i]);
+            }
+
+            for(int i = 0; i < posts.size(); i++) {
+                setPostSeen();
+            }
+
+            
         }
 
         sleep(1);

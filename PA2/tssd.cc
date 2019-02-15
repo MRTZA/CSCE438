@@ -260,7 +260,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     time(&rawTime);
     timeinfo = localtime(&rawTime);
     strftime(buffer, sizeof(buffer), "%d-%m-%Y %H:%M:%S", timeinfo);
-    std::string t_srt(buffer);
+    std::string t_str(buffer);
 
     post = request->name() + "(" + t_str + ")" + request->post();
 
@@ -278,7 +278,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     reply->set_status(tns::PostReply_IStatus_SUCCESS);
     pthread_mutex_unlock(&m);
-    std::cout << "finished submitting " request->name() << "'s post" << std::endl;
+    std::cout << "finished submitting " << request->name() << "'s post" << std::endl;
     return Status::OK;
   }
 };

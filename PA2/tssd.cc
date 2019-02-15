@@ -200,7 +200,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
 
     if(timeline.size() == request->posts()) {
       // they dont need any more updates
-      reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+      reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);
       pthread_mutex_unlock(&m);
       return Status::OK; 
@@ -209,7 +209,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     pthread_mutex_lock(&m);
 
     // they need a certain number of updates
-    for(int i = timeline.size() - requests->posts(); i < timeline.size(); i++) {
+    for(int i = timeline.size() - request->posts(); i < timeline.size(); i++) {
       if(i == timeline.size() -1) {
         replyString += timeline[i];
       }
@@ -218,7 +218,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       }
     }
 
-    reply->set_status(tns::FollowReply_IStatus_SUCCESS);
+    reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
     reply->set_timeline(replyString);
     pthread_mutex_unlock(&m);
     return Status::OK;

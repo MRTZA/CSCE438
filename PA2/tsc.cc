@@ -194,7 +194,9 @@ class Client : public IClient
             ClientContext context;
 
             // The actual RPC.
+            std::cout << "atempting update" << std::endl;
             Status status = tns_stub_->Update(&context, request, &reply);
+            std::cout << "finished update" << std::endl;
 
             std::vector<std::string> returnVec;
 

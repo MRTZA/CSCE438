@@ -200,6 +200,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     }
 
     if(timeline.size() == request->posts()) {
+      std::cout << request->name() << "'s timeline is up to date" << std::endl;
       // they dont need any more updates
       reply->set_status(tns::UpdateReply_IStatus_SUCCESS);
       reply->set_timeline(replyString);
@@ -211,7 +212,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     //pthread_mutex_lock(&m);
 
     // they need a certain number of updates
-    for(int i = timeline.size() - request->posts(); i < timeline.size(); i++) {
+    for(int i = timeline.size() - request->posts()-1; i < timeline.size(); i++) {
       if(i == timeline.size() -1) {
         // check if its the user's own post
         std::string sender = "";

@@ -409,6 +409,7 @@ void* updateThreadFunction(void* update) {
 
         for(int i = 0; i < posts.size(); i++) {
             displayPostMessage(posts[i]);
+            setPostSeen();
         }
 
         sleep(1);
@@ -422,6 +423,7 @@ void* postThreadFunction(void* post) {
         std::string message = getPostMessage();
 
         postData->Post(postData->getUsername(), message);
+        setPostSeen();
     }
 }
 

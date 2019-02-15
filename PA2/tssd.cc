@@ -249,10 +249,12 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
   Status Post(ServerContext* context, const PostRequest* request,
                   PostReply* reply) {
 
+    std::cout << request->name() << "submitted a post" << std::endl;
+
     // build the post
     std::string post = "";
     time_t timer;
-    time(&timer);
+    time(&timer); // gets current time
 
     std::string t_str(std::ctime(&timer));
     t_str[t_str.size()-1] = '\0';
@@ -265,6 +267,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
       if(u->name == request->name()) {
         u->timeline.push_back(post);
         for(auto f : u->followers) {
+          std::cout << "adding post to " << request->name() << "'s follower's timeline";
           f->timeline.push_back(post);
         }
       }

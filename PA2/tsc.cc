@@ -413,7 +413,7 @@ void* updateThreadFunction(void* update) {
         // std::cout << "recieved update of " << posts.size() << " posts" << std::endl;
         
         int num = std::max(posts.size()-20, 0);
-        for(int i = posts.size(); i >= num; i--) { 
+        for(int i = posts.size(); i > num; i--) { 
             displayPostMessage(posts[i]);
         }
 

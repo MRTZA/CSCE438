@@ -37,4 +37,4 @@ fbc: tns.pb.o tns.grpc.pb.o tsc.o
 	$(PROTOC) -I $(PROTOS_PATH) --cpp_out=. $<
 
 clean: 
-	rm -f *.o *.pb.cc *.pb.h fbsd fbc
+	rm -f *.o *.pb.cc *.pb.h fbsd fbc server.txt

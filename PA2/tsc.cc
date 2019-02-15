@@ -178,7 +178,7 @@ class Client : public IClient
             }
         }
 
-        std::vector<std::string> Update(const std::string& name, const int& numPosts, IReply* ireply) {
+        std::vector<std::string> Update(const std::string& name, int numPosts, IReply* ireply) {
             // Data we are sending to the server.
             UpdateRequest request;
             request.set_name(name);

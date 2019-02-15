@@ -328,7 +328,7 @@ class tnsServiceImpl final : public tinyNetworkingService::Service {
     }
 
     // they need a certain number of updates
-    for(int i = timeline.size() - request->posts()-1; i < timeline.size(); i++) {
+    for(int i = request->posts(); i < timeline.size(); i++) {
       if(i == timeline.size() -1) {
         // check if its the user's own post
         std::string sender = "";

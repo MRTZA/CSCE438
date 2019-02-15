@@ -416,7 +416,7 @@ void* updateThreadFunction(void* update) {
             setPostSeen();
         }
 
-        sleep(5);
+        sleep(1);
     }
 }
 

@@ -418,7 +418,7 @@ void* updateThreadFunction(void* update) {
 
  
 void* postThreadFunction(void* post) {
-    postStruct *postData = static_cast<postStruct*>(post);
+    Client *postData = static_cast<Client*>(post);
 	for(;;) {
         std::string message = postData->getPostMessage();
 

@@ -23,8 +23,21 @@ using tns::ListReply;
 
 using tns::FollowRequest;
 using tns::FollowReply;
+
+using tns::UpdateRequest;
+using tns::UpdateReply;
+
+using tns::PostRequest;
+using tns::PostReply;
+
 using std::cout;
 using std::endl;
+
+/* Global variable: 
+* to keep track of the posts printed for the client
+* helps to check for updates against the server
+*/
+int postSeen = 0;
 
 
 class Client : public IClient
@@ -144,10 +157,57 @@ class Client : public IClient
             }
         }
 
+        std::vector<std::string> Update(const std::string& name, const int& numPosts, IReply* ireply) {
+            // Data we are sending to the server.
+            UpdateRequest request;
+            request.set_name(name);
+            request.set_posts(numPosts);
+
+            // Container for the data we expect from the server.
+            UpdateReply reply;
+
+            // Context for the client. It could be used to convey extra information to
+            // the server and/or tweak certain RPC behaviors.
+            ClientContext context;
+
+            // The actual RPC.
+            Status status = tns_stub_->Update(&context, request, &reply);
+
+            std::vector<std::string> returnVec;
+
+            // Act upon its status.
+            if (status.ok()) {
+                ireply->comm_status = (IStatus)reply.status();
+                
+                // parse the reply string of posts
+                if(reply.timeline == "") {
+                    return returnVec;
+                }
+                if(reply.timeline.find(",") == std::string::npos) {
+                    return reply.timeline;
+                }
+
+                stringstream ss(reply.timeline);
+                while(ss.good()) {
+                    std::string substr;
+                    getline(ss,substr,',');
+                    returnVec.push_back(substr);
+                }
+                return returnVec;
+
+            } else {
+            std::cout << status.error_code() << ": " << status.error_message()
+                        << std::endl;
+                        returnVec.push_back("RPC failed");
+            return returnVec;
+            }
+        }
+
         void setChannel(std::shared_ptr<Channel> channel) {
             stub_ = Test::NewStub(channel);
             tns_stub_ = tinyNetworkingService::NewStub(channel);
         }
+
     protected:
         virtual int connectTo();
         virtual IReply processCommand(std::string& input);

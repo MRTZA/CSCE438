@@ -68,7 +68,7 @@ message Message {
 }
 
 // The server management service definition
-service Health {
+service HealthService {
 
   rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
 }

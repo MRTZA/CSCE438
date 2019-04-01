@@ -63,6 +63,9 @@ using csce438::ListReply;
 using csce438::Request;
 using csce438::Reply;
 using csce438::SNSService;
+using csce438::HealthService;
+using csce438::HealthCheckRequest;
+using csce438::HealthCheckResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 1
@@ -269,7 +272,7 @@ int main(int argc, char** argv) {
   while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n:")) != -1){
     switch(opt) {
       case 'p': // port
-          port = optarg;server_db.myPort = port;break;
+          port = optarg;break;
       case 'r': // role
           server_db.myRole = optarg;break;
       case 'i': // ip
@@ -286,6 +289,7 @@ int main(int argc, char** argv) {
 	  std::cerr << "Invalid Command Line Argument\n";
     }
   }
+  server_db.myPort = port;
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

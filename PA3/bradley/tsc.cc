@@ -122,7 +122,8 @@ std::string Client::GetConnectInfo() {
 
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &response);
 
-    return response.serverInfo();
+    std::string r = response.serverInfo();
+    return r;
 }
 
 IReply Client::processCommand(std::string& input)

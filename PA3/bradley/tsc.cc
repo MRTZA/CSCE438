@@ -55,7 +55,7 @@ class Client : public IClient
         std::unique_ptr<SNSService::Stub> stub_SNSS_;
         std::unique_ptr<SNSRouter::Stub> stub_SNSR_;
 
-        ServerInfoResponse GetConnectInfo();
+        std::string GetConnectInfo();
         IReply Login();
         IReply List();
         IReply Follow(const std::string& username2);
@@ -110,7 +110,7 @@ int Client::connectTo()
     
     ServerInfoResponse serverInfo = GetConnectInfo();
     
-    login_info = serverInfo->serverInfo();
+    login_info = serverInfo.serverInfo();
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));

@@ -329,9 +329,9 @@ int main(int argc, char** argv) {
     << "My Port: " << server_db.myPort << std::endl
     << "Slave/Master Port: " << server_db.otherPort << std::endl;
 
-    std::map<std::string, std::string>::iterator itr; 
-    for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) { 
-        std::cout << itr->first << ": " << itr->second << '\n'; 
+    std::map<std::string, std::string>::iterator itrTest; 
+    for (itrTest = server_db.masterData.begin(); itrTest != server_db.masterData.end(); ++itrTest) { 
+        std::cout << itrTest->first << ": " << itrTest->second << '\n'; 
     } 
   }
 

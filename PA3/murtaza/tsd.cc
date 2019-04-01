@@ -269,15 +269,44 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
-int Check(std::unique_ptr<HealthService::Stub> stub_) {
+//Returns the status of the server
+int Check(std::string server) {
     HealthCheckRequest request;
     request.set_service(server_db.myIp);
     HealthCheckResponse reply;
     ClientContext context;
 
-    Status status = stub_->Check(&context, request, &reply);
-    int s = reply.status();
+    int s = 0;
+    Status status;
+    if(server == "available") {
+      status = Availablestub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+    else if(server == "masterOne") {
+      status = MasterOnestub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+    else if(server == "masterTwo") {
+      status = MasterTwostub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
     return s;
+}
+
+void Connect_To() {
+  //Create channels/stubs
+  if(server_db.myRole == "router") {
+    std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
+    std::unique_ptr<HealthService::Stub> MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
+    std::unique_ptr<HealthService::Stub> MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
+  }
+  return;
 }
 
 void RunServer(std::string port_no) {
@@ -318,19 +347,7 @@ int main(int argc, char** argv) {
     }
   }
   server_db.myPort = port;
-
-  //Create channels/stubs
-  if(server_db.myRole == "router") {
-    std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
-      grpc::CreateChannel(
-        server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
-    std::unique_ptr<HealthService::Stub> MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
-      grpc::CreateChannel(
-        server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
-    std::unique_ptr<HealthService::Stub> MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
-      grpc::CreateChannel(
-        server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
-  }
+  Connect_To();
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

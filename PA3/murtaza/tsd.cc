@@ -260,22 +260,14 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
-void Check() {
+HealthCheckResponse Check(std::unique_ptr<HealthService::Stub> stub_) {
     HealthCheckRequest request;
     request.set_service(server_db.myIp);
     HealthCheckResponse reply;
     ClientContext context;
 
-    Status status = stub_->Login(&context, request, &reply);
-
-    IReply ire;
-    ire.grpc_status = status;
-    if (reply.msg() == "you have already joined") {
-        ire.comm_status = FAILURE_ALREADY_EXISTS;
-    } else {
-        ire.comm_status = SUCCESS;
-    }
-    return ire;
+    Status status = stub_->Check(&context, request, &reply);
+    return reply;
 }
 
 void RunServer(std::string port_no) {

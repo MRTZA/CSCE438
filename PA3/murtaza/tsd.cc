@@ -319,11 +319,17 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
 
+  //Create channels/stubs
   if(server_db.myRole == "router") {
-    //Create channels/stubs
     std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
+    std::unique_ptr<HealthService::Stub> MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
+    std::unique_ptr<HealthService::Stub> MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
   }
 
   if(DBG_CLI) {

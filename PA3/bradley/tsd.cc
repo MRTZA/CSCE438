@@ -232,7 +232,7 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
-void RunServer(std::string port_no) {
+void RunServer(std::string port_no, std::string role) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
 
@@ -248,16 +248,19 @@ void RunServer(std::string port_no) {
 int main(int argc, char** argv) {
   
   std::string port = "3010";
+  std::string role = "master";
   int opt = 0;
   while ((opt = getopt(argc, argv, "p:")) != -1){
     switch(opt) {
       case 'p':
           port = optarg;break;
+      case 'r':
+          role = optarg;break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }
   }
-  RunServer(port);
+  RunServer(port, role);
 
   return 0;
 }

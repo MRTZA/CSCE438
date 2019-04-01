@@ -78,9 +78,5 @@ message HealthCheckRequest {
 }
 
 message HealthCheckResponse {
-  enum ServingStatus {
-    SUCCESS = 0;
-    FAILURE_UNKNOWN = 1;
-  }
-  ServingStatus status = 1;
+  int status = 1;
 }

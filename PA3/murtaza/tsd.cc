@@ -57,6 +57,11 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerReaderWriter;
 using grpc::ServerWriter;
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
 using grpc::Status;
 using csce438::Message;
 using csce438::ListReply;
@@ -89,6 +94,7 @@ struct Svr {
   std::string myPort;
   std::string otherPort; //Either master or slave port depending on role
   std::map<std::string, std::string> masterData; //Holds info on other servers
+  std::map<std::string, std::unique_ptr<HealthService::Stub>> stubData;
 };
 
 //Vector that stores every client that has been created
@@ -259,6 +265,16 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
+HealthCheckResponse Check(std::unique_ptr<HealthService::Stub> stub_) {
+    HealthCheckRequest request;
+    request.set_service(server_db.myIp);
+    HealthCheckResponse reply;
+    ClientContext context;
+
+    Status status = stub_->Check(&context, request, &reply);
+    return reply;
+}
+
 void RunServer(std::string port_no) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
@@ -298,15 +314,24 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
 
+  // create the channel/stubs if you're the routing server
+  std::map<std::string, std::string>::iterator itr; 
+  for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) {
+      std::unique_ptr<HealthService::Stub> stub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+                grpc::CreateChannel(
+                  itr->second, grpc::InsecureChannelCredentials()))); 
+      server_db.stubData.insert(std::pair<std::string, std::unique_ptr<HealthService::Stub>>(itr->first, stub_));
+  }
+
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl
     << "Ip: " << server_db.myIp << std::endl
     << "My Port: " << server_db.myPort << std::endl
     << "Slave/Master Port: " << server_db.otherPort << std::endl;
 
-    std::map<std::string, std::string>::iterator itr; 
-    for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) { 
-        std::cout << itr->first << ": " << itr->second << '\n'; 
+    std::map<std::string, std::string>::iterator itrTest; 
+    for (itrTest = server_db.masterData.begin(); itrTest != server_db.masterData.end(); ++itrTest) { 
+        std::cout << itrTest->first << ": " << itrTest->second << '\n'; 
     } 
   }
 

@@ -108,6 +108,13 @@ int find_user(std::string username){
   return -1;
 }
 
+class HealthServiceImpl final : public HealthService::Service {
+  Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
+    response->set_status(csce438::HealthCheckResponse_ServingStatus_SUCCESS);
+    return Status::OK;
+  }
+};
+
 class SNSServiceImpl final : public SNSService::Service {
   
   Status List(ServerContext* context, const Request* request, ListReply* list_reply) override {

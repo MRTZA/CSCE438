@@ -320,7 +320,7 @@ int main(int argc, char** argv) {
       std::unique_ptr<HealthService::Stub> stub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
                 grpc::CreateChannel(
                   itr->second, grpc::InsecureChannelCredentials()))); 
-      server_db.stubData.insert(std::pair<std::string, std::string>(itr->first, stub_))
+      server_db.stubData.insert(std::pair<std::string, std::unique_ptr<HealthService::Stub>(itr->first, stub_))
   }
 
   if(DBG_CLI) {

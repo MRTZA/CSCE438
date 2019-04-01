@@ -281,7 +281,7 @@ int main(int argc, char** argv) {
       case 'm': // master server one ip
           server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
       case 'f': // master server two ip
-          server_db.masterData.insert(std::pair<std::string, std::string>("masterTwo", optarg));break;
+          server_db.masterData.insert(std::pair<std::string, std::string>("j;klsd", optarg));break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }

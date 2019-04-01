@@ -242,6 +242,7 @@ void RunServer(std::string port_no, std::string role) {
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 
+
   server->Wait();
 }
 

@@ -319,7 +319,7 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
 
-  if(server_db.Role == "router") {
+  if(server_db.myRole == "router") {
     //Create channels/stubs
     std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(

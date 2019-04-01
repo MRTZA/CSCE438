@@ -276,11 +276,11 @@ int main(int argc, char** argv) {
       case 'o': // other (master or slave ip)
           server_db.otherIp = optarg;break;
       case 'a': // available server ip
-          server_db.masterData.insert(pair<std::string, std::string>("available", optarg));break;
+          server_db.masterData.insert(std::pair<std::string, std::string>("available", optarg));break;
       case 'm': // master server one ip
-          server_db.masterData.insert(pair<std::string, std::string>("masterOne", optarg));break;
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
       case 'n': // master server two ip
-          server_db.masterData.insert(pair<std::string, std::string>("masterTwo", optarg));break;
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterTwo", optarg));break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }

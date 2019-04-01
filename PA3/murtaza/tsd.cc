@@ -89,6 +89,7 @@ struct Svr {
   std::string myPort;
   std::string otherPort; //Either master or slave port depending on role
   std::map<std::string, std::string> masterData; //Holds info on other servers
+  std::map<std::string, std::unique_ptr<HealthService::Stub>> stubData;
 };
 
 //Vector that stores every client that has been created
@@ -259,6 +260,24 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
+void Check() {
+    HealthCheckRequest request;
+    request.set_service(server_db.myIp);
+    HealthCheckResponse reply;
+    ClientContext context;
+
+    Status status = stub_->Login(&context, request, &reply);
+
+    IReply ire;
+    ire.grpc_status = status;
+    if (reply.msg() == "you have already joined") {
+        ire.comm_status = FAILURE_ALREADY_EXISTS;
+    } else {
+        ire.comm_status = SUCCESS;
+    }
+    return ire;
+}
+
 void RunServer(std::string port_no) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
@@ -297,6 +316,15 @@ int main(int argc, char** argv) {
     }
   }
   server_db.myPort = port;
+
+  // create the channel/stubs if you're the routing server
+  std::map<std::string, std::string>::iterator itr; 
+  for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) {
+      std::unique_ptr<HealthService::Stub> stub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+                grpc::CreateChannel(
+                  itr->second, grpc::InsecureChannelCredentials()))); 
+      server_db.stubData.insert(std::pair<std::string, std::string>(itr->first, stud_))
+  }
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

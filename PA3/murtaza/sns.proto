@@ -44,6 +44,12 @@ service SNSService{
   rpc Timeline (stream Message) returns (stream Message) {} 
 }
 
+// The server management service definition
+service MGMTService{
+
+  rpc Heartbeat (Beat) returns (Reply) {}
+}
+
 message ListReply {
   repeated string all_users = 1;
   repeated string followers = 2;
@@ -52,6 +58,10 @@ message ListReply {
 message Request {
   string username = 1;
   repeated string arguments = 2;
+}
+
+message Beat {
+  string ip = 1;
 }
 
 message Reply {

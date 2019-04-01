@@ -32,6 +32,8 @@
  */
 
 #include <ctime>
+#include <map>
+#include <iterator>
 
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/duration.pb.h>
@@ -62,6 +64,9 @@ using csce438::Request;
 using csce438::Reply;
 using csce438::SNSService;
 
+/* Debug Toggles */
+#define DBG_CLI 1
+
 struct Client {
   std::string username;
   bool connected = true;
@@ -74,8 +79,19 @@ struct Client {
   }
 };
 
+//Routing server stores its data here
+struct Server {
+  std::string myRole; //Server role (routing, master, or slave)
+  std::string myIp;
+  std::string otherIp; //Either master or slave ip depending on role
+  std::map<std::string, std::string> masterData; //Holds info on other servers
+};
+
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
+
+//Data the server has to store based on its role
+Server server_db;
 
 //Helper function used to find a Client object given its username
 int find_user(std::string username){
@@ -239,9 +255,6 @@ void RunServer(std::string port_no) {
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
-  builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_TIME_MS, 10000);
-  builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_TIMEOUT_MS, 20000);
-  builder.AddChannelArgument(GRPC_ARG_KEEPALIVE_PERMIT_WITHOUT_CALLS, 1);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 
@@ -252,14 +265,38 @@ int main(int argc, char** argv) {
   
   std::string port = "3010";
   int opt = 0;
-  while ((opt = getopt(argc, argv, "p:")) != -1){
+  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n")) != -1){
     switch(opt) {
-      case 'p':
+      case 'p': // port
           port = optarg;break;
+      case 'r': // role
+          server_db.myRole = optarg;break;
+      case 'i': // ip
+          server_db.myIp = optarg;break;
+      case 'o': // other (master or slave ip)
+          server_db.otherIp = optarg;break;
+      case 'a': // available server ip
+          server_db.masterData.insert(pair<std::string, std::string>("available", optarg));break;
+      case 'm': // master server one ip
+          server_db.masterData.insert(pair<std::string, std::string>("masterOne", optarg));break;
+      case 'n': // master server two ip
+          server_db.masterData.insert(pair<std::string, std::string>("masterTwo", optarg));break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }
   }
+
+  if(DBG_CLI) {
+    std::cout << "Role: " << server_db.myRole << std::endl
+    << "Ip: " << server_db.myIp << std::endl
+    << "Other Ip: " << server_db.otherIp << std::endl;
+
+    std::map<std::string, std::string>::iterator itr; 
+    for (itr = server_db.begin(); itr != server_db.end(); ++itr) { 
+        std::cout << itr->first << ": " << itr->second << '\n'; 
+    } 
+  }
+
   RunServer(port);
 
   return 0;

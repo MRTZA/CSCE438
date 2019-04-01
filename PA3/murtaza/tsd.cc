@@ -80,7 +80,7 @@ struct Client {
 };
 
 //Routing server stores its data here
-struct Server {
+struct Svr {
   std::string myRole; //Server role (routing, master, or slave)
   std::string myIp;
   std::string otherIp; //Either master or slave ip depending on role
@@ -91,7 +91,7 @@ struct Server {
 std::vector<Client> client_db;
 
 //Data the server has to store based on its role
-Server server_db;
+Svr server_db;
 
 //Helper function used to find a Client object given its username
 int find_user(std::string username){
@@ -292,7 +292,7 @@ int main(int argc, char** argv) {
     << "Other Ip: " << server_db.otherIp << std::endl;
 
     std::map<std::string, std::string>::iterator itr; 
-    for (itr = server_db.begin(); itr != server_db.end(); ++itr) { 
+    for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) { 
         std::cout << itr->first << ": " << itr->second << '\n'; 
     } 
   }

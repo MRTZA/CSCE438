@@ -266,7 +266,7 @@ int main(int argc, char** argv) {
   
   std::string port = "3010";
   int opt = 0;
-  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:f")) != -1){
+  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n:")) != -1){
     switch(opt) {
       case 'p': // port
           port = optarg;server_db.myPort = port;break;
@@ -280,8 +280,8 @@ int main(int argc, char** argv) {
           server_db.masterData.insert(std::pair<std::string, std::string>("available", optarg));break;
       case 'm': // master server one ip
           server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
-      case 'f': // master server two ip
-          server_db.masterData.insert(std::pair<std::string, std::string>("j;klsd", optarg));break;
+      case 'n': // master server two ip
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterTwo", optarg));break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }

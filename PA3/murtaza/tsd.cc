@@ -276,7 +276,7 @@ int Check(std::unique_ptr<HealthService::Stub> stub_) {
     ClientContext context;
 
     Status status = stub_->Check(&context, request, &reply);
-    int s = reply->status();
+    int s = reply.status();
     return s;
 }
 

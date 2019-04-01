@@ -96,9 +96,9 @@ struct Svr {
   std::map<std::string, std::string> masterData; //Holds info on other servers
 
   //Only used if you're the routing server
-  std::unique_ptr<HealthService::Stub> Availablestub_
-  std::unique_ptr<HealthService::Stub> MasterOnestub_
-  std::unique_ptr<HealthService::Stub> MasterTwostub_
+  std::unique_ptr<HealthService::Stub> Availablestub_;
+  std::unique_ptr<HealthService::Stub> MasterOnestub_;
+  std::unique_ptr<HealthService::Stub> MasterTwostub_;
 };
 
 //Vector that stores every client that has been created

@@ -57,6 +57,11 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerReaderWriter;
 using grpc::ServerWriter;
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
 using grpc::Status;
 using csce438::Message;
 using csce438::ListReply;
@@ -315,7 +320,7 @@ int main(int argc, char** argv) {
       std::unique_ptr<HealthService::Stub> stub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
                 grpc::CreateChannel(
                   itr->second, grpc::InsecureChannelCredentials()))); 
-      server_db.stubData.insert(std::pair<std::string, std::string>(itr->first, stud_))
+      server_db.stubData.insert(std::pair<std::string, std::string>(itr->first, stub_))
   }
 
   if(DBG_CLI) {

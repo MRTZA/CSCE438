@@ -82,8 +82,9 @@ struct Client {
 //Routing server stores its data here
 struct Svr {
   std::string myRole; //Server role (routing, master, or slave)
-  std::string myIp;
-  std::string otherIp; //Either master or slave ip depending on role
+  std::string myIp; //Ip is the same whether it is a master or a slave
+  std::string myPort;
+  std::string otherPort; //Either master or slave port depending on role
   std::map<std::string, std::string> masterData; //Holds info on other servers
 };
 
@@ -268,13 +269,13 @@ int main(int argc, char** argv) {
   while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n")) != -1){
     switch(opt) {
       case 'p': // port
-          port = optarg;break;
+          port = optarg;server_db.myPort = port;break;
       case 'r': // role
           server_db.myRole = optarg;break;
       case 'i': // ip
           server_db.myIp = optarg;break;
       case 'o': // other (master or slave ip)
-          server_db.otherIp = optarg;break;
+          server_db.otherPort = optarg;break;
       case 'a': // available server ip
           server_db.masterData.insert(std::pair<std::string, std::string>("available", optarg));break;
       case 'm': // master server one ip
@@ -289,7 +290,7 @@ int main(int argc, char** argv) {
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl
     << "Ip: " << server_db.myIp << std::endl
-    << "Other Ip: " << server_db.otherIp << std::endl;
+    << "Slave/Master Port: " << server_db.otherPort << std::endl;
 
     std::map<std::string, std::string>::iterator itr; 
     for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) { 

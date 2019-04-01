@@ -67,7 +67,11 @@ message Message {
   google.protobuf.Timestamp timestamp = 3;
 }
 
-package grpc.health.v1;
+// The server management service definition
+service HealthService {
+
+  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+}
 
 message HealthCheckRequest {
   string service = 1;
@@ -75,13 +79,20 @@ message HealthCheckRequest {
 
 message HealthCheckResponse {
   enum ServingStatus {
-    UNKNOWN = 0;
-    SERVING = 1;
-    NOT_SERVING = 2;
+    SUCCESS = 0;
+    FAILURE_UNKNOWN = 1;
   }
   ServingStatus status = 1;
 }
 
-service Health {
-  rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+service SNSRouter {
+  rpc GetConnectInfo(ServerInfoRequest) returns (ServerInfoResponse);
+}
+
+message ServerInfoRequest {
+  string service = 1;
+}
+
+message ServerInfoResponse {
+  string serverInfo = 1;
 }

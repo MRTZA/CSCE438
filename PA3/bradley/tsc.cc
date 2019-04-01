@@ -19,6 +19,9 @@ using csce438::ListReply;
 using csce438::Request;
 using csce438::Reply;
 using csce438::SNSService;
+using csce438::SNSRouter;
+using csce438::ServerInfoRequest;
+using csce438::ServerInfoResponse;
 
 Message MakeMessage(const std::string& username, const std::string& msg) {
     Message m;
@@ -30,6 +33,8 @@ Message MakeMessage(const std::string& username, const std::string& msg) {
     m.set_allocated_timestamp(timestamp);
     return m;
 }
+
+class 
 
 class Client : public IClient
 {
@@ -49,8 +54,10 @@ class Client : public IClient
         std::string port;
         // You can have an instance of the client stub
         // as a member variable.
-        std::unique_ptr<SNSService::Stub> stub_;
+        std::unique_ptr<SNSService::Stub> stub_SNSS_;
+        std::unique_ptr<SNSRouter::Stub> stub_SNSR_;
 
+        ServerInfoResponse GetConnectInfo();
         IReply Login();
         IReply List();
         IReply Follow(const std::string& username2);
@@ -98,7 +105,15 @@ int Client::connectTo()
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
     std::string login_info = hostname + ":" + port;
-    stub_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
+    stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSService::NewStub(
+               grpc::CreateChannel(
+                    login_info, grpc::InsecureChannelCredentials())));
+    
+    
+    ServerInfoResponse serverInfo = GetConnectInfo();
+    
+    login_info = serverInfo->serverInfo();
+    stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
 
@@ -107,6 +122,18 @@ int Client::connectTo()
         return -1;
     }
     return 1;
+}
+
+std::string Client::GetConnectInfo() {
+    ServerInfoRequest request;
+    request.set_service("Dicks");
+    ClientContext context;
+
+    ServerInfoResponse response;
+
+    Status status = stub_SNSR_->GetConnectInfo(&context, request, &response);
+
+    return response.serverInfo();
 }
 
 IReply Client::processCommand(std::string& input)
@@ -221,7 +248,7 @@ IReply Client::List() {
     //Context for the client
     ClientContext context;
 
-    Status status = stub_->List(&context, request, &list_reply);
+    Status status = stub_SNSS_->List(&context, request, &list_reply);
     IReply ire;
     ire.grpc_status = status;
     //Loop through list_reply.all_users and list_reply.following_users
@@ -248,7 +275,7 @@ IReply Client::Follow(const std::string& username2) {
     Reply reply;
     ClientContext context;
 
-    Status status = stub_->Follow(&context, request, &reply);
+    Status status = stub_SNSS_->Follow(&context, request, &reply);
     IReply ire; ire.grpc_status = status;
     if (reply.msg() == "unkown user name") {
         ire.comm_status = FAILURE_INVALID_USERNAME;
@@ -274,7 +301,7 @@ IReply Client::UnFollow(const std::string& username2) {
 
     ClientContext context;
 
-    Status status = stub_->UnFollow(&context, request, &reply);
+    Status status = stub_SNSS_->UnFollow(&context, request, &reply);
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "unknown follower username") {
@@ -296,7 +323,7 @@ IReply Client::Login() {
     Reply reply;
     ClientContext context;
 
-    Status status = stub_->Login(&context, request, &reply);
+    Status status = stub_SNSS_->Login(&context, request, &reply);
 
     IReply ire;
     ire.grpc_status = status;
@@ -312,7 +339,7 @@ void Client::Timeline(const std::string& username) {
     ClientContext context;
 
     std::shared_ptr<ClientReaderWriter<Message, Message>> stream(
-            stub_->Timeline(&context));
+            stub_SNSS_->Timeline(&context));
 
     //Thread used to read chat messages and send them to the server
     std::thread writer([username, stream]() {

@@ -94,12 +94,12 @@ struct Svr {
   std::string myPort;
   std::string otherPort; //Either master or slave port depending on role
   std::map<std::string, std::string> masterData; //Holds info on other servers
-
-  //Only used if you're the routing server
-  std::unique_ptr<HealthService::Stub> Availablestub_;
-  std::unique_ptr<HealthService::Stub> MasterOnestub_;
-  std::unique_ptr<HealthService::Stub> MasterTwostub_;
 };
+
+//Only used if you're the routing server
+std::unique_ptr<HealthService::Stub> Availablestub_;
+std::unique_ptr<HealthService::Stub> MasterOnestub_;
+std::unique_ptr<HealthService::Stub> MasterTwostub_;
 
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
@@ -319,10 +319,12 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
 
-  //Create channels/stubs
-  std::unique_ptr<HealthService::Stub> server_db.Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
-    grpc::CreateChannel(
-      server_db.masterData.get("available"), grpc::InsecureChannelCredentials()))); 
+  if(server_db.Role == "router") {
+    //Create channels/stubs
+    std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.get("available"), grpc::InsecureChannelCredentials()))); 
+  }
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

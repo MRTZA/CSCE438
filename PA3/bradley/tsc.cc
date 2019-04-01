@@ -34,8 +34,6 @@ Message MakeMessage(const std::string& username, const std::string& msg) {
     return m;
 }
 
-class 
-
 class Client : public IClient
 {
     public:
@@ -105,7 +103,7 @@ int Client::connectTo()
     // Please refer to gRpc tutorial how to create a stub.
 	// ------------------------------------------------------------
     std::string login_info = hostname + ":" + port;
-    stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSService::NewStub(
+    stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSRouter::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
     
@@ -138,52 +136,7 @@ std::string Client::GetConnectInfo() {
 
 IReply Client::processCommand(std::string& input)
 {
-	// ------------------------------------------------------------
-	// GUIDE 1:
-	// In this function, you are supposed to parse the given input
-    // command and create your own message so that you call an 
-    // appropriate service method. The input command will be one
-    // of the followings:
-	//
-	// FOLLOW <username>
-	// UNFOLLOW <username>
-	// LIST
-    // TIMELINE
-	//
-	// - JOIN/LEAVE and "<username>" are separated by one space.
-	// ------------------------------------------------------------
 	
-    // ------------------------------------------------------------
-	// GUIDE 2:
-	// Then, you should create a variable of IReply structure
-	// provided by the client.h and initialize it according to
-	// the result. Finally you can finish this function by returning
-    // the IReply.
-	// ------------------------------------------------------------
-    
-    
-	// ------------------------------------------------------------
-    // HINT: How to set the IReply?
-    // Suppose you have "Join" service method for JOIN command,
-    // IReply can be set as follow:
-    // 
-    //     // some codes for creating/initializing parameters for
-    //     // service method
-    //     IReply ire;
-    //     grpc::Status status = stub_->Join(&context, /* some parameters */);
-    //     ire.grpc_status = status;
-    //     if (status.ok()) {
-    //         ire.comm_status = SUCCESS;
-    //     } else {
-    //         ire.comm_status = FAILURE_NOT_EXISTS;
-    //     }
-    //      
-    //      return ire;
-    // 
-    // IMPORTANT: 
-    // For the command "LIST", you should set both "all_users" and 
-    // "following_users" member variable of IReply.
-	// ------------------------------------------------------------
     IReply ire;
     std::size_t index = input.find_first_of(" ");
     if (index != std::string::npos) {

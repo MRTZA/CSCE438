@@ -94,7 +94,11 @@ struct Svr {
   std::string myPort;
   std::string otherPort; //Either master or slave port depending on role
   std::map<std::string, std::string> masterData; //Holds info on other servers
-  std::map<std::string, std::unique_ptr<HealthService::Stub>> stubData;
+
+  //Only used if you're the routing server
+  std::unique_ptr<HealthService::Stub> Availablestub_;
+  std::unique_ptr<HealthService::Stub> MasterOnestub_;
+  std::unique_ptr<HealthService::Stub> MasterTwostub_;
 };
 
 //Vector that stores every client that has been created
@@ -116,7 +120,7 @@ int find_user(std::string username){
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    response->set_status(csce438::HealthCheckResponse_ServingStatus_SUCCESS);
+    response->set_status(1);
     return Status::OK;
   }
 };
@@ -265,14 +269,15 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
-HealthCheckResponse Check(std::unique_ptr<HealthService::Stub> stub_) {
+int Check(std::unique_ptr<HealthService::Stub> stub_) {
     HealthCheckRequest request;
     request.set_service(server_db.myIp);
     HealthCheckResponse reply;
     ClientContext context;
 
     Status status = stub_->Check(&context, request, &reply);
-    return reply;
+    int s = reply.status();
+    return s;
 }
 
 void RunServer(std::string port_no) {
@@ -314,14 +319,10 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
 
-  // create the channel/stubs if you're the routing server
-  std::map<std::string, std::string>::iterator itr; 
-  for (itr = server_db.masterData.begin(); itr != server_db.masterData.end(); ++itr) {
-      std::unique_ptr<HealthService::Stub> stub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
-                grpc::CreateChannel(
-                  itr->second, grpc::InsecureChannelCredentials()))); 
-      server_db.stubData.insert(std::pair<std::string, std::unique_ptr<HealthService::Stub>>(itr->first, stub_));
-  }
+  //Create channels/stubs
+  std::unique_ptr<HealthService::Stub> server_db.Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+    grpc::CreateChannel(
+      server_db.masterData.get("available"), grpc::InsecureChannelCredentials()))); 
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

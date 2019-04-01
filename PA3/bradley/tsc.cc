@@ -93,27 +93,18 @@ int main(int argc, char** argv) {
 
 int Client::connectTo()
 {
-	// ------------------------------------------------------------
-    // In this function, you are supposed to create a stub so that
-    // you call service methods in the processCommand/porcessTimeline
-    // functions. That is, the stub should be accessible when you want
-    // to call any service methods in those functions.
-    // I recommend you to have the stub as
-    // a member variable in your own Client class.
-    // Please refer to gRpc tutorial how to create a stub.
-	// ------------------------------------------------------------
+
+    // Connect to the routing server
     std::string login_info = hostname + ":" + port;
     stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSRouter::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
     
-    
-    ServerInfoResponse serverInfo = GetConnectInfo();
-    
-    login_info = serverInfo.serverInfo();
+    // Get connection info from the routing server
+    std::string availableServerInfo = GetConnectInfo();
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
-                    login_info, grpc::InsecureChannelCredentials())));
+                    availableServerInfo, grpc::InsecureChannelCredentials())));
 
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {

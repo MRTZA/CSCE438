@@ -306,6 +306,8 @@ int Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
+                // Stream has error
+                // Reconnect to server here
                 break;
             }
             }
@@ -324,7 +326,7 @@ int Client::Timeline(const std::string& username) {
 
     //Wait for the threads to finish
     writer.join();
-    return -1;
     reader.join();
+    return -1;
 }
 

@@ -61,6 +61,9 @@ using csce438::ListReply;
 using csce438::Request;
 using csce438::Reply;
 using csce438::SNSService;
+using csce438::SNSRouter;
+using csce438::ServerInfoRequest;
+using csce438::ServerInfoResponse;
 
 struct Client {
   std::string username;
@@ -93,7 +96,7 @@ class SNSRouterImpl final : public SNSRouter::Service {
     reply->set_msg("127.0.0.1:5000");
     return Status::OK;
   }
-}
+};
 
 class SNSServiceImpl final : public SNSService::Service {
   

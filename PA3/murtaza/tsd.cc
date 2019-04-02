@@ -380,8 +380,8 @@ void RunServer(std::string port_no) {
 
         //Reconnect with updated channel information
         Connect_To();
-        sleep(SLP_RTR);
       }
+      sleep(SLP_RTR);
       // err = Check("masterOne");
       // err = Check("masterTwo");
     }

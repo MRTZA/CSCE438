@@ -302,13 +302,13 @@ int Check(std::string server) {
 void Connect_To() {
   //Create channels/stubs
   if(server_db.myRole == "router") {
-    std::unique_ptr<HealthService::Stub> Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+    Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
-    std::unique_ptr<HealthService::Stub> MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+    MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
-    std::unique_ptr<HealthService::Stub> MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+    MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
   }

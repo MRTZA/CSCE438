@@ -306,11 +306,6 @@ void Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             stream->Write(m);
-
-            Status status = writer->Finish();
-            if(!status.ok()) {
-                std::cout << "got here writer" << std::endl;
-            }
             }
             stream->WritesDone();
             });
@@ -322,11 +317,6 @@ void Client::Timeline(const std::string& username) {
             google::protobuf::Timestamp temptime = m.timestamp();
             std::time_t time = temptime.seconds();
             displayPostMessage(m.username(), m.msg(), time);
-
-            Status status = reader->Finish();
-            if(!status.ok()) {
-                std::cout << "got here reader" << std::endl;
-            }
             }
             });
 

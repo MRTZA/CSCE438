@@ -332,7 +332,18 @@ void RunServer(std::string port_no) {
 
   if(server_db.myRole == "router") {
     while(1) {
-      int s = Check("available");
+      int err = Check("available"); //Only care if available goes down
+      if(!err) {
+        //make masterOne the new available server
+        std::string masterIp = server_db.masterData.find("masterOne")->second;
+        std::string availableIp = server_db.masterData.find("available")->second;
+        server_db.masterData.find("masterOne")->second = availableIp;
+        server_db.masterData.find("available")->second = masterIp;
+        //Reconnect with updated channel information
+        Connect_To();
+      }
+      // err = Check("masterOne");
+      // err = Check("masterTwo");
     }
   }
 

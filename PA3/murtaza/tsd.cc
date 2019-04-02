@@ -144,6 +144,7 @@ class HealthServiceImpl final : public HealthService::Service {
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     std::string ip = server_db.masterData.find("available")->second;
+    std::cout << "ip sent to client: " << ip << std::endl;
     reply->set_msg(ip);
     return Status::OK;
   }

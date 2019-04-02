@@ -387,8 +387,8 @@ void RunServer(std::string port_no) {
           std::string arg = "-p " + server_db.otherPort;
           args[1] = (char*)arg.c_str();
           args[2] = "-r master";
-          arg = "-o " + server_db.myPort;
-          args[3] = (char*)arg.c_str();
+          std::string arg2 = "-o " + server_db.myPort;
+          args[3] = (char*)arg2.c_str();
           args[4] = NULL;
           if(execvp(command,args) < 0) {
             //error msg
@@ -398,6 +398,7 @@ void RunServer(std::string port_no) {
           }
         }
       }
+      sleep(1);
     }
   }
 

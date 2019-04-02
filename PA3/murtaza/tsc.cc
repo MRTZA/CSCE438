@@ -306,6 +306,7 @@ void Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             stream->Write(m);
+            connectTo();
             }
             stream->WritesDone();
             });

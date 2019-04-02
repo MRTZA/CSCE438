@@ -309,7 +309,7 @@ int Client::Timeline(const std::string& username) {
                 break;
             }
             }
-            stream->WritesDone();
+            // stream->WritesDone();
             });
 
     std::thread reader([username, stream]() {

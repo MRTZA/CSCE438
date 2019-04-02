@@ -306,7 +306,7 @@ int Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
-                std::terminate();
+                break;
             }
             }
             stream->WritesDone();

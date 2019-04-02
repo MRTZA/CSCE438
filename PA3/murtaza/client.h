@@ -81,11 +81,11 @@ void IClient::run()
         std::string cmd = getCommand();
         IReply reply = processCommand(cmd);
         displayCommandReply(cmd, reply);
-        timelineStatus = 1;
+        int timelineStatus = 1;
         if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
                 && cmd == "TIMELINE") {
             std::cout << "Now you are in the timeline" << std::endl;
-            int timelineStatus = processTimeline();
+            timelineStatus = processTimeline();
         } else if(!reply.grpc_status.ok() || timelineStatus == -1) {
             int ret = connectTo();
             if (ret < 0) {

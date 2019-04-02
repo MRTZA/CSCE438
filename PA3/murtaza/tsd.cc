@@ -321,15 +321,19 @@ void Connect_To() {
 void RunServer(std::string port_no) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
+  HealthServiceImpl healthService;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
+  builder.RegisterService(&healthService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
-    int s = Check("available");
+    while(1) {
+      int s = Check("available");
+    }
   }
 
   server->Wait();

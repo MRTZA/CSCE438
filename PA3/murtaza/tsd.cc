@@ -122,6 +122,9 @@ int find_user(std::string username){
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
     response->set_status(1);
+    if(DBG_HBT) {
+      std::cout << "Responded to router" << std::endl;
+    }
     return Status::OK;
   }
 };

@@ -311,7 +311,7 @@ int Client::Timeline(const std::string& username) {
                 break;
             }
             }
-            // stream->WritesDone();
+            stream->WritesDone();
             });
 
     std::thread reader([username, stream]() {
@@ -326,7 +326,7 @@ int Client::Timeline(const std::string& username) {
 
     //Wait for the threads to finish
     writer.join();
-    return -1;
     reader.join();
+    return -1;
 }
 

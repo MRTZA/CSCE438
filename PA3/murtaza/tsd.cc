@@ -96,6 +96,7 @@ struct Svr {
   std::string myIp; //Ip is the same whether it is a master or a slave
   std::string myPort;
   std::string otherPort; //Either master or slave port depending on role
+  std::string routingServer;
   std::map<std::string, std::string> masterData; //Holds info on other servers
 };
 
@@ -370,7 +371,7 @@ int main(int argc, char** argv) {
   
   std::string port = "3010";
   int opt = 0;
-  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n:")) != -1){
+  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n:s:")) != -1){
     switch(opt) {
       case 'p': // port
           port = optarg;break;
@@ -386,6 +387,8 @@ int main(int argc, char** argv) {
           server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
       case 'n': // master server two ip
           server_db.masterData.insert(std::pair<std::string, std::string>("masterTwo", optarg));break;
+      case 's':
+          server_db.routingServer = optarg;break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }

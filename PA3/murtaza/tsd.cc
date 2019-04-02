@@ -74,6 +74,7 @@ using csce438::HealthCheckResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 1
+#define DBG_HBT 1
 
 struct Client {
   std::string username;
@@ -290,6 +291,11 @@ int Check(std::string server) {
       status = MasterTwostub_->Check(&context, request, &reply);
       s = reply.status();
     }
+
+    if(DBG_HBT) {
+      std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
+    }
+
     return s;
 }
 
@@ -318,6 +324,12 @@ void RunServer(std::string port_no) {
   builder.RegisterService(&service);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
+
+  if(server_db.myRole == "router") {
+    while(1) {
+      int status = Check("available");
+    }
+  }
 
   server->Wait();
 }

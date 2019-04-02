@@ -305,7 +305,15 @@ void Client::Timeline(const std::string& username) {
             while (1) {
             input = getPostMessage();
             m = MakeMessage(username, input);
-            stream->Write(m);
+            if(!stream->Write(m)) {
+                // Stream has error
+                // Reconnect to server here
+                int ret = connectTo();
+                if (ret < 0) {
+                    std::cout << "connection failed: " << ret << std::endl;
+                    exit(1);
+                }
+            }
             }
             stream->WritesDone();
             });

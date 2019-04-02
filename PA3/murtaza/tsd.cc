@@ -359,7 +359,7 @@ void RunServer(std::string port_no) {
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
   builder.RegisterService(&healthService);
-  builder.RegisterService(&routingService);
+  builder.RegisterService(&routerService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 

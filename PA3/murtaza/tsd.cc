@@ -32,6 +32,7 @@
  */
 
 #include <ctime>
+#include <time.h>
 #include <map>
 #include <iterator>
 
@@ -75,6 +76,7 @@ using csce438::HealthCheckResponse;
 /* Debug Toggles */
 #define DBG_CLI 1
 #define DBG_HBT 1
+#define DBG_RST 1
 
 struct Client {
   std::string username;
@@ -101,6 +103,10 @@ struct Svr {
 std::unique_ptr<HealthService::Stub> Availablestub_;
 std::unique_ptr<HealthService::Stub> MasterOnestub_;
 std::unique_ptr<HealthService::Stub> MasterTwostub_;
+
+//Only used if you're the slave server
+std::unique_ptr<HealthService::Stub> Routerstub_;
+std::unique_ptr<HealthService::Stub> Masterstub_;
 
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
@@ -334,11 +340,21 @@ void RunServer(std::string port_no) {
     while(1) {
       int err = Check("available"); //Only care if available goes down
       if(!err) {
-        //make masterOne the new available server
-        std::string masterIp = server_db.masterData.find("masterOne")->second;
-        std::string availableIp = server_db.masterData.find("available")->second;
-        server_db.masterData.find("masterOne")->second = availableIp;
-        server_db.masterData.find("available")->second = masterIp;
+        //make one of the masters the new available server
+        srand (time(NULL));
+        int randNum = rand()%(2-1 + 1) + 1;
+        if(randNum == 1) {
+          std::string masterIp = server_db.masterData.find("masterOne")->second;
+          std::string availableIp = server_db.masterData.find("available")->second;
+          server_db.masterData.find("masterOne")->second = availableIp;
+          server_db.masterData.find("available")->second = masterIp;
+        } else {
+          std::string masterIp = server_db.masterData.find("masterTwo")->second;
+          std::string availableIp = server_db.masterData.find("available")->second;
+          server_db.masterData.find("masterTwo")->second = availableIp;
+          server_db.masterData.find("available")->second = masterIp;
+        }
+
         //Reconnect with updated channel information
         Connect_To();
       }

@@ -403,14 +403,15 @@ void RunServer(std::string port_no) {
         } else if (pid == 0) {
           //We are the child
           char* command = "./tsd";
-          char* args[5];
+          char* args[6];
           args[0] = "./tsd";
           std::string arg = "-p " + server_db.otherPort;
           args[1] = (char*)arg.c_str();
           args[2] = "-r master";
           std::string arg2 = "-o " + server_db.myPort;
           args[3] = (char*)arg2.c_str();
-          args[4] = NULL;
+          args[4] = "&";
+          args[5] = NULL;
           if(execvp(command,args) < 0) {
             //error msg
             //exec failed

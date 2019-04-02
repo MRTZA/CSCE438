@@ -81,6 +81,9 @@ using csce438::ServerInfoResponse;
 #define DBG_HBT 1
 #define DBG_RST 1
 
+#define SLP_SLV 8
+#define SLP_RTR 4
+
 struct Client {
   std::string username;
   bool connected = true;
@@ -377,6 +380,7 @@ void RunServer(std::string port_no) {
 
         //Reconnect with updated channel information
         Connect_To();
+        sleep(SLP_RTR);
       }
       // err = Check("masterOne");
       // err = Check("masterTwo");
@@ -408,7 +412,7 @@ void RunServer(std::string port_no) {
           }
         }
       }
-      sleep(4);
+      sleep(SLP_SLV);
     }
   }
 

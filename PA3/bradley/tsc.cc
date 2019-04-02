@@ -118,11 +118,11 @@ std::string Client::GetConnectInfo() {
     request.set_service("Dicks");
     ClientContext context;
 
-    ServerInfoResponse response;
+    Reply reply
 
-    Status status = stub_SNSR_->GetConnectInfo(&context, request, &response);
+    Status status = stub_SNSR_->GetConnectInfo(&context, request, &reply);
 
-    std::string r = response.ServerResponse();
+    std::string r = reply.msg();
     return r;
 }
 

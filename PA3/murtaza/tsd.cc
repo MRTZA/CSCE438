@@ -353,11 +353,13 @@ void RunServer(std::string port_no) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
   HealthServiceImpl healthService;
+  SNSRouterImpl routerService;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
   builder.RegisterService(&healthService);
+  builder.RegisterService(&routingService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
 

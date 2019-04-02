@@ -96,14 +96,13 @@ int Client::connectTo()
 
     // Connect to the routing server
     std::string login_info = hostname + ":" + port;
-    std::cout << login_info << std::endl;
+
     stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSRouter::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
     
     // Get connection info from the routing server
     std::string availableServerInfo = GetConnectInfo();
-    std::cout << availableServerInfo << std::endl;
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     availableServerInfo, grpc::InsecureChannelCredentials())));
@@ -125,7 +124,6 @@ std::string Client::GetConnectInfo() {
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &reply);
 
     std::string r = reply.msg();
-    std::cout << "got server info" << std::endl;
     return r;
 }
 

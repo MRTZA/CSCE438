@@ -88,6 +88,13 @@ int find_user(std::string username){
   return -1;
 }
 
+class SNSRouterImpl final : public SNSRouter::Service {
+  Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, ServerInfoResponse* reply) override {
+    reply->set_serverInfo("127.0.0.1:5000");
+    return Status::OK;
+  }
+}
+
 class SNSServiceImpl final : public SNSService::Service {
   
   Status List(ServerContext* context, const Request* request, ListReply* list_reply) override {

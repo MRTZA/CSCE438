@@ -384,16 +384,17 @@ void RunServer(std::string port_no) {
           char* command = "./tsd";
           char* args[4];
           args[0] = "./tsd";
-          args[1] = "-p " + server_db.otherPort;
+          std::string arg = "-p " + server_db.otherPort;
+          args[1] = arg.c_str();
           args[2] = "-r master";
-          args[3] = "-o " + server_db.myPort;
+          arg = "-o " + server_db.myPort;
+          args[3] = arg.c_str();
           if(execvp(command,args) < 0) {
             //error msg
             //exec failed
+            std::cout << "Execvp failed master was not restarted" << std::endl;
             exit(1);
           }
-        } else {
-          // We are the parent
         }
       }
     }

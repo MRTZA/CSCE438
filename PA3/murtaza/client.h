@@ -85,7 +85,7 @@ void IClient::run()
         if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
                 && cmd == "TIMELINE") {
             std::cout << "Now you are in the timeline" << std::endl;
-            timelineStatus = processTimeline();
+            int timelineStatus = processTimeline();
         } else if(!reply.grpc_status.ok() || timelineStatus == -1) {
             int ret = connectTo();
             if (ret < 0) {

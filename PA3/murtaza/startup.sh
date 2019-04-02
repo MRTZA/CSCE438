@@ -10,9 +10,9 @@ masterOne = "10.0.2.6:$masterPort"
 masterTwo = "10.0.2.7:$masterPort"
 
 echo "Are you starting the routing server? (y/n): "
-read router
+read isrouter
 
-if [ $router = "y" ]
+if [ $isrouter = "y" ]
 then
     ./tsd -r router -a $available -m $masterOne -n $masterTwo -o $slavePort
     ./tsd -p $slavePort -r slave -o $masterPort

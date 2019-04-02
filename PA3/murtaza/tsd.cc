@@ -72,6 +72,9 @@ using csce438::SNSService;
 using csce438::HealthService;
 using csce438::HealthCheckRequest;
 using csce438::HealthCheckResponse;
+using csce438::SNSRouter;
+using csce438::ServerInfoRequest;
+using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 1

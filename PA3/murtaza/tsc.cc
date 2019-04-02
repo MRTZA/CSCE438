@@ -45,7 +45,7 @@ class Client : public IClient
     protected:
         virtual int connectTo();
         virtual IReply processCommand(std::string& input);
-        virtual void processTimeline();
+        virtual int processTimeline();
     private:
         std::string hostname;
         std::string username;
@@ -60,7 +60,7 @@ class Client : public IClient
         IReply List();
         IReply Follow(const std::string& username2);
         IReply UnFollow(const std::string& username2);
-        void Timeline(const std::string& username);
+        int Timeline(const std::string& username);
 
 
 };
@@ -162,9 +162,9 @@ IReply Client::processCommand(std::string& input)
     return ire;
 }
 
-void Client::processTimeline()
+int Client::processTimeline()
 {
-    Timeline(username);
+    return Timeline(username);
 	// ------------------------------------------------------------
     // In this function, you are supposed to get into timeline mode.
     // You may need to call a service method to communicate with
@@ -291,7 +291,7 @@ IReply Client::Login() {
     return ire;
 }
 
-void Client::Timeline(const std::string& username) {
+int Client::Timeline(const std::string& username) {
     ClientContext context;
 
     std::shared_ptr<ClientReaderWriter<Message, Message>> stream(
@@ -324,6 +324,7 @@ void Client::Timeline(const std::string& username) {
 
     //Wait for the threads to finish
     writer.join();
+    return -1;
     reader.join();
 }
 

@@ -326,9 +326,7 @@ void RunServer(std::string port_no) {
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
-    while(1) {
-      int status = Check("available");
-    }
+    int s = Check("available");
   }
 
   server->Wait();

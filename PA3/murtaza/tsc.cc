@@ -102,10 +102,11 @@ int Client::connectTo()
     
     // Get connection info from the routing server
     std::string availableServerInfo = GetConnectInfo();
+    std::cout << availableServerInfo << std::endl;
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     availableServerInfo, grpc::InsecureChannelCredentials())));
-    std::cout << availableServerInfo << std::endl;
+    
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {
         return -1;

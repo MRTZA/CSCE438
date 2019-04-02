@@ -54,10 +54,6 @@ message Request {
   repeated string arguments = 2;
 }
 
-message Reply {
-  string msg = 1;
-}
-
 message Message {
   //Username who sent the message
   string username = 1;
@@ -91,4 +87,8 @@ message ServerInfoRequest {
 
 message ServerInfoResponse {
   string ServerResponse = 1;
+}
+
+message Reply {
+  string msg = 1;
 }

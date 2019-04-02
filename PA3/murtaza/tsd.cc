@@ -143,7 +143,8 @@ class HealthServiceImpl final : public HealthService::Service {
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    reply->set_msg(server_db.masterData.find("available")->second);
+    std::string ip = server_db.masterData.find("available")->second;
+    reply->set_msg(ip);
     return Status::OK;
   }
 };

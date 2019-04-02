@@ -306,13 +306,7 @@ void Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
-                // Stream has error
-                // Reconnect to server here
-                int ret = connectTo();
-                if (ret < 0) {
-                    std::cout << "connection failed: " << ret << std::endl;
-                    exit(1);
-                }
+                std::terminate();
             }
             }
             stream->WritesDone();

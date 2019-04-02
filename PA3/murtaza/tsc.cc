@@ -195,7 +195,7 @@ IReply Client::List() {
     ClientContext context;
 
     Status status = stub_SNSS_->List(&context, request, &list_reply);
-    std::cout << "status: " << status << std::endl;
+    std::cout << "status: " << status() << std::endl;
     IReply ire;
     ire.grpc_status = status;
     //Loop through list_reply.all_users and list_reply.following_users

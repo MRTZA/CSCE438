@@ -398,7 +398,7 @@ void RunServer(std::string port_no) {
           }
         }
       }
-      sleep(1);
+      sleep(4);
     }
   }
 

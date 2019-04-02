@@ -106,7 +106,6 @@ std::unique_ptr<HealthService::Stub> MasterOnestub_;
 std::unique_ptr<HealthService::Stub> MasterTwostub_;
 
 //Only used if you're the slave server
-std::unique_ptr<HealthService::Stub> Routerstub_;
 std::unique_ptr<HealthService::Stub> Masterstub_;
 
 //Vector that stores every client that has been created
@@ -301,6 +300,10 @@ int Check(std::string server) {
       status = MasterTwostub_->Check(&context, request, &reply);
       s = reply.status();
     }
+    else if(server == "master") {
+      status = Masterstub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
 
     if(DBG_HBT) {
       std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
@@ -321,6 +324,12 @@ void Connect_To() {
     MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
+  }
+  if(server_db.myRole == "slave") {
+    std::string hostname = "localhost:" + server_db.otherPort;
+    Masterstub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        hostname, grpc::InsecureChannelCredentials()))); 
   }
   return;
 }
@@ -361,6 +370,32 @@ void RunServer(std::string port_no) {
       }
       // err = Check("masterOne");
       // err = Check("masterTwo");
+    }
+  }
+  if(server_db.myRole == "slave") {
+    while(1) {
+      int err = Check("master");
+      if(!err) {
+        pid_t pid;
+        if((pid = fork()) < 0) {
+          //error
+        } else if (pid == 0) {
+          //We are the child
+          char* command = "./tsd";
+          char* args[4];
+          args[0] = "./tsd";
+          args[1] = "-p " + server_db.otherPort;
+          args[2] = "-r master";
+          args[3] = "-o " + server_db.myPort;
+          if(execvp(command,args) < 0) {
+            //error msg
+            //exec failed
+            exit(1);
+          }
+        } else {
+          // We are the parent
+        }
+      }
     }
   }
 

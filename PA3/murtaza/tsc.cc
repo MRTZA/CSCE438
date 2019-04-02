@@ -195,7 +195,6 @@ IReply Client::List() {
     ClientContext context;
 
     Status status = stub_SNSS_->List(&context, request, &list_reply);
-    std::cout << "status: " << status.error_message() << std::endl;
     IReply ire;
     ire.grpc_status = status;
     //Loop through list_reply.all_users and list_reply.following_users
@@ -210,6 +209,8 @@ IReply Client::List() {
         for(std::string s : list_reply.followers()){
             ire.followers.push_back(s);
         }
+    } else {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
     }
     return ire;
 }
@@ -223,6 +224,9 @@ IReply Client::Follow(const std::string& username2) {
     ClientContext context;
 
     Status status = stub_SNSS_->Follow(&context, request, &reply);
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire; ire.grpc_status = status;
     if (reply.msg() == "unkown user name") {
         ire.comm_status = FAILURE_INVALID_USERNAME;
@@ -249,6 +253,9 @@ IReply Client::UnFollow(const std::string& username2) {
     ClientContext context;
 
     Status status = stub_SNSS_->UnFollow(&context, request, &reply);
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "unknown follower username") {
@@ -271,7 +278,9 @@ IReply Client::Login() {
     ClientContext context;
 
     Status status = stub_SNSS_->Login(&context, request, &reply);
-
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "you have already joined") {

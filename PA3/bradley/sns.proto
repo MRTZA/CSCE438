@@ -86,7 +86,7 @@ message HealthCheckResponse {
 }
 
 service SNSRouter {
-  rpc GetConnectInfo(ServerInfoRequest) returns (ServerInfoResponse);
+  rpc GetConnectInfo(ServerInfoRequest) returns (Reply);
 }
 
 message ServerInfoRequest {
@@ -94,5 +94,5 @@ message ServerInfoRequest {
 }
 
 message ServerInfoResponse {
-  string serverInfo = 1;
+  string ServerResponse = 1;
 }

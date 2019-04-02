@@ -118,7 +118,7 @@ std::string Client::GetConnectInfo() {
     request.set_service("Dicks");
     ClientContext context;
 
-    Reply reply
+    Reply reply;
 
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &reply);
 

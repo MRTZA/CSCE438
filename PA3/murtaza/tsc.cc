@@ -308,6 +308,7 @@ int Client::Timeline(const std::string& username) {
             if(!stream->Write(m)) {
                 // Stream has error
                 // Reconnect to server here
+                std::cout << "Connection failed, reconnecting..." << std::endl;
                 break;
             }
             }

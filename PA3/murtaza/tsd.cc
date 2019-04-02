@@ -77,10 +77,10 @@ using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
-#define DBG_CLI 1
-#define DBG_HBT 1
-#define DBG_RST 1
-#define DBG_CLT 1
+#define DBG_CLI 0
+#define DBG_HBT 0
+#define DBG_RST 0
+#define DBG_CLT 0
 
 #define SLP_SLV 4
 #define SLP_RTR 1
@@ -136,7 +136,7 @@ class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
     response->set_status(1);
     if(DBG_HBT) {
-      std::cout << "Responded to router" << std::endl;
+      std::cout << "Heartbeat response sent" << std::endl;
     }
     return Status::OK;
   }

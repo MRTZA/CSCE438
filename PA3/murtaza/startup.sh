@@ -1,11 +1,11 @@
 #!/bin/sh
 clear 
 
-masterPort=3010
-slavePort=3011
-availableIP=10.0.2.5
-masterOneIP=10.0.2.6
-masterTwoIP=10.0.2.7
+masterPort="3010"
+slavePort="3011"
+availableIP="10.0.2.5"
+masterOneIP="10.0.2.6"
+masterTwoIP="10.0.2.7"
 
 available="$availableIP:$masterPort"
 masterOne="$masterOneIP:$masterPort"

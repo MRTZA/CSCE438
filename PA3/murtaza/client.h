@@ -59,6 +59,14 @@ class IClient
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual void processTimeline() = 0;
 
+        void testConnection() {
+            int ret = connectTo();
+            if (ret < 0) {
+                std::cout << "connection failed: " << ret << std::endl;
+                exit(1);
+            }
+        }
+
     private:
 
         void run();
@@ -71,20 +79,18 @@ class IClient
 
 void IClient::run()
 {
-    int ret = connectTo();
-    if (ret < 0) {
-        std::cout << "connection failed: " << ret << std::endl;
-        exit(1);
-    }
+    testConnection();
     displayTitle();
     while (1) {
         std::string cmd = getCommand();
         IReply reply = processCommand(cmd);
         displayCommandReply(cmd, reply);
+        testConnection();
         if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
                 && cmd == "TIMELINE") {
             std::cout << "Now you are in the timeline" << std::endl;
             processTimeline();
+            testConnection();
         }
     }
 }

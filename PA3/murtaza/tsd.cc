@@ -80,9 +80,10 @@ using csce438::ServerInfoResponse;
 #define DBG_CLI 1
 #define DBG_HBT 1
 #define DBG_RST 1
+#define DBG_CLT 1
 
-#define SLP_SLV 8
-#define SLP_RTR 4
+#define SLP_SLV 4
+#define SLP_RTR 1
 
 struct Client {
   std::string username;
@@ -144,7 +145,9 @@ class HealthServiceImpl final : public HealthService::Service {
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     std::string ip = server_db.masterData.find("available")->second;
-    std::cout << "ip sent to client: " << ip << std::endl;
+    if(DBG_CLT) {
+      std::cout << "IP sent to client: " << ip << std::endl;
+    }
     reply->set_msg(ip);
     return Status::OK;
   }

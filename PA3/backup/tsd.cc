@@ -135,13 +135,6 @@ class HealthServiceImpl final : public HealthService::Service {
   }
 };
 
-class SNSRouterImpl final : public SNSRouter::Service {
-  Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    reply->set_msg(server_db.masterData.find("available")->second);
-    return Status::OK;
-  }
-};
-
 class SNSServiceImpl final : public SNSService::Service {
   
   Status List(ServerContext* context, const Request* request, ListReply* list_reply) override {

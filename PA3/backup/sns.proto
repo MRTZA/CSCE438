@@ -80,15 +80,3 @@ message HealthCheckRequest {
 message HealthCheckResponse {
   int32 status = 1;
 }
-
-service SNSRouter {
-  rpc GetConnectInfo(ServerInfoRequest) returns (Reply);
-}
-
-message ServerInfoRequest {
-  string service = 1;
-}
-
-message ServerInfoResponse {
-  string ServerResponse = 1;
-}

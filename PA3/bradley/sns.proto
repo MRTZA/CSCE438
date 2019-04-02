@@ -94,5 +94,5 @@ message ServerInfoRequest {
 }
 
 message ServerInfoResponse {
-  string serverInfo = 1;
+  string ServerResponse = 1;
 }

@@ -122,7 +122,7 @@ std::string Client::GetConnectInfo() {
 
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &response);
 
-    std::string r = response.serverInfo();
+    std::string r = response.ServerResponse();
     return r;
 }
 

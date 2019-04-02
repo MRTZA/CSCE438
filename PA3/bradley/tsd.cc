@@ -90,7 +90,7 @@ int find_user(std::string username){
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, ServerInfoResponse* reply) override {
-    reply->set_serverInfo("127.0.0.1:5000");
+    reply->set_ServerResponse("127.0.0.1:5000");
     return Status::OK;
   }
 }

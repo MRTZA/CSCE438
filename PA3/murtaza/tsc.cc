@@ -96,6 +96,7 @@ int Client::connectTo()
 
     // Connect to the routing server
     std::string login_info = hostname + ":" + port;
+    std::cout << login_info << std::endl;
     stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSRouter::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));

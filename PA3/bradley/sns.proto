@@ -54,10 +54,6 @@ message Request {
   repeated string arguments = 2;
 }
 
-message Reply {
-  string msg = 1;
-}
-
 message Message {
   //Username who sent the message
   string username = 1;
@@ -78,11 +74,7 @@ message HealthCheckRequest {
 }
 
 message HealthCheckResponse {
-  enum ServingStatus {
-    SUCCESS = 0;
-    FAILURE_UNKNOWN = 1;
-  }
-  ServingStatus status = 1;
+  int32 status = 1;
 }
 
 service SNSRouter {
@@ -95,4 +87,8 @@ message ServerInfoRequest {
 
 message ServerInfoResponse {
   string ServerResponse = 1;
+}
+
+message Reply {
+  string msg = 1;
 }

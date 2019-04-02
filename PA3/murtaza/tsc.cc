@@ -306,6 +306,11 @@ int Client::Timeline(const std::string& username) {
             input = getPostMessage();
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
+<<<<<<< HEAD
+                // Stream has error
+                // Reconnect to server here
+=======
+>>>>>>> 5fd8310747ad99d6d641696c5c47b53a8cd56cd7
                 break;
             }
             }

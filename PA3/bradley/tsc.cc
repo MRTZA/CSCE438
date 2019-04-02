@@ -96,6 +96,7 @@ int Client::connectTo()
 
     // Connect to the routing server
     std::string login_info = hostname + ":" + port;
+
     stub_SNSR_ = std::unique_ptr<SNSRouter::Stub>(SNSRouter::NewStub(
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
@@ -105,7 +106,7 @@ int Client::connectTo()
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     availableServerInfo, grpc::InsecureChannelCredentials())));
-
+    
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {
         return -1;
@@ -208,6 +209,8 @@ IReply Client::List() {
         for(std::string s : list_reply.followers()){
             ire.followers.push_back(s);
         }
+    } else {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
     }
     return ire;
 }
@@ -221,6 +224,9 @@ IReply Client::Follow(const std::string& username2) {
     ClientContext context;
 
     Status status = stub_SNSS_->Follow(&context, request, &reply);
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire; ire.grpc_status = status;
     if (reply.msg() == "unkown user name") {
         ire.comm_status = FAILURE_INVALID_USERNAME;
@@ -247,6 +253,9 @@ IReply Client::UnFollow(const std::string& username2) {
     ClientContext context;
 
     Status status = stub_SNSS_->UnFollow(&context, request, &reply);
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "unknown follower username") {
@@ -269,7 +278,9 @@ IReply Client::Login() {
     ClientContext context;
 
     Status status = stub_SNSS_->Login(&context, request, &reply);
-
+    if(!status.ok()) {
+        std::cout << "Connection failed, reconnecting..." << std::endl;
+    }
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "you have already joined") {
@@ -294,7 +305,11 @@ void Client::Timeline(const std::string& username) {
             while (1) {
             input = getPostMessage();
             m = MakeMessage(username, input);
-            stream->Write(m);
+            if(!stream->Write(m)) {
+                // Stream has error
+                // Reconnect to server here
+                break;
+            }
             }
             stream->WritesDone();
             });

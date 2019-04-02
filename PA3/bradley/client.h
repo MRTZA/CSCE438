@@ -85,6 +85,19 @@ void IClient::run()
                 && cmd == "TIMELINE") {
             std::cout << "Now you are in the timeline" << std::endl;
             processTimeline();
+        } else if(!reply.grpc_status.ok()) {
+            int ret = connectTo();
+            if (ret < 0) {
+                std::cout << "connection failed: " << ret << std::endl;
+                exit(1);
+            }
+            reply = processCommand(cmd);
+            displayCommandReply(cmd, reply);
+            if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
+                && cmd == "TIMELINE") {
+                std::cout << "Now you are in the timeline" << std::endl;
+                processTimeline();
+            }
         }
     }
 }

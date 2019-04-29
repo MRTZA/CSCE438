@@ -115,6 +115,9 @@ std::unique_ptr<HealthService::Stub> MasterTwostub_;
 //Only used if you're the slave server
 std::unique_ptr<HealthService::Stub> Masterstub_;
 
+//Only used if you're the master server
+std::unique_ptr<HealthService::Stub> Routerstub_;
+
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
 

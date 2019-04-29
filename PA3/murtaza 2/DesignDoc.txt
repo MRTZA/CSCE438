@@ -1,0 +1,28 @@
+We didn't make a flow chart for this one, but we layed out the relationships between all the
+different parts that we will need for the project. What they need to do and who they talk to.
+
+
+router:
+clients connect to by default (returns info of avaiblable master)
+keeps track of which masters are alive
+run election algo if available master dies (and makes the slaves wait until election is over)
+
+master:
+if available then handles connections like a normal server
+keeps track of if slave is alive (if slave dies restarts the slave)
+responds to election algo call from router (different state from normal server?)
+
+slave:
+checks if master is alive
+if master dies then we restart the master
+
+client:
+connects to router (and gets info about the available master)
+connects to master after getting info from router
+sends messages to master like normal
+in the event that master dies will reconnect to the router to get new master info
+
+Notes:
+only masters need to send heartbeat to the router (the router doesn't need to respond)
+heartbeat is it's own grpc function like hello world that sends a message to the router every so often
+slave and master need to have both have heartbeats for each other

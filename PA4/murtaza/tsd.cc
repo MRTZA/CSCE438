@@ -32,6 +32,9 @@
  */
 
 #include <ctime>
+#include <time.h>
+#include <map>
+#include <iterator>
 
 #include <google/protobuf/timestamp.pb.h>
 #include <google/protobuf/duration.pb.h>
@@ -55,12 +58,32 @@ using grpc::ServerContext;
 using grpc::ServerReader;
 using grpc::ServerReaderWriter;
 using grpc::ServerWriter;
+using grpc::Channel;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientReaderWriter;
+using grpc::ClientWriter;
 using grpc::Status;
 using csce438::Message;
 using csce438::ListReply;
 using csce438::Request;
 using csce438::Reply;
 using csce438::SNSService;
+using csce438::HealthService;
+using csce438::HealthCheckRequest;
+using csce438::HealthCheckResponse;
+using csce438::SNSRouter;
+using csce438::ServerInfoRequest;
+using csce438::ServerInfoResponse;
+
+/* Debug Toggles */
+#define DBG_CLI 0
+#define DBG_HBT 0
+#define DBG_RST 0
+#define DBG_CLT 0
+
+#define SLP_SLV 4
+#define SLP_RTR 1
 
 struct Client {
   std::string username;
@@ -74,8 +97,29 @@ struct Client {
   }
 };
 
+//Routing server stores its data here
+struct Svr {
+  std::string myRole; //Server role (routing, master, or slave)
+  std::string myIp; //Ip is the same whether it is a master or a slave
+  std::string myPort;
+  std::string otherPort; //Either master or slave port depending on role
+  std::string routingServer;
+  std::map<std::string, std::string> masterData; //Holds info on other servers
+};
+
+//Only used if you're the routing server
+std::unique_ptr<HealthService::Stub> Availablestub_;
+std::unique_ptr<HealthService::Stub> MasterOnestub_;
+std::unique_ptr<HealthService::Stub> MasterTwostub_;
+
+//Only used if you're the slave server
+std::unique_ptr<HealthService::Stub> Masterstub_;
+
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
+
+//Data the server has to store based on its role
+Svr server_db;
 
 //Helper function used to find a Client object given its username
 int find_user(std::string username){
@@ -87,6 +131,27 @@ int find_user(std::string username){
   }
   return -1;
 }
+
+class HealthServiceImpl final : public HealthService::Service {
+  Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
+    response->set_status(1);
+    if(DBG_HBT) {
+      std::cout << "Heartbeat response sent" << std::endl;
+    }
+    return Status::OK;
+  }
+};
+
+class SNSRouterImpl final : public SNSRouter::Service {
+  Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
+    std::string ip = server_db.masterData.find("available")->second;
+    if(DBG_CLT) {
+      std::cout << "IP sent to client: " << ip << std::endl;
+    }
+    reply->set_msg(ip);
+    return Status::OK;
+  }
+};
 
 class SNSServiceImpl final : public SNSService::Service {
   
@@ -232,15 +297,132 @@ class SNSServiceImpl final : public SNSService::Service {
 
 };
 
+//Returns the status of the server
+int Check(std::string server) {
+    HealthCheckRequest request;
+    request.set_service(server_db.myIp);
+    HealthCheckResponse reply;
+    ClientContext context;
+
+    int s = 0;
+    Status status;
+    if(server == "available") {
+      status = Availablestub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+    else if(server == "masterOne") {
+      status = MasterOnestub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+    else if(server == "masterTwo") {
+      status = MasterTwostub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+    else if(server == "master") {
+      status = Masterstub_->Check(&context, request, &reply);
+      s = reply.status();
+    }
+
+    if(DBG_HBT) {
+      std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
+    }
+
+    return s;
+}
+
+void Connect_To() {
+  //Create channels/stubs
+  if(server_db.myRole == "router") {
+    Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
+    MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
+    MasterTwostub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.masterData.find("masterTwo")->second, grpc::InsecureChannelCredentials()))); 
+  }
+  if(server_db.myRole == "slave") {
+    std::string hostname = "localhost:" + server_db.otherPort;
+    Masterstub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        hostname, grpc::InsecureChannelCredentials()))); 
+  }
+  return;
+}
+
 void RunServer(std::string port_no) {
   std::string server_address = "0.0.0.0:"+port_no;
   SNSServiceImpl service;
+  HealthServiceImpl healthService;
+  SNSRouterImpl routerService;
 
   ServerBuilder builder;
   builder.AddListeningPort(server_address, grpc::InsecureServerCredentials());
   builder.RegisterService(&service);
+  builder.RegisterService(&healthService);
+  builder.RegisterService(&routerService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
   std::cout << "Server listening on " << server_address << std::endl;
+
+  if(server_db.myRole == "router") {
+    while(1) {
+      int err = Check("available"); //Only care if available goes down
+      if(!err) {
+        //make one of the masters the new available server
+        srand (time(NULL));
+        int randNum = rand()%(2-1 + 1) + 1;
+        if(randNum == 1) {
+          std::string masterIp = server_db.masterData.find("masterOne")->second;
+          std::string availableIp = server_db.masterData.find("available")->second;
+          server_db.masterData.find("masterOne")->second = availableIp;
+          server_db.masterData.find("available")->second = masterIp;
+        } else {
+          std::string masterIp = server_db.masterData.find("masterTwo")->second;
+          std::string availableIp = server_db.masterData.find("available")->second;
+          server_db.masterData.find("masterTwo")->second = availableIp;
+          server_db.masterData.find("available")->second = masterIp;
+        }
+
+        //Reconnect with updated channel information
+        Connect_To();
+      }
+      sleep(SLP_RTR);
+      // err = Check("masterOne");
+      // err = Check("masterTwo");
+    }
+  }
+  if(server_db.myRole == "slave") {
+    while(1) {
+      int err = Check("master");
+      if(!err) {
+        pid_t pid;
+        if((pid = fork()) < 0) {
+          //error
+        } else if (pid == 0) {
+          //We are the child
+          char* command = "./tsd";
+          char* args[6];
+          args[0] = "./tsd";
+          std::string arg = "-p " + server_db.otherPort;
+          args[1] = (char*)arg.c_str();
+          args[2] = "-r master";
+          std::string arg2 = "-o " + server_db.myPort;
+          args[3] = (char*)arg2.c_str();
+          args[4] = "&";
+          args[5] = NULL;
+          if(execvp(command,args) < 0) {
+            //error msg
+            //exec failed
+            std::cout << "Execvp failed master was not restarted" << std::endl;
+            exit(1);
+          }
+        }
+      }
+      sleep(SLP_SLV);
+    }
+  }
 
   server->Wait();
 }
@@ -249,14 +431,43 @@ int main(int argc, char** argv) {
   
   std::string port = "3010";
   int opt = 0;
-  while ((opt = getopt(argc, argv, "p:")) != -1){
+  while ((opt = getopt(argc, argv, "p:r:i:o:a:m:n:s:")) != -1){
     switch(opt) {
-      case 'p':
+      case 'p': // port
           port = optarg;break;
+      case 'r': // role
+          server_db.myRole = optarg;break;
+      case 'i': // ip
+          server_db.myIp = optarg;break;
+      case 'o': // other (master or slave ip)
+          server_db.otherPort = optarg;break;
+      case 'a': // available server ip
+          server_db.masterData.insert(std::pair<std::string, std::string>("available", optarg));break;
+      case 'm': // master server one ip
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
+      case 'n': // master server two ip
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterTwo", optarg));break;
+      case 's':
+          server_db.routingServer = optarg;break;
       default:
 	  std::cerr << "Invalid Command Line Argument\n";
     }
   }
+  server_db.myPort = port;
+  Connect_To();
+
+  if(DBG_CLI) {
+    std::cout << "Role: " << server_db.myRole << std::endl
+    << "Ip: " << server_db.myIp << std::endl
+    << "My Port: " << server_db.myPort << std::endl
+    << "Slave/Master Port: " << server_db.otherPort << std::endl;
+
+    std::map<std::string, std::string>::iterator itrTest; 
+    for (itrTest = server_db.masterData.begin(); itrTest != server_db.masterData.end(); ++itrTest) { 
+        std::cout << itrTest->first << ": " << itrTest->second << '\n'; 
+    } 
+  }
+
   RunServer(port);
 
   return 0;

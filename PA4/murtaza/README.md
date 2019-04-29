@@ -7,11 +7,12 @@ To clear the directory (and remove .txt files):
    
     make clean
 
-To run the server on port 3010:
+To run the servers:
 
-    ./tsd -p 3010
+    sh startup.sh
+    (It will prompt you to ask if you are starting a router or just a normal master/slave )
 
-To run the client  
+To run the client:  
 
     ./tsc -h host_addr -p 3010 -u user1
 

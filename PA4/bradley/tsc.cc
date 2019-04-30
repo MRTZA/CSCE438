@@ -111,13 +111,13 @@ int Client::connectTo()
     // Get connection info from the routing server
     std::string serversInfo = GetConnectInfo();
     std::stringstream ss(serversInfo);
-    getline( ss, master, ',');
-    getline( ss, slave);
+    getline( ss, masterInfo, ',');
+    getline( ss, slaveInfo);
 
     if(DBG_CON) {
-        std::cout << master << "   " << slave << std::endl;
+        std::cout << masterInfo << "   " << slaveInfo << std::endl;
     }
-    currentConnection = master;
+    currentConnection = masterInfo;
 
 
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(

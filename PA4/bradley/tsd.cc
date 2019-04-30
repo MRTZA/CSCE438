@@ -177,7 +177,7 @@ std::string findConnectionInfo() {
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     std::string ips = findConnectionInfo();
-    reply->set_msg(ip);
+    reply->set_msg(ips);
     return Status::OK;
   }
 };
@@ -371,26 +371,26 @@ std::map<std::string, int> CheckServers() {
   // Check the status of all of the servers and get the num user connected
   status = MasterOnestub_->Check(&context, request, &reply);
   if(status.ok()) {
-    serversInfo.insert(pair<std::string, int>("masterOne",reply.status()));
+    serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(pair<std::string, int>("masterOne",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
   }
 
   status = MasterTwostub_->Check(&context, request, &reply);
   if(status.ok()) {
-    serversInfo.insert(pair<std::string, int>("masterTwo",reply.status()));
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(pair<std::string, int>("masterTwo",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
   }
 
   status = MasterThreestub_->Check(&context, request, &reply);
   if(status.ok()) {
-    serversInfo.insert(pair<std::string, int>("masterThree",reply.status()));
+    serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(pair<std::string, int>("masterThree",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterThree",-1));
   }
 
   return serversInfo;
@@ -437,7 +437,7 @@ void RunServer(std::string port_no) {
       auto serversInfo = CheckServers(); //Only care if available goes down
       
       for(auto entry : serversInfo) {
-        std::cout << "Server: " << entry->first << " ---Status: " << entry.second << std::endl;
+        std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
       }
       sleep(SLP_RTR);
     }

@@ -133,13 +133,13 @@ void write_client_db() {
     out << c.username << "\n";
 
     // second line is the followers
-    for(Client *x : client_db.client_followers) {
+    for(Client *x : c.client_followers) {
       out << x->username << ",";
     }
     out << "\n";
 
     // third line is the following
-    for (Client *x : client_db.client_following) {
+    for (Client *x : c.client_following) {
       out << x->username << ",";
     }
 

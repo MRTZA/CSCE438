@@ -187,6 +187,7 @@ class SNSRouterImpl final : public SNSRouter::Service {
     reply->set_msg(ips);
     return Status::OK;
   }
+  
   Status SayHi(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     reply->set_msg("Hi");
     return Status::OK;

@@ -181,33 +181,10 @@ std::string findConnectionInfo() {
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    if(DBG_CLT == 1)
+    if(DBG_RTR == 1)
       std::cout << "Client Connecting" << std::endl;
-    
-    auto serversInfo = CheckServers();
-    std::string master;
-    std::string slave;
-    int min1 = INT_MAX;
-    int min2 = INT_MAX;
-    for(auto entry : serversInfo) {
-      if(entry.second < min1) {
-        master = entry.first;
-        min1 = entry.second;
-      } else if(entry.second < min2) {
-        slave = entry.first;
-        min2 = entry.second;
-      }
-    }
-
-    std::string fullInfo = server_db.masterData.find(master)->second + "," + server_db.masterData.find(slave)->second;
-
-    if(DBG_RTR) {
-      std::cout << "master: " << master << " users: " << min1 << std::endl;
-      std::cout << "slave: " << slave << " users: " << min2 << std::endl;
-      std::cout << fullInfo << std::endl;
-    }
-
-    reply->set_msg(fullInfo);
+    std::string ips = findConnectionInfo();
+    reply->set_msg(ips);
     return Status::OK;
   }
 
@@ -405,6 +382,8 @@ std::map<std::string, int> CheckServers() {
   
   Status status;
 
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop One" << std::endl;
   // Check the status of all of the servers and get the num user connected
   status = MasterOnestub_->Check(&context, request, &reply);
   if(status.ok()) {
@@ -414,6 +393,8 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
   }
 
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Two" << std::endl;
   status = MasterTwostub_->Check(&context, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
@@ -422,6 +403,8 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
   }
 
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Three" << std::endl;
   status = MasterThreestub_->Check(&context, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));

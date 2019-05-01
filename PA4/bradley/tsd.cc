@@ -439,14 +439,14 @@ void RunServer(std::string port_no) {
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
-    while(1) {
-      auto serversInfo = CheckServers(); //Only care if available goes down
+    // while(1) {
+    //   auto serversInfo = CheckServers(); //Only care if available goes down
       
-      for(auto entry : serversInfo) {
-        std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-      }
-      sleep(SLP_RTR);
-    }
+    //   for(auto entry : serversInfo) {
+    //     std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+    //   }
+    //   sleep(SLP_RTR);
+    // }
   }
   if(server_db.myRole == "slave") {
     while(1) {

@@ -56,6 +56,7 @@ class IClient
          * Pure virtual functions to be implemented by students
          */
         virtual int connectTo() = 0;
+        virtual int connectToBackup() = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual int processTimeline() = 0;
 
@@ -71,6 +72,7 @@ class IClient
 
 void IClient::run()
 {
+    // Connect to router
     int ret = connectTo();
     if (ret < 0) {
         std::cout << "connection failed: " << ret << std::endl;
@@ -87,7 +89,8 @@ void IClient::run()
             std::cout << "Now you are in the timeline" << std::endl;
             timelineStatus = processTimeline();
         } else if(!reply.grpc_status.ok() || timelineStatus == -1) {
-            int ret = connectTo();
+            // Connect to slave
+            int ret = connectToBackup();
             if (ret < 0) {
                 std::cout << "connection failed: " << ret << std::endl;
                 exit(1);

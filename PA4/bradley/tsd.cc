@@ -443,7 +443,7 @@ void RunServer(std::string port_no) {
   builder.RegisterService(&healthService);
   builder.RegisterService(&routerService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "Server listening on " << server_address << std::endl;
+  std::cout << server_db.myrole << " listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
     std::cout << "Got here" << std::endl;

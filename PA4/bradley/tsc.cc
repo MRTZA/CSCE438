@@ -64,6 +64,7 @@ class Client : public IClient
         std::unique_ptr<SNSRouter::Stub> stub_SNSR_;
 
         std::string GetConnectInfo();
+        std::string SayHi();
         IReply Login();
         IReply List();
         IReply Follow(const std::string& username2);
@@ -113,6 +114,7 @@ int Client::connectTo()
     std::cout << "routing stub created" << std::endl;
     sleep(1);
     // Get connection info from the routing server
+    std::cout << SayHi() << std::endl;
     std::string serversInfo = GetConnectInfo();
     std::cout << "routing server info retrieved: " << serversInfo << std::endl;
     std::stringstream ss(serversInfo);
@@ -164,6 +166,19 @@ std::string Client::GetConnectInfo() {
     Reply reply;
 
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &reply);
+
+    std::string r = reply.msg();
+    return r;
+}
+
+std::string Client::SayHi() {
+    ServerInfoRequest request;
+    request.set_service("Dicks");
+    ClientContext context;
+
+    Reply reply;
+
+    Status status = stub_SNSR_->SayHi(&context, request, &reply);
 
     std::string r = reply.msg();
     return r;

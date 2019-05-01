@@ -446,7 +446,11 @@ void RunServer(std::string port_no) {
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
+    if(DBG_RTR == 1)
+      std::cout << "Attempting to Connect to servers" << std::endl;
     connect_To();
+    if(DBG_RTR == 1)
+      std::cout << "Finished connecting to servers" << std::endl;
     while(1) {
       auto serversInfo = CheckServers(); //Only care if available goes down
       

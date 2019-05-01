@@ -175,32 +175,32 @@ class HealthServiceImpl final : public HealthService::Service {
   Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
       // router recieved an update that it needs to send out
-      ClientContext contextOne;
-      ClientContext contextTwo;
-      ClientContext contextThree;
+      // ClientContext contextOne;
+      // ClientContext contextTwo;
+      // ClientContext contextThree;
 
-      UpdateResponse replyOne;
-      UpdateResponse replyTwo;
-      UpdateResponse replyThree;
+      // UpdateResponse replyOne;
+      // UpdateResponse replyTwo;
+      // UpdateResponse replyThree;
 
-      MasterOnestub_->Update(&contextOne, request, &replyOne);
-      MasterTwostub_->Update(&contextTwo, request, &replyTwo);
-      MasterThreestub_->Update(&contextThree, request, &replyThree);
+      // MasterOnestub_->Update(&contextOne, request, &replyOne);
+      // MasterTwostub_->Update(&contextTwo, request, &replyTwo);
+      // MasterThreestub_->Update(&contextThree, request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
-      if(request->command() == "login") {
+      // if(request->command() == "login") {
 
-      }
-      if(request->command() == "follow") {
+      // }
+      // else if(request->command() == "follow") {
         
-      }
-      if(request->command() == "unfollow") {
+      // }
+      // else if(request->command() == "unfollow") {
         
-      }
-      if(request->command() == "post") {
+      // }
+      // else if(request->command() == "post") {
         
-      }
+      // }
     }
     if(DBG_UDT) {
       std::cout << "Udpate response sent" << std::endl;

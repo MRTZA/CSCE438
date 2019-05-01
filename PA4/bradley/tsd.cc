@@ -137,7 +137,12 @@ int find_user(std::string username){
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    response->set_status(client_db.size());
+    if(client_db.size() == 0) {
+      response->set_status(-1);
+    } else {
+      response->set_status(client_db.size());
+    }
+    
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
     }
@@ -356,9 +361,6 @@ int Check(std::string server) {
       std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
     }
 
-    if(s == 0)
-      return -1;
-
     return s;
 }
 
@@ -456,7 +458,7 @@ void RunServer(std::string port_no) {
       int err = Check("master");
       if(DBG_HBT == 1)
         std::cout << "==> " << err << std::endl;
-      if(err < 0) {
+      if(!err) {
         pid_t pid;
         if((pid = fork()) < 0) {
           //error

@@ -114,7 +114,7 @@ int Client::connectTo()
     sleep(1);
     // Get connection info from the routing server
     std::string serversInfo = GetConnectInfo();
-    std::cout << "routing server info retrieved" << std::endl;
+    std::cout << "routing server info retrieved: " << serversInfo << std::endl;
     std::stringstream ss(serversInfo);
     getline( ss, masterInfo, ',');
     getline( ss, slaveInfo);

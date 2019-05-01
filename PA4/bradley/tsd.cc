@@ -181,10 +181,33 @@ std::string findConnectionInfo() {
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    // if(DBG_CLT == 1)
-    //   std::cout << "Client Connecting" << std::endl;
-    // std::string ips = findConnectionInfo();
-    reply->set_msg("Test");
+    if(DBG_CLT == 1)
+      std::cout << "Client Connecting" << std::endl;
+    
+    auto serversInfo = CheckServers();
+    std::string master;
+    std::string slave;
+    int min1 = INT_MAX;
+    int min2 = INT_MAX;
+    for(auto entry : serversInfo) {
+      if(entry.second < min1) {
+        master = entry.first;
+        min1 = entry.second;
+      } else if(entry.second < min2) {
+        slave = entry.first;
+        min2 = entry.second;
+      }
+    }
+
+    std::string fullInfo = server_db.masterData.find(master)->second + "," + server_db.masterData.find(slave)->second;
+
+    if(DBG_RTR) {
+      std::cout << "master: " << master << " users: " << min1 << std::endl;
+      std::cout << "slave: " << slave << " users: " << min2 << std::endl;
+      std::cout << fullInfo << std::endl;
+    }
+
+    reply->set_msg(fullInfo);
     return Status::OK;
   }
 

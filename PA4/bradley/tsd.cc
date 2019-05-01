@@ -78,7 +78,7 @@ using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 0
-#define DBG_HBT 1
+#define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
 #define DBG_RTR 0
@@ -444,14 +444,14 @@ void RunServer(std::string port_no) {
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
-    // while(1) {
-    //   auto serversInfo = CheckServers(); //Only care if available goes down
+    while(1) {
+      // auto serversInfo = CheckServers(); //Only care if available goes down
       
-    //   for(auto entry : serversInfo) {
-    //     std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-    //   }
-    //   sleep(SLP_RTR);
-    // }
+      // for(auto entry : serversInfo) {
+      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      // }
+      sleep(SLP_RTR);
+    }
   }
   if(server_db.myRole == "slave") {
     while(1) {

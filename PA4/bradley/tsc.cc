@@ -47,6 +47,7 @@ class Client : public IClient
             {}
     protected:
         virtual int connectTo();
+        virtual int connectToBackup();
         virtual IReply processCommand(std::string& input);
         virtual int processTimeline();
     private:
@@ -92,6 +93,7 @@ int main(int argc, char** argv) {
     }
 
     Client myc(hostname, username, port);
+
     // You MUST invoke "run_client" function to start business logic
     myc.run_client();
 
@@ -124,6 +126,26 @@ int Client::connectTo()
                grpc::CreateChannel(
                     currentConnection, grpc::InsecureChannelCredentials())));
     
+    IReply ire = Login();
+    if(!ire.grpc_status.ok()) {
+        return -1;
+    }
+    return 1;
+}
+
+int Client::connectToBackup() {
+    // If the current connection is master join slave
+    if(currentConnection == masterInfo) {
+        currentConnection = slaveInfo;
+    } // if current connection is slave join master
+    else if(currentConnection == slaveInfo) {
+        currentConnection = masterInfo;
+    }
+
+    stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
+               grpc::CreateChannel(
+                    currentConnection, grpc::InsecureChannelCredentials())));
+
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {
         return -1;

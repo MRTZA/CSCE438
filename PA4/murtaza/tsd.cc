@@ -133,13 +133,13 @@ void write_client_db() {
     out << c.username << "\n";
 
     // second line is the followers
-    for(Client *x : client_db.client_followers) {
+    for(Client *x : c.client_followers) {
       out << x->username << ",";
     }
     out << "\n";
 
     // third line is the following
-    for (Client *x : client_db.client_following) {
+    for (Client *x : c.client_following) {
       out << x->username << ",";
     }
 
@@ -175,32 +175,32 @@ class HealthServiceImpl final : public HealthService::Service {
   Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
       // router recieved an update that it needs to send out
-      ClientContext contextOne;
-      ClientContext contextTwo;
-      ClientContext contextThree;
+      // ClientContext contextOne;
+      // ClientContext contextTwo;
+      // ClientContext contextThree;
 
-      UpdateResponse replyOne;
-      UpdateResponse replyTwo;
-      UpdateResponse replyThree;
+      // UpdateResponse replyOne;
+      // UpdateResponse replyTwo;
+      // UpdateResponse replyThree;
 
-      MasterOnestub_->Update(&contextOne, request, &replyOne);
-      MasterTwostub_->Update(&contextTwo, request, &replyTwo);
-      MasterThreestub_->Update(&contextThree, request, &replyThree);
+      // MasterOnestub_->Update(&contextOne, request, &replyOne);
+      // MasterTwostub_->Update(&contextTwo, request, &replyTwo);
+      // MasterThreestub_->Update(&contextThree, request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
-      if(request->command() == "login") {
+      // if(request->command() == "login") {
 
-      }
-      if(request->command() == "follow") {
+      // }
+      // else if(request->command() == "follow") {
         
-      }
-      if(request->command() == "unfollow") {
+      // }
+      // else if(request->command() == "unfollow") {
         
-      }
-      if(request->command() == "post") {
+      // }
+      // else if(request->command() == "post") {
         
-      }
+      // }
     }
     if(DBG_UDT) {
       std::cout << "Udpate response sent" << std::endl;
@@ -288,7 +288,7 @@ class SNSServiceImpl final : public SNSService::Service {
       
       // update the shared db with the new client
       std::ofstream outfile;
-      outfile.open("user_list.txt", std::ios_base::app);
+      outfile.open("user_list.txt", std::ios::app);
 
       outfile << "STARTCLIENT\n";
       // first line is the username

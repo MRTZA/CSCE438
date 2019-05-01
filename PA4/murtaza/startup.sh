@@ -17,7 +17,7 @@ read isrouter
 if [ $isrouter = "y" ]
 then
     ./tsd -r router -a $available -m $masterOne -n $masterTwo -o $slavePort &
-    ./tsd -p $slavePort -r slave -o $masterPort &
+    # ./tsd -p $slavePort -r slave -o $masterPort &
 else 
     ./tsd -p $masterPort -r master -o $slavePort &
     ./tsd -p $slavePort -r slave -o $masterPort &

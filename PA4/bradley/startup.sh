@@ -20,6 +20,7 @@ then
     # ./tsd -p $slavePort -r slave -o $masterPort &
 else 
     ./tsd -p $masterPort -r master -o $slavePort &
+    sleep 1
     ./tsd -p $slavePort -r slave -o $masterPort &
 fi
 

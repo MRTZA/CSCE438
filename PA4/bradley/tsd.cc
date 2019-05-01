@@ -359,6 +359,7 @@ int Check(std::string server) {
     return s;
 }
 
+//Retruns the status of all the servers and the number of users connected
 std::map<std::string, int> CheckServers() {
   HealthCheckRequest request;
   request.set_service(server_db.myIp);
@@ -398,7 +399,12 @@ std::map<std::string, int> CheckServers() {
 
 void Connect_To() {
   //Create channels/stubs
+
   if(server_db.myRole == "router") {
+    if(DBG_RTR == 1) {
+      std::cout << "Attempting to connect to masters as router" << std::endl;
+    }
+
     MasterThreestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("masterThree")->second, grpc::InsecureChannelCredentials()))); 

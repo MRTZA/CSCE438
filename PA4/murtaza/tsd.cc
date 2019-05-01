@@ -111,7 +111,7 @@ struct Svr {
 };
 
 //Only used if you're the routing server
-std::unique_ptr<HealthService::Stub> MasterThreestub_;
+std::unique_ptr<HealthService::Stub> Availablestub_;
 std::unique_ptr<HealthService::Stub> MasterOnestub_;
 std::unique_ptr<HealthService::Stub> MasterTwostub_;
 

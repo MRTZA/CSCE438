@@ -72,6 +72,8 @@ using csce438::SNSService;
 using csce438::HealthService;
 using csce438::HealthCheckRequest;
 using csce438::HealthCheckResponse;
+using csce438::UpdateRequest;
+using csce438::UpdateResponse;
 using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
@@ -81,6 +83,7 @@ using csce438::ServerInfoResponse;
 #define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
+#define DBG_UDT 1
 
 #define SLP_SLV 4
 #define SLP_RTR 1
@@ -108,7 +111,7 @@ struct Svr {
 };
 
 //Only used if you're the routing server
-std::unique_ptr<HealthService::Stub> Availablestub_;
+std::unique_ptr<HealthService::Stub> MasterThreestub_;
 std::unique_ptr<HealthService::Stub> MasterOnestub_;
 std::unique_ptr<HealthService::Stub> MasterTwostub_;
 
@@ -120,6 +123,31 @@ std::unique_ptr<HealthService::Stub> Routerstub_;
 
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
+
+void write_client_db() {
+  std::ofstream out("user_list.txt");
+
+  for(Client c : client_db) {
+    out << "STARTCLIENT\n";
+    // first line is the username
+    out << c.username << "\n";
+
+    // second line is the followers
+    for(Client *x : client_db.client_followers) {
+      out << x->username << ",";
+    }
+    out << "\n";
+
+    // third line is the following
+    for (Client *x : client_db.client_following) {
+      out << x->username << ",";
+    }
+
+    out << "\nENDCLIENT\n";
+  }
+
+  out.close();
+}
 
 //Data the server has to store based on its role
 Svr server_db;
@@ -140,6 +168,42 @@ class HealthServiceImpl final : public HealthService::Service {
     response->set_status(1);
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
+    }
+    return Status::OK;
+  }
+
+  Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
+    if(server_db.myRole == "router") {
+      // router recieved an update that it needs to send out
+      ClientContext contextOne;
+      ClientContext contextTwo;
+      ClientContext contextThree;
+
+      UpdateResponse replyOne;
+      UpdateResponse replyTwo;
+      UpdateResponse replyThree;
+
+      MasterOnestub_->Update(&contextOne, request, &replyOne);
+      MasterTwostub_->Update(&contextTwo, request, &replyTwo);
+      MasterThreestub_->Update(&contextThree, request, &replyThree);
+    }
+    else if(server_db.myRole == "master") {
+      // master recieved and update
+      if(request->command() == "login") {
+
+      }
+      if(request->command() == "follow") {
+        
+      }
+      if(request->command() == "unfollow") {
+        
+      }
+      if(request->command() == "post") {
+        
+      }
+    }
+    if(DBG_UDT) {
+      std::cout << "Udpate response sent" << std::endl;
     }
     return Status::OK;
   }
@@ -188,6 +252,7 @@ class SNSServiceImpl final : public SNSService::Service {
       user2->client_followers.push_back(user1);
       reply->set_msg("Join Successful");
     }
+    write_client_db();
     return Status::OK; 
   }
 
@@ -208,6 +273,7 @@ class SNSServiceImpl final : public SNSService::Service {
       user2->client_followers.erase(find(user2->client_followers.begin(), user2->client_followers.end(), user1));
       reply->set_msg("Leave Successful");
     }
+    write_client_db();
     return Status::OK;
   }
   
@@ -219,6 +285,25 @@ class SNSServiceImpl final : public SNSService::Service {
       c.username = username;
       client_db.push_back(c);
       reply->set_msg("Login Successful!");
+      
+      // update the shared db with the new client
+      std::ofstream outfile;
+      outfile.open("user_list.txt", std::ios_base::app);
+
+      outfile << "STARTCLIENT\n";
+      // first line is the username
+      outfile << c.username << "\n";
+      // second line is the followers
+      for(Client *x : c.client_followers) {
+        outfile << x->username << ",";
+      }
+      outfile << "\n";
+      // third line is the following
+      for (Client *x : c.client_following) {
+        outfile << x->username << ",";
+      }
+      outfile << "\nENDCLIENT\n";
+      outfile.close();
     }
     else{ 
       Client *user = &client_db[user_index];

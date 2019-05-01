@@ -348,7 +348,7 @@ int Check(std::string server) {
 
     int s = 0;
     Status status;
-    if(server == "available") {
+    if(server == "masterThree") {
       status = MasterThreestub_->Check(&context, request, &reply);
       s = reply.status();
     }
@@ -377,7 +377,7 @@ std::map<std::string, int> CheckServers() {
   HealthCheckRequest request;
   request.set_service(server_db.myIp);
   HealthCheckResponse reply;
-  ClientContext context;
+  ClientContext context1;
   std::map<std::string, int> serversInfo;
   
   Status status;
@@ -395,7 +395,9 @@ std::map<std::string, int> CheckServers() {
 
   if(DBG_RTR == 1)
     std::cout << "CheckServers Stop Two" << std::endl;
-  status = MasterTwostub_->Check(&context, request, &reply);
+
+  ClientContext context2;
+  status = MasterTwostub_->Check(&context2, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
@@ -403,9 +405,10 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
   }
 
+  ClientContext context3;
   if(DBG_RTR == 1)
     std::cout << "CheckServers Stop Three" << std::endl;
-  status = MasterThreestub_->Check(&context, request, &reply);
+  status = MasterThreestub_->Check(&context3, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {

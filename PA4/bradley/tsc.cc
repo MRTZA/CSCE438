@@ -160,7 +160,7 @@ int Client::connectToBackup() {
 
 std::string Client::GetConnectInfo() {
     ServerInfoRequest request;
-    request.set_service("Dicks");
+    //request.set_service("");
     ClientContext context;
 
     Reply reply;

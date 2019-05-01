@@ -447,11 +447,11 @@ void RunServer(std::string port_no) {
 
   if(server_db.myRole == "router") {
     while(1) {
-      // auto serversInfo = CheckServers(); //Only care if available goes down
+      auto serversInfo = CheckServers(); //Only care if available goes down
       
-      // for(auto entry : serversInfo) {
-      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-      // }
+      for(auto entry : serversInfo) {
+        std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      }
       sleep(SLP_RTR);
     }
   }

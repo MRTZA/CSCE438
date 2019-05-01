@@ -110,8 +110,10 @@ int Client::connectTo()
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
     
+    std::cout << "routing stub created" << std::endl;
     // Get connection info from the routing server
     std::string serversInfo = GetConnectInfo();
+    std::cout << "routing server info retrieved" << std::endl;
     std::stringstream ss(serversInfo);
     getline( ss, masterInfo, ',');
     getline( ss, slaveInfo);

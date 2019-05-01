@@ -184,7 +184,7 @@ class SNSRouterImpl final : public SNSRouter::Service {
     // if(DBG_CLT == 1)
     //   std::cout << "Client Connecting" << std::endl;
     // std::string ips = findConnectionInfo();
-    reply->set_msg("");
+    reply->set_msg("Test");
     return Status::OK;
   }
 

@@ -446,6 +446,7 @@ void RunServer(std::string port_no) {
   std::cout << "Server listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
+    std::cout << "Got here" << std::endl;
     if(DBG_RTR == 1)
       std::cout << "Attempting to Connect to servers" << std::endl;
     connect_To();

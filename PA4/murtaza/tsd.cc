@@ -288,7 +288,7 @@ class SNSServiceImpl final : public SNSService::Service {
       
       // update the shared db with the new client
       std::ofstream outfile;
-      outfile.open("user_list.txt", std::ios_base::app);
+      outfile.open("user_list.txt", std::ios::app);
 
       outfile << "STARTCLIENT\n";
       // first line is the username

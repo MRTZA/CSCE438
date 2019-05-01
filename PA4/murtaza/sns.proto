@@ -95,9 +95,9 @@ message Reply {
 }
 
 message UpdateRequest {
-  repeated string followers = 1;
-  string post = 2;
-  string sender = 3;
+  string commmand = 1;
+  string sender = 2;
+  string post = 3;
 }
 
 message UpdateResponse {

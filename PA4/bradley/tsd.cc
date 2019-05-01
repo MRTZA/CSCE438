@@ -81,7 +81,7 @@ using csce438::ServerInfoResponse;
 #define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
-#define DBG_RTR 0
+#define DBG_RTR 1
 
 #define SLP_SLV 4
 #define SLP_RTR 1

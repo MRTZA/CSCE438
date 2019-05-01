@@ -181,13 +181,13 @@ std::string findConnectionInfo() {
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    if(DBG_CLT == 1)
-      std::cout << "Client Connecting" << std::endl;
-    std::string ips = findConnectionInfo();
-    reply->set_msg(ips);
+    // if(DBG_CLT == 1)
+    //   std::cout << "Client Connecting" << std::endl;
+    // std::string ips = findConnectionInfo();
+    reply->set_msg("");
     return Status::OK;
   }
-  
+
   Status SayHi(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     reply->set_msg("Hi");
     return Status::OK;

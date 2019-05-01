@@ -355,7 +355,8 @@ int Check(std::string server) {
     if(DBG_HBT) {
       std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
     }
-
+    if(s == 0)
+      return -1;
     return s;
 }
 
@@ -451,7 +452,7 @@ void RunServer(std::string port_no) {
   if(server_db.myRole == "slave") {
     while(1) {
       int err = Check("master");
-      if(!err) {
+      if(err < 0) {
         pid_t pid;
         if((pid = fork()) < 0) {
           //error

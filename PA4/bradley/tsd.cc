@@ -81,7 +81,7 @@ using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 1
-#define DBG_HBT 0
+#define DBG_HBT 1
 #define DBG_RST 0
 #define DBG_CLT 0
 #define DBG_UDT 1

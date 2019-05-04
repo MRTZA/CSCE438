@@ -46,8 +46,11 @@
 #include <string>
 #include <stdlib.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <bits/stdc++.h>
 #include <google/protobuf/util/time_util.h>
 #include <grpc++/grpc++.h>
+#include <chrono>
 
 #include "sns.grpc.pb.h"
 
@@ -78,6 +81,8 @@ using csce438::UpdateResponse;
 using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
+
+using namespace std;
 
 /* Debug Toggles */
 #define DBG_CLI 1

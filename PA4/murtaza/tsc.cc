@@ -126,6 +126,7 @@ int main(int argc, char** argv) {
 
         input.close();
         for(std::string c : commands) {
+            std::cout << "Command " << c << std::endl;
             myc.processCommand(c);
         }
     }

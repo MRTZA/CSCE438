@@ -9,3 +9,8 @@ Do more testing to make sure that the election works
         it may be return -1 on all calls even when a client is connected
     if I client disconnects and then reconnects with the same name it looked like it crashed
 Add the client functionality for stress testing the servers
+
+network failure
+slaves need to check internet before restarting a master
+if masters aren't connected clear client client_db
+    must read client_db upon connecting back to the internet

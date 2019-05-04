@@ -124,6 +124,15 @@ Svr server_db;
 
 std::map<std::string, int> CheckServers();
 
+//Check internet connect/network failure of currently running process/machine
+bool isConnected() {
+    //TODO
+    // if (system("ping -c1 -s1 www.google.com"))
+    // {
+    //   cout<<"There is no internet connection  \n";
+    // }
+}
+
 //Helper function used to find a Client object given its username
 int find_user(std::string username){
   int index = 0;
@@ -144,7 +153,7 @@ class HealthServiceImpl final : public HealthService::Service {
       if(client.connected) 
         clientsConnected++;
     response->set_status(clientsConnected);
-    
+
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
     }

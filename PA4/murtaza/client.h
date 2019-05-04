@@ -79,11 +79,11 @@ void IClient::run()
     }
     displayTitle();
     while (1) {
-        std::string cmd = getCommand();
+        std::string cmd;
         if(commands.size() != 0) {
             cmd = commands[0];
             commands.erase(commands.begin());
-        }
+        } else { cmd = getCommand(); }
         IReply reply = processCommand(cmd);
         displayCommandReply(cmd, reply);
         int timelineStatus = 1;

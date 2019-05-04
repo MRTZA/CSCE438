@@ -218,12 +218,28 @@ void read_user_list() {
         }
 
         for(std::string s : vect) {
-          std::cout << "following: " << s << "-" << std::endl;
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_followers.push_back(user);
         }
       }
       // following
       if(row == 3) {
+        std::vector<std::string> vect;
 
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
+        }
+
+        for(std::string s : vect) {
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_following.push_back(user);
+        }
       }
       if(line == "STARTCLIENT") {
         row = 0;

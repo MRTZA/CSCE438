@@ -169,7 +169,11 @@ std::string findConnectionInfo() {
   if(DBG_RTR) {
     std::cout << "master: " << master << " users: " << min1 << std::endl;
     std::cout << "slave: " << slave << " users: " << min2 << std::endl;
+    for(auto entry : serversInfo) {
+      std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+    }
   }
+  
 
   std::string fullInfo = server_db.masterData.find(master)->second + "," + server_db.masterData.find(slave)->second;
 
@@ -463,11 +467,11 @@ void RunServer(std::string port_no) {
   if(server_db.myRole == "router") {
     Connect_To();
     while(1) {
-      auto serversInfo = CheckServers(); //Only care if available goes down
+      // auto serversInfo = CheckServers();
       
-      for(auto entry : serversInfo) {
-        std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-      }
+      // for(auto entry : serversInfo) {
+      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      // }
       sleep(SLP_RTR);
     }
   }

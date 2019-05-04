@@ -40,8 +40,6 @@ Message MakeMessage(const std::string& username, const std::string& msg) {
     return m;
 }
 
-std::vector<std::string> posts;
-
 class Client : public IClient
 {
     public:
@@ -50,10 +48,10 @@ class Client : public IClient
                const std::string& p)
             :hostname(hname), username(uname), port(p)
             {}
-        virtual IReply processCommand(std::string& input);
     protected:
         virtual int connectTo();
         virtual int connectToBackup();
+        virtual IReply processCommand(std::string& input);
         virtual int processTimeline();
     private:
         std::string hostname;
@@ -110,7 +108,7 @@ int main(int argc, char** argv) {
         std::cout << "processing file..." << std::endl;
         std::ifstream input(file);
         std::vector<std::string> commands;
-
+        std::vector<std::string> posts;
         bool isPosts = false;
         std::string line;
         while(std::getline(input, line)) {
@@ -126,10 +124,8 @@ int main(int argc, char** argv) {
         }
 
         input.close();
-        for(std::string c : commands) {
-            std::cout << "Command " << c << std::endl;
-            myc.processCommand(c);
-        }
+        myc.commands = commands;
+        myc.posts = posts;
     }
 
     return 0;

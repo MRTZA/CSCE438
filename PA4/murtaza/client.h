@@ -82,6 +82,7 @@ void IClient::run()
         std::string cmd;
         if(commands.size() != 0) {
             cmd = commands[0];
+            std::cout << commands[0] << std::endl;
             commands.erase(commands.begin());
         } else { cmd = getCommand(); }
         IReply reply = processCommand(cmd);

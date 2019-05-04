@@ -480,7 +480,8 @@ void RunServer(std::string port_no) {
       Status err = Check("master");
       if(DBG_HBT == 1)
         std::cout << "==> " << err << std::endl;
-      if(err.ok()) {
+      // If the status of the check is not okay then we restart master
+      if(!err.ok()) {
         pid_t pid;
         if((pid = fork()) < 0) {
           //error

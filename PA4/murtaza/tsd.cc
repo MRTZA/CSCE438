@@ -196,10 +196,10 @@ void read_user_list() {
     pFile.close();
 
     // second pass through file updates info
-    pFile.open();
+    std::ifstream p2File("user_list.txt");
     row = 0;
     std::string curr_client;
-    while (std::getline(pFile, line))
+    while (std::getline(p2File, line))
     { 
       // client's name
       if(row == 1) {
@@ -234,6 +234,7 @@ void read_user_list() {
       row++;
     }
   }
+  p2File.close();
   return;
 }
 
@@ -620,7 +621,6 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
   Connect_To();
-  read_user_list();
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

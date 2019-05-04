@@ -137,11 +137,11 @@ int find_user(std::string username){
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    if(client_db.size() == 0) {
-      response->set_status(-1);
-    } else {
+    // if(client_db.size() == 0) {
+    //   response->set_status(-1);
+    // } else {
       response->set_status(client_db.size());
-    }
+    //}
     
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
@@ -157,10 +157,10 @@ std::string findConnectionInfo() {
   int min1 = INT_MAX;
   int min2 = INT_MAX;
   for(auto entry : serversInfo) {
-    if(entry.second < min1 && entry.second != -2) {
+    if(entry.second < min1 && entry.second >= 0) {
       master = entry.first;
       min1 = entry.second;
-    } else if(entry.second < min2 && entry.second != -2) {
+    } else if(entry.second < min2 && entry.second >= 0) {
       slave = entry.first;
       min2 = entry.second;
     }
@@ -407,7 +407,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterTwo",-2));
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
   }
 
   if(DBG_RTR == 1)
@@ -417,7 +417,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterThree",-2));
+    serversInfo.insert(std::pair<std::string, int>("masterThree",-1));
   }
 
   return serversInfo;

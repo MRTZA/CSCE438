@@ -3,10 +3,11 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <string.h>
+#include <stdio.h>
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
-#include <boost/algorithm/string.hpp>
 #include <grpc++/grpc++.h>
 #include "client.h"
 
@@ -49,10 +50,10 @@ class Client : public IClient
                const std::string& p)
             :hostname(hname), username(uname), port(p)
             {}
+        virtual IReply processCommand(std::string& input);
     protected:
         virtual int connectTo();
         virtual int connectToBackup();
-        virtual IReply processCommand(std::string& input);
         virtual int processTimeline();
     private:
         std::string hostname;
@@ -110,6 +111,7 @@ int main(int argc, char** argv) {
         std::vector<std::string> commands;
 
         bool isPosts = false;
+        std::string line;
         while(std::getline(input, line)) {
             if(isPosts) {
                 posts.push_back(line);
@@ -117,7 +119,7 @@ int main(int argc, char** argv) {
             else {
                 commands.push_back(line);
             }
-            if(boost::iequals(line, "timeline")) {
+            if(line == "TIMELINE") {
                 isPosts = true;
             }
         }

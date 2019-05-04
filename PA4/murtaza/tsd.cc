@@ -289,9 +289,9 @@ class HealthServiceImpl final : public HealthService::Service {
       UpdateResponse replyTwo;
       UpdateResponse replyThree;
 
-      MasterOnestub_->Update(&contextOne, *request, &replyOne);
-      MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
-      MasterThreestub_->Update(&contextThree, *request, &replyThree);
+      Status status1 = MasterOnestub_->Update(&contextOne, *request, &replyOne);
+      Status status2 = MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
+      Status status3 = MasterThreestub_->Update(&contextThree, *request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
@@ -315,6 +315,7 @@ class HealthServiceImpl final : public HealthService::Service {
     if(DBG_UDT) {
       std::cout << "Udpate response sent" << std::endl;
     }
+    response->set_recieved(1);
     return Status::OK;
   }
 };

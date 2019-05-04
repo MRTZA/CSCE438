@@ -101,9 +101,6 @@ int main(int argc, char** argv) {
 
     Client myc(hostname, username, port);
 
-    // You MUST invoke "run_client" function to start business logic
-    myc.run_client();
-
     if(!file.empty()) {
         std::cout << "processing file..." << std::endl;
         std::ifstream input(file);
@@ -127,6 +124,9 @@ int main(int argc, char** argv) {
         myc.commands = commands;
         myc.posts = posts;
     }
+
+    // You MUST invoke "run_client" function to start business logic
+    myc.run_client();
 
     return 0;
 }

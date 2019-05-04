@@ -208,19 +208,13 @@ void read_user_list() {
       // followers
       if(row == 2) {
         std::vector<std::string> vect;
-        std::stringstream ss(line);
-        std::string i;
 
-        while (ss >> i)
-        {   
-            i = i.substr(0, i.size()-1);
-            vect.push_back(i);
-
-            if (ss.peek() == ',') {
-              ss.ignore();
-            }
-
-            i = "";
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
         }
 
         for(std::string s : vect) {

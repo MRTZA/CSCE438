@@ -107,6 +107,7 @@ int main(int argc, char** argv) {
     myc.run_client();
 
     if(!file.empty()) {
+        std::cout << "processing file..." << std::endl;
         std::ifstream input(file);
         std::vector<std::string> commands;
 

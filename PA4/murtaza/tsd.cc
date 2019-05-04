@@ -134,10 +134,13 @@ std::map<std::string, int> CheckServers();
 //Check internet connect/network failure of currently running process/machine
 bool isConnected() {
     //TODO
-    // if (system("ping -c1 -s1 www.google.com"))
-    // {
-    //   cout<<"There is no internet connection  \n";
-    // }
+    if (system("ping -c1 -s1 www.google.com"))
+    {
+      return false;
+    }
+    else {
+      return true;
+    }
 }
 
 //Helper function used to find a Client object given its username
@@ -694,9 +697,14 @@ void RunServer(std::string port_no) {
   }
   if(server_db.myRole == "slave") {
     while(1) {
+      // Check if we are connected to the internet
+      if(!isConnected()) {
+        continue;
+      }
       Status err = Check("master");
       if(DBG_HBT == 1)
         std::cout << "==> " << err.ok() << std::endl;
+      
       // If the status of the check is not okay then we restart master
       if(!err.ok()) {
         pid_t pid;
@@ -730,6 +738,14 @@ void RunServer(std::string port_no) {
   if(server_db.myRole == "master") {
     Connect_To();
     read_user_list();
+    // Loop checking conncetion to the internet
+    while(1) {
+      if(!isConnected()) {
+        client_db.clear();
+      }
+      // Sleep for one second between checking the internet status
+      sleep(1);
+    }
   }
 
   server->Wait();

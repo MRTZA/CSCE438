@@ -271,9 +271,9 @@ class HealthServiceImpl final : public HealthService::Service {
       UpdateResponse replyTwo;
       UpdateResponse replyThree;
 
-      MasterOnestub_->Update(&contextOne, request, &replyOne);
-      MasterTwostub_->Update(&contextTwo, request, &replyTwo);
-      Availablestub_->Update(&contextThree, request, &replyThree);
+      MasterOnestub_->Update(&contextOne, *request, &replyOne);
+      MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
+      Availablestub_->Update(&contextThree, *request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update

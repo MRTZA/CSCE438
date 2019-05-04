@@ -468,6 +468,7 @@ class SNSServiceImpl final : public SNSService::Service {
       }
       outfile << "\nENDCLIENT\n";
       outfile.close();
+      Update("login", "n/a", "n/a");
     }
     else{ 
       Client *user = &client_db[user_index];

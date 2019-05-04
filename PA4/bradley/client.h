@@ -77,6 +77,10 @@ void IClient::run()
         exit(1);
     }
     displayTitle();
+    if(testFile != "") {
+        
+    }
+
     while (1) {
         std::string cmd = getCommand();
         IReply reply = processCommand(cmd);

@@ -251,6 +251,11 @@ int Client::processTimeline()
 	// ------------------------------------------------------------
 }
 
+int Client::processTimeline(const std::vector<std::string>& commands, int start)
+{
+    return Timeline(username, commands, start);
+}
+
 IReply Client::List() {
     //Data being sent to the server
     Request request;
@@ -357,6 +362,45 @@ IReply Client::Login() {
         ire.comm_status = SUCCESS;
     }
     return ire;
+}
+
+int Client::Timeline(const std::string& username, const std::vector<std::string> commands, int start) {
+    ClientContext context;
+
+    std::shared_ptr<ClientReaderWriter<Message, Message>> stream(
+            stub_SNSS_->Timeline(&context));
+
+    //Thread used to read chat messages and send them to the server
+    std::thread writer([username, stream, commands, start]() {
+            std::string input = "Set Stream";
+            Message m = MakeMessage(username, input);
+            stream->Write(m);
+            for (auto command : commands) {
+            m = MakeMessage(username, command);
+            if(!stream->Write(m)) {
+                // Stream has error
+                // Reconnect to server here
+                std::cout << "Connection failed, reconnecting..." << std::endl;
+                break;
+            }
+            }
+            stream->WritesDone();
+            });
+
+    std::thread reader([username, stream]() {
+            Message m;
+            while(stream->Read(&m)){
+
+            google::protobuf::Timestamp temptime = m.timestamp();
+            std::time_t time = temptime.seconds();
+            displayPostMessage(m.username(), m.msg(), time);
+            }
+            });
+
+    //Wait for the threads to finish
+    writer.join();
+    reader.join();
+    return -1;
 }
 
 int Client::Timeline(const std::string& username) {

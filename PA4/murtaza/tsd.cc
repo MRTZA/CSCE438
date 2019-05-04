@@ -710,9 +710,9 @@ void RunServer(std::string port_no) {
           args[2] = "-r master";
           std::string arg2 = "-o " + server_db.myPort;
           args[3] = (char*)arg2.c_str();
-          args[4] = "&";
           std::string arg3 = "-s " + server_db.routingServer;
-          args[5] = (char*)arg3.c_str();
+          args[4] = (char*)arg3.c_str();
+          args[5] = "&";
           args[6] = NULL;
           if(execvp(command,args) < 0) {
             //error msg

@@ -95,7 +95,7 @@ message Reply {
 }
 
 message UpdateRequest {
-  string commmand = 1;
+  string command = 1;
   string sender = 2;
   string post = 3;
   string client = 4;

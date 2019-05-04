@@ -277,18 +277,20 @@ class HealthServiceImpl final : public HealthService::Service {
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
-      // if(request->command() == "login") {
-
-      // }
-      // else if(request->command() == "follow") {
-        
-      // }
-      // else if(request->command() == "unfollow") {
-        
-      // }
-      // else if(request->command() == "post") {
-        
-      // }
+      if(request->command() == "post") {
+        int i = find_user(request->client());
+        Client *c = client_db[i];
+        std::vector<Client*>::const_iterator it;
+        for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {
+          Client *temp_client = *it;
+          if(temp_client->stream!=0 && temp_client->connected) {
+            temp_client->stream->Write(message);
+          }
+        }
+      }
+      else {
+        read_user_list();
+      }
     }
     if(DBG_UDT) {
       std::cout << "Udpate response sent" << std::endl;

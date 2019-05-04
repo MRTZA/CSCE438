@@ -205,7 +205,7 @@ void read_user_list() {
       // followers
       if(row == 2) {
         std::vector<std::string> vect;
-        std::stringstream ss(str);
+        std::stringstream ss(line);
         std::string i;
 
         while (ss >> i)

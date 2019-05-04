@@ -92,6 +92,30 @@ void IClient::run()
             commands.push_back(line);
             index++;
         }
+        for(int i = 0; i < start; i++) {
+            cmd = commands.at(i);
+            IReply reply = processCommand(cmd);
+            displayCommandReply(cmd, reply);
+            int timelineStatus = 1;
+            if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
+                    && cmd == "TIMELINE") {
+                std::cout << "Now you are in the timeline" << std::endl;
+                timelineStatus = processTimeline(commands, start);
+            } else if(!reply.grpc_status.ok() || timelineStatus == -1) {
+                int ret = connectTo();
+                if (ret < 0) {
+                    std::cout << "connection failed: " << ret << std::endl;
+                    exit(1);
+                }
+                reply = processCommand(cmd);
+                displayCommandReply(cmd, reply);
+                if (reply.grpc_status.ok() && reply.comm_status == SUCCESS
+                    && cmd == "TIMELINE") {
+                    std::cout << "Now you are in the timeline" << std::endl;
+                    processTimeline(commands, start);
+                }
+            } 
+        }
     }
 
     while (1) {

@@ -387,7 +387,7 @@ int Client::Timeline(const std::string& username) {
             stub_SNSS_->Timeline(&context));
 
     //Thread used to read chat messages and send them to the server
-    std::thread writer([username, stream, this->posts]() {
+    std::thread writer([username, stream, posts]() {
             std::string input = "Set Stream";
             Message m = MakeMessage(username, input);
             stream->Write(m);

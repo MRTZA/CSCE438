@@ -98,7 +98,7 @@ int main(int argc, char** argv) {
         }
     }
 
-    Client myc(hostname, username, port);
+    Client myc(hostname, username, port, testFile);
 
     // You MUST invoke "run_client" function to start business logic
     myc.run_client();

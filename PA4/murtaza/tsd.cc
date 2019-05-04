@@ -280,11 +280,15 @@ class HealthServiceImpl final : public HealthService::Service {
       if(request->command() == "post") {
         int i = find_user(request->client());
         Client *c = &client_db[i];
+        Message m;
+        m.set_username(request->client());
+        m.set_msg(request->post());
+        m.set_timestamp(request->timestamp());
         std::vector<Client*>::const_iterator it;
         for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {
           Client *temp_client = *it;
           if(temp_client->stream!=0 && temp_client->connected) {
-            temp_client->stream->Write(request->post());
+            temp_client->stream->Write(m);
           }
         }
       }

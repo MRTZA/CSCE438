@@ -6,7 +6,6 @@
 #include <sstream>
 #include <fstream>
 #include <unistd.h>
-#include <boost/algorithm/string.hpp>
 #include <grpc++/grpc++.h>
 #include "client.h"
 
@@ -117,7 +116,7 @@ int main(int argc, char** argv) {
             else {
                 commands.push_back(line);
             }
-            if(boost::iequals(line, "timeline")) {
+            if(0 == strcmpi(line, "TIMELINE")) {
                 isPosts = true;
             }
         }

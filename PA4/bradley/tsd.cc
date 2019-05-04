@@ -157,10 +157,10 @@ std::string findConnectionInfo() {
   int min1 = INT_MAX;
   int min2 = INT_MAX;
   for(auto entry : serversInfo) {
-    if(entry.second < min1) {
+    if(entry.second < min1 && entry.second != -2) {
       master = entry.first;
       min1 = entry.second;
-    } else if(entry.second < min2) {
+    } else if(entry.second < min2 && entry.second != -2) {
       slave = entry.first;
       min2 = entry.second;
     }
@@ -396,7 +396,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterOne",-2));
   }
 
   if(DBG_RTR == 1)
@@ -407,7 +407,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",-2));
   }
 
   if(DBG_RTR == 1)
@@ -417,7 +417,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterThree",-1));
+    serversInfo.insert(std::pair<std::string, int>("masterThree",-2));
   }
 
   return serversInfo;

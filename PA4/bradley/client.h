@@ -77,9 +77,6 @@ void IClient::run()
         exit(1);
     }
     displayTitle();
-    if(this->testFile != "") {
-        
-    }
 
     while (1) {
         std::string cmd = getCommand();

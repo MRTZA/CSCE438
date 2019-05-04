@@ -291,7 +291,7 @@ class HealthServiceImpl final : public HealthService::Service {
 
       MasterOnestub_->Update(&contextOne, *request, &replyOne);
       MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
-      Availablestub_->Update(&contextThree, *request, &replyThree);
+      MasterThreestub_->Update(&contextThree, *request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
@@ -654,6 +654,11 @@ void Connect_To() {
       grpc::CreateChannel(
         hostname, grpc::InsecureChannelCredentials()))); 
   }
+  if(server_db.myRole == "master") {
+    Routerstub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.routingServer, grpc::InsecureChannelCredentials()))); 
+  }
   return;
 }
 
@@ -695,7 +700,7 @@ void RunServer(std::string port_no) {
         } else if (pid == 0) {
           //We are the child
           char* command = "./tsd";
-          char* args[6];
+          char* args[7];
           args[0] = "./tsd";
           std::string arg = "-p " + server_db.otherPort;
           args[1] = (char*)arg.c_str();
@@ -703,7 +708,9 @@ void RunServer(std::string port_no) {
           std::string arg2 = "-o " + server_db.myPort;
           args[3] = (char*)arg2.c_str();
           args[4] = "&";
-          args[5] = NULL;
+          std::string arg3 = "-s " + server_db.routingServer;
+          args[5] = (char*)arg3.c_str();
+          args[6] = NULL;
           if(execvp(command,args) < 0) {
             //error msg
             //exec failed

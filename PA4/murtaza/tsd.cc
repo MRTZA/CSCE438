@@ -446,11 +446,10 @@ class SNSServiceImpl final : public SNSService::Service {
     std::string username = request->username();
     int user_index = find_user(username);
     if(user_index < 0){
-      if(server_db.myRole == "master") {
-        c.username = username;
-        client_db.push_back(c);
-        reply->set_msg("Login Successful!");
-        
+      c.username = username;
+      client_db.push_back(c);
+      reply->set_msg("Login Successful!");
+      if(server_db.myRole == "master") {        
         // update the shared db with the new client
         std::ofstream outfile;
         outfile.open("user_list.txt", std::ios::app);

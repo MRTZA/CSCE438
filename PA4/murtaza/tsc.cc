@@ -3,6 +3,7 @@
 #include <thread>
 #include <vector>
 #include <string>
+#include <sstream>
 #include <unistd.h>
 #include <grpc++/grpc++.h>
 #include "client.h"
@@ -22,6 +23,8 @@ using csce438::SNSService;
 using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
+
+#define DBG_CON 1
 
 Message MakeMessage(const std::string& username, const std::string& msg) {
     Message m;
@@ -44,18 +47,24 @@ class Client : public IClient
             {}
     protected:
         virtual int connectTo();
+        virtual int connectToBackup();
         virtual IReply processCommand(std::string& input);
         virtual int processTimeline();
     private:
         std::string hostname;
         std::string username;
         std::string port;
+
+        std::string masterInfo;
+        std::string slaveInfo;
+        std::string currentConnection;
         // You can have an instance of the client stub
         // as a member variable.
         std::unique_ptr<SNSService::Stub> stub_SNSS_;
         std::unique_ptr<SNSRouter::Stub> stub_SNSR_;
 
         std::string GetConnectInfo();
+        std::string SayHi();
         IReply Login();
         IReply List();
         IReply Follow(const std::string& username2);
@@ -85,6 +94,7 @@ int main(int argc, char** argv) {
     }
 
     Client myc(hostname, username, port);
+
     // You MUST invoke "run_client" function to start business logic
     myc.run_client();
 
@@ -101,12 +111,48 @@ int Client::connectTo()
                grpc::CreateChannel(
                     login_info, grpc::InsecureChannelCredentials())));
     
+    std::cout << "routing stub created" << std::endl;
+    // sleep(1);
     // Get connection info from the routing server
-    std::string availableServerInfo = GetConnectInfo();
+    // std::cout << SayHi() << std::endl;
+    std::string serversInfo = GetConnectInfo();
+    std::cout << "routing server info retrieved: " << serversInfo << std::endl;
+    std::stringstream ss(serversInfo);
+    getline( ss, masterInfo, ',');
+    getline( ss, slaveInfo);
+
+    if(DBG_CON) {
+        std::cout << masterInfo << "   " << slaveInfo << std::endl;
+    }
+    currentConnection = masterInfo;
+
+
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
-                    availableServerInfo, grpc::InsecureChannelCredentials())));
+                    currentConnection, grpc::InsecureChannelCredentials())));
     
+    IReply ire = Login();
+    if(!ire.grpc_status.ok()) {
+        return -1;
+    }
+    return 1;
+}
+
+int Client::connectToBackup() {
+    // If the current connection is master join slave
+    if(currentConnection == masterInfo) {
+        currentConnection = slaveInfo;
+    } // if current connection is slave join master
+    else if(currentConnection == slaveInfo) {
+        currentConnection = masterInfo;
+    }
+
+    std::cout << "Connecting to server at: " << currentConnection << std::endl;
+
+    stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
+               grpc::CreateChannel(
+                    currentConnection, grpc::InsecureChannelCredentials())));
+
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {
         return -1;
@@ -122,6 +168,19 @@ std::string Client::GetConnectInfo() {
     Reply reply;
 
     Status status = stub_SNSR_->GetConnectInfo(&context, request, &reply);
+
+    std::string r = reply.msg();
+    return r;
+}
+
+std::string Client::SayHi() {
+    ServerInfoRequest request;
+    request.set_service("Dicks");
+    ClientContext context;
+
+    Reply reply;
+
+    Status status = stub_SNSR_->SayHi(&context, request, &reply);
 
     std::string r = reply.msg();
     return r;

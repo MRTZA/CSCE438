@@ -80,6 +80,7 @@ message HealthCheckResponse {
 
 service SNSRouter {
   rpc GetConnectInfo(ServerInfoRequest) returns (Reply);
+  rpc SayHi(ServerInfoRequest) returns (Reply);
 }
 
 message ServerInfoRequest {

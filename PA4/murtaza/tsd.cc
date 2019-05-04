@@ -80,11 +80,12 @@ using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
-#define DBG_CLI 0
+#define DBG_CLI 1
 #define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
 #define DBG_UDT 1
+#define DBG_RTR 1
 
 #define SLP_SLV 4
 #define SLP_RTR 1
@@ -112,7 +113,7 @@ struct Svr {
 };
 
 //Only used if you're the routing server
-std::unique_ptr<HealthService::Stub> Availablestub_;
+std::unique_ptr<HealthService::Stub> MasterThreestub_;
 std::unique_ptr<HealthService::Stub> MasterOnestub_;
 std::unique_ptr<HealthService::Stub> MasterTwostub_;
 
@@ -127,6 +128,17 @@ std::vector<Client> client_db;
 
 //Data the server has to store based on its role
 Svr server_db;
+
+std::map<std::string, int> CheckServers();
+
+//Check internet connect/network failure of currently running process/machine
+bool isConnected() {
+    //TODO
+    // if (system("ping -c1 -s1 www.google.com"))
+    // {
+    //   cout<<"There is no internet connection  \n";
+    // }
+}
 
 //Helper function used to find a Client object given its username
 int find_user(std::string username){
@@ -252,7 +264,14 @@ void read_user_list() {
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    response->set_status(1);
+    
+    //response->set_status(client_db.size());
+    int clientsConnected = 0;
+    for(auto client : client_db)
+      if(client.connected) 
+        clientsConnected++;
+    response->set_status(clientsConnected);
+
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
     }
@@ -312,16 +331,55 @@ void Update(std::string command, std::string post, std::string client) {
 
   return;
 }
+std::string findConnectionInfo() {
+  auto serversInfo = CheckServers();
+  std::string master = "!";
+  std::string slave = "!";
+  int min1 = INT_MAX;
+  int min2 = INT_MAX;
+  for(auto entry : serversInfo) {
+    if(entry.second < min1 && entry.second >= 0) {
+      min2 = min1;
+      slave = master;
+      min1 = entry.second;
+      master = entry.first;
+    } else if(entry.second < min2 && entry.first != slave && entry.second >= 0) {
+      min2 = entry.second;
+      slave = entry.first;
+    }
+  }
+
+  if(DBG_RTR) {
+    std::cout << "master: " << master << " users: " << min1 << std::endl;
+    std::cout << "slave: " << slave << " users: " << min2 << std::endl;
+    for(auto entry : serversInfo) {
+      std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+    }
+  }
+  
+
+  std::string fullInfo = server_db.masterData.find(master)->second + "," + server_db.masterData.find(slave)->second;
+
+  return fullInfo;
+
+
+}
+
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
-    std::string ip = server_db.masterData.find("available")->second;
-    if(DBG_CLT) {
-      std::cout << "IP sent to client: " << ip << std::endl;
-    }
-    reply->set_msg(ip);
+    if(DBG_RTR == 1)
+      std::cout << "Client Connecting" << std::endl;
+    std::string ips = findConnectionInfo();
+    reply->set_msg(ips);
     return Status::OK;
   }
+
+  Status SayHi(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
+    reply->set_msg("Hi");
+    return Status::OK;
+  }
+
 };
 
 class SNSServiceImpl final : public SNSService::Service {
@@ -349,7 +407,7 @@ class SNSServiceImpl final : public SNSService::Service {
       Client *user1 = &client_db[find_user(username1)];
       Client *user2 = &client_db[join_index];
       if(std::find(user1->client_following.begin(), user1->client_following.end(), user2) != user1->client_following.end()){
-	reply->set_msg("Join Failed -- Already Following User");
+      	reply->set_msg("Join Failed -- Already Following User");
         return Status::OK;
       }
       user1->client_following.push_back(user2);
@@ -371,7 +429,7 @@ class SNSServiceImpl final : public SNSService::Service {
       Client *user1 = &client_db[find_user(username1)];
       Client *user2 = &client_db[leave_index];
       if(std::find(user1->client_following.begin(), user1->client_following.end(), user2) == user1->client_following.end()){
-	reply->set_msg("Leave Failed -- Not Following User");
+	      reply->set_msg("Leave Failed -- Not Following User");
         return Status::OK;
       }
       user1->client_following.erase(find(user1->client_following.begin(), user1->client_following.end(), user2)); 
@@ -417,7 +475,7 @@ class SNSServiceImpl final : public SNSService::Service {
         reply->set_msg("Invalid Username");
       else{
         std::string msg = "Welcome Back " + user->username;
-	reply->set_msg(msg);
+      	reply->set_msg(msg);
         user->connected = true;
       }
     }
@@ -461,11 +519,11 @@ class SNSServiceImpl final : public SNSService::Service {
           newest_twenty.push_back(line);
         }
         Message new_msg; 
- 	//Send the newest messages to the client to be displayed
-	for(int i = 0; i<newest_twenty.size(); i++){
-	  new_msg.set_msg(newest_twenty[i]);
-          stream->Write(new_msg);
-        }    
+  	//Send the newest messages to the client to be displayed
+    for(int i = 0; i<newest_twenty.size(); i++){
+      new_msg.set_msg(newest_twenty[i]);
+            stream->Write(new_msg);
+          }    
         continue;
       }
       //Send the message to each follower's stream
@@ -477,23 +535,23 @@ class SNSServiceImpl final : public SNSService::Service {
         //For each of the current user's followers, put the message in their following.txt file
         std::string temp_username = temp_client->username;
         std::string temp_file = temp_username + "following.txt";
-	std::ofstream following_file(temp_file,std::ios::app|std::ios::out|std::ios::in);
-	following_file << fileinput;
-        temp_client->following_file_size++;
-	std::ofstream user_file(temp_username + ".txt",std::ios::app|std::ios::out|std::ios::in);
-        user_file << fileinput;
-      }
+    std::ofstream following_file(temp_file,std::ios::app|std::ios::out|std::ios::in);
+    following_file << fileinput;
+          temp_client->following_file_size++;
+    std::ofstream user_file(temp_username + ".txt",std::ios::app|std::ios::out|std::ios::in);
+          user_file << fileinput;
+        }
       Update("post", fileinput, message.username());
-    }
-    //If the client disconnected from Chat Mode, set connected to false
-    c->connected = false;
-    return Status::OK;
+      }
+      //If the client disconnected from Chat Mode, set connected to false
+      c->connected = false;
+      return Status::OK;
   }
 
 };
 
 //Returns the status of the server
-int Check(std::string server) {
+Status Check(std::string server) {
     HealthCheckRequest request;
     request.set_service(server_db.myIp);
     HealthCheckResponse reply;
@@ -501,8 +559,8 @@ int Check(std::string server) {
 
     int s = 0;
     Status status;
-    if(server == "available") {
-      status = Availablestub_->Check(&context, request, &reply);
+    if(server == "masterThree") {
+      status = MasterThreestub_->Check(&context, request, &reply);
       s = reply.status();
     }
     else if(server == "masterOne") {
@@ -522,15 +580,67 @@ int Check(std::string server) {
       std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
     }
 
-    return s;
+    return status;
+}
+
+//Retruns the status of all the servers and the number of users connected
+std::map<std::string, int> CheckServers() {
+  HealthCheckRequest request;
+  request.set_service(server_db.myIp);
+  HealthCheckResponse reply;
+  ClientContext context1;
+  ClientContext context2;
+  ClientContext context3;
+  std::map<std::string, int> serversInfo;
+  
+  Status status;
+
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop One" << std::endl;
+  // Check the status of all of the servers and get the num user connected
+  status = MasterOnestub_->Check(&context1, request, &reply);
+  if(status.ok()) {
+    serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
+  } else {
+    //If server is down then we return -1 as the num of users connected
+    serversInfo.insert(std::pair<std::string, int>("masterOne",-2));
+  }
+
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Two" << std::endl;
+
+  status = MasterTwostub_->Check(&context2, request, &reply);
+  if(status.ok()) {
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
+  } else {
+    //If server is down then we return -1 as the num of users connected
+    serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
+  }
+
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Three" << std::endl;
+  status = MasterThreestub_->Check(&context3, request, &reply);
+  if(status.ok()) {
+    serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
+  } else {
+    //If server is down then we return -1 as the num of users connected
+    serversInfo.insert(std::pair<std::string, int>("masterThree",-1));
+  }
+
+  return serversInfo;
 }
 
 void Connect_To() {
   //Create channels/stubs
+
   if(server_db.myRole == "router") {
-    Availablestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+    if(DBG_RTR == 1) {
+      std::cout << "Attempting to connect to masters as router" << std::endl;
+    }
+
+    MasterThreestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
-        server_db.masterData.find("available")->second, grpc::InsecureChannelCredentials()))); 
+        server_db.masterData.find("masterThree")->second, grpc::InsecureChannelCredentials()))); 
     MasterOnestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         server_db.masterData.find("masterOne")->second, grpc::InsecureChannelCredentials()))); 
@@ -559,39 +669,26 @@ void RunServer(std::string port_no) {
   builder.RegisterService(&healthService);
   builder.RegisterService(&routerService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "Server listening on " << server_address << std::endl;
+  std::cout << server_db.myRole << " listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
+    Connect_To();
     while(1) {
-      int err = Check("available"); //Only care if available goes down
-      if(!err) {
-        //make one of the masters the new available server
-        srand (time(NULL));
-        int randNum = rand()%(2-1 + 1) + 1;
-        if(randNum == 1) {
-          std::string masterIp = server_db.masterData.find("masterOne")->second;
-          std::string availableIp = server_db.masterData.find("available")->second;
-          server_db.masterData.find("masterOne")->second = availableIp;
-          server_db.masterData.find("available")->second = masterIp;
-        } else {
-          std::string masterIp = server_db.masterData.find("masterTwo")->second;
-          std::string availableIp = server_db.masterData.find("available")->second;
-          server_db.masterData.find("masterTwo")->second = availableIp;
-          server_db.masterData.find("available")->second = masterIp;
-        }
-
-        //Reconnect with updated channel information
-        Connect_To();
-      }
+      // auto serversInfo = CheckServers();
+      
+      // for(auto entry : serversInfo) {
+      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      // }
       sleep(SLP_RTR);
-      // err = Check("masterOne");
-      // err = Check("masterTwo");
     }
   }
   if(server_db.myRole == "slave") {
     while(1) {
-      int err = Check("master");
-      if(!err) {
+      Status err = Check("master");
+      if(DBG_HBT == 1)
+        std::cout << "==> " << err.ok() << std::endl;
+      // If the status of the check is not okay then we restart master
+      if(!err.ok()) {
         pid_t pid;
         if((pid = fork()) < 0) {
           //error
@@ -639,8 +736,8 @@ int main(int argc, char** argv) {
           server_db.myIp = optarg;break;
       case 'o': // other (master or slave ip)
           server_db.otherPort = optarg;break;
-      case 'a': // available server ip
-          server_db.masterData.insert(std::pair<std::string, std::string>("available", optarg));break;
+      case 'a': // master server three ip
+          server_db.masterData.insert(std::pair<std::string, std::string>("masterThree", optarg));break;
       case 'm': // master server one ip
           server_db.masterData.insert(std::pair<std::string, std::string>("masterOne", optarg));break;
       case 'n': // master server two ip

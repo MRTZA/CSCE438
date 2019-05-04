@@ -446,28 +446,31 @@ class SNSServiceImpl final : public SNSService::Service {
     std::string username = request->username();
     int user_index = find_user(username);
     if(user_index < 0){
-      c.username = username;
-      client_db.push_back(c);
-      reply->set_msg("Login Successful!");
-      
-      // update the shared db with the new client
-      std::ofstream outfile;
-      outfile.open("user_list.txt", std::ios::app);
+      if(server_db.myRole == "master") {
+        c.username = username;
+        client_db.push_back(c);
+        reply->set_msg("Login Successful!");
+        
+        // update the shared db with the new client
+        std::ofstream outfile;
+        outfile.open("user_list.txt", std::ios::app);
 
-      outfile << "STARTCLIENT\n";
-      // first line is the username
-      outfile << c.username << "\n";
-      // second line is the followers
-      for(Client *x : c.client_followers) {
-        outfile << x->username << ",";
+        outfile << "STARTCLIENT\n";
+        // first line is the username
+        outfile << c.username << "\n";
+        // second line is the followers
+        for(Client *x : c.client_followers) {
+          outfile << x->username << ",";
+        }
+        outfile << "\n";
+        // third line is the following
+        for (Client *x : c.client_following) {
+          outfile << x->username << ",";
+        }
+        outfile << "\nENDCLIENT\n";
+        outfile.close();
+        Update("login", "n/a", "n/a");
       }
-      outfile << "\n";
-      // third line is the following
-      for (Client *x : c.client_following) {
-        outfile << x->username << ",";
-      }
-      outfile << "\nENDCLIENT\n";
-      outfile.close();
     }
     else{ 
       Client *user = &client_db[user_index];

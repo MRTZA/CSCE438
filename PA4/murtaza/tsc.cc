@@ -101,9 +101,6 @@ int main(int argc, char** argv) {
 
     Client myc(hostname, username, port);
 
-    // You MUST invoke "run_client" function to start business logic
-    myc.run_client();
-
     if(!file.empty()) {
         std::cout << "processing file..." << std::endl;
         std::ifstream input(file);
@@ -127,6 +124,9 @@ int main(int argc, char** argv) {
         myc.commands = commands;
         myc.posts = posts;
     }
+
+    // You MUST invoke "run_client" function to start business logic
+    myc.run_client();
 
     return 0;
 }
@@ -387,12 +387,18 @@ int Client::Timeline(const std::string& username) {
             stub_SNSS_->Timeline(&context));
 
     //Thread used to read chat messages and send them to the server
-    std::thread writer([username, stream]() {
+    std::thread writer([username, stream, this]() {
             std::string input = "Set Stream";
             Message m = MakeMessage(username, input);
             stream->Write(m);
             while (1) {
-            input = getPostMessage();
+            if(this->posts.size() != 0) {
+                input = this->posts[0];
+                std::cout << this->posts[0] << std::endl;
+                this->posts.erase(this->posts.begin()); 
+            } else {
+                input = getPostMessage();
+            }
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
                 // Stream has error

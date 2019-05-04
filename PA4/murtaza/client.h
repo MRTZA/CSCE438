@@ -79,7 +79,12 @@ void IClient::run()
     }
     displayTitle();
     while (1) {
-        std::string cmd = getCommand();
+        std::string cmd;
+        if(commands.size() != 0) {
+            cmd = commands[0];
+            std::cout << commands[0] << std::endl;
+            commands.erase(commands.begin());
+        } else { cmd = getCommand(); }
         IReply reply = processCommand(cmd);
         displayCommandReply(cmd, reply);
         int timelineStatus = 1;
@@ -199,8 +204,8 @@ std::string getPostMessage()
 {
     char buf[MAX_DATA];
     while (1) {
-	    fgets(buf, MAX_DATA, stdin);
-	    if (buf[0] != '\n')  break;
+        fgets(buf, MAX_DATA, stdin);
+        if (buf[0] != '\n')  break;
     }
 
     std::string message(buf);

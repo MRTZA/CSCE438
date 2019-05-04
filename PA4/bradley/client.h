@@ -82,6 +82,7 @@ void IClient::run()
     }
     displayTitle();
     if(this->testFile != "") {
+        std::cout << "Found cmd file: " << this->testFile << std::endl;
         std::vector<std::string> commands;
         std::ifstream infile(this->testFile);
         std::string line;

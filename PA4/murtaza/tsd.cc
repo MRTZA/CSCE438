@@ -41,6 +41,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include <string>
 #include <stdlib.h>
@@ -164,6 +165,7 @@ void write_client_db() {
 }
 
 void read_user_list() {
+  std::cout << "reading..." << std::endl;
   std::ifstream pFile("user_list.txt");
 
   if(pFile.peek() == std::ifstream::traits_type::eof()) {
@@ -218,7 +220,7 @@ void read_user_list() {
         }
 
         for(std::string s : vect) {
-          std::cout << s << std::endl;
+          std::cout << "following: " << s << std::endl;
         }
       }
       // following

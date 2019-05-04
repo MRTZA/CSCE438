@@ -67,6 +67,7 @@ message Message {
 service HealthService {
 
   rpc Check(HealthCheckRequest) returns (HealthCheckResponse);
+  rpc Update(UpdateRequest) returns (UpdateResponse);
 }
 
 message HealthCheckRequest {
@@ -92,4 +93,14 @@ message ServerInfoResponse {
 
 message Reply {
   string msg = 1;
+}
+
+message UpdateRequest {
+  string command = 1;
+  string post = 2;
+  string client = 3;
+}
+
+message UpdateResponse {
+  int32 recieved = 1;
 }

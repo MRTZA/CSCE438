@@ -41,6 +41,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <memory>
 #include <string>
 #include <stdlib.h>
@@ -72,6 +73,8 @@ using csce438::SNSService;
 using csce438::HealthService;
 using csce438::HealthCheckRequest;
 using csce438::HealthCheckResponse;
+using csce438::UpdateRequest;
+using csce438::UpdateResponse;
 using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
@@ -81,6 +84,7 @@ using csce438::ServerInfoResponse;
 #define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
+#define DBG_UDT 1
 #define DBG_RTR 1
 
 #define SLP_SLV 4
@@ -116,6 +120,9 @@ std::unique_ptr<HealthService::Stub> MasterTwostub_;
 //Only used if you're the slave server
 std::unique_ptr<HealthService::Stub> Masterstub_;
 
+//Only used if you're the master server
+std::unique_ptr<HealthService::Stub> Routerstub_;
+
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
 
@@ -144,6 +151,117 @@ int find_user(std::string username){
   return -1;
 }
 
+void write_client_db() {
+  std::ofstream out("user_list.txt");
+
+  for(Client c : client_db) {
+    out << "STARTCLIENT\n";
+    // first line is the username
+    out << c.username << "\n";
+
+    // second line is the followers
+    for(Client *x : c.client_followers) {
+      out << x->username << ",";
+    }
+    out << "\n";
+
+    // third line is the following
+    for (Client *x : c.client_following) {
+      out << x->username << ",";
+    }
+
+    out << "\nENDCLIENT\n";
+  }
+
+  out.close();
+}
+
+void read_user_list() {
+  std::ifstream pFile("user_list.txt");
+
+  if(pFile.peek() == std::ifstream::traits_type::eof()) {
+    return;
+  }
+  else {
+    std::string line;
+    int row = 0;
+    // first pass checks all clients in local db
+    while (std::getline(pFile, line))
+    { 
+      // client's name
+      if(row == 1) {
+        int i = find_user(line);
+        // add the client to the db
+        if(i < 0) {
+          Client c;
+          c.username = line;
+          c.connected = false;
+          client_db.push_back(c);
+        }
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
+    }
+    pFile.close();
+
+    // second pass through file updates info
+    std::ifstream p2File("user_list.txt");
+    row = 0;
+    std::string curr_client;
+    while (std::getline(p2File, line))
+    { 
+      // client's name
+      if(row == 1) {
+        curr_client = line;
+      }
+      // followers
+      if(row == 2) {
+        std::vector<std::string> vect;
+
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
+        }
+
+        for(std::string s : vect) {
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_followers.push_back(user);
+        }
+      }
+      // following
+      if(row == 3) {
+        std::vector<std::string> vect;
+
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
+        }
+
+        for(std::string s : vect) {
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_following.push_back(user);
+        }
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
+    }
+    p2File.close();
+  }
+  return;
+}
+
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
     
@@ -159,7 +277,60 @@ class HealthServiceImpl final : public HealthService::Service {
     }
     return Status::OK;
   }
+
+  Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
+    if(server_db.myRole == "router") {
+      //router recieved an update that it needs to send out
+      ClientContext contextOne;
+      ClientContext contextTwo;
+      ClientContext contextThree;
+
+      UpdateResponse replyOne;
+      UpdateResponse replyTwo;
+      UpdateResponse replyThree;
+
+      MasterOnestub_->Update(&contextOne, *request, &replyOne);
+      MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
+      MasterThreestub_->Update(&contextThree, *request, &replyThree);
+    }
+    else if(server_db.myRole == "master") {
+      // master recieved and update
+      if(request->command() == "post") {
+        int i = find_user(request->client());
+        Client *c = &client_db[i];
+        Message m;
+        m.set_msg(request->post());
+        std::vector<Client*>::const_iterator it;
+        for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {
+          Client *temp_client = *it;
+          if(temp_client->stream!=0 && temp_client->connected) {
+            temp_client->stream->Write(m);
+          }
+        }
+      }
+      else {
+        read_user_list();
+      }
+    }
+    if(DBG_UDT) {
+      std::cout << "Udpate response sent" << std::endl;
+    }
+    return Status::OK;
+  }
 };
+
+void Update(std::string command, std::string post, std::string client) {
+  UpdateRequest request;
+  request.set_command(command);
+  request.set_post(post);
+  request.set_client(client);
+  UpdateResponse reply;
+  ClientContext context;
+
+  Status status = Routerstub_->Update(&context, request, &reply);
+
+  return;
+}
 
 std::string findConnectionInfo() {
   auto serversInfo = CheckServers();
@@ -244,6 +415,8 @@ class SNSServiceImpl final : public SNSService::Service {
       user2->client_followers.push_back(user1);
       reply->set_msg("Join Successful");
     }
+    write_client_db();
+    Update("follow", "n/a", "n/a");
     return Status::OK; 
   }
 
@@ -264,6 +437,8 @@ class SNSServiceImpl final : public SNSService::Service {
       user2->client_followers.erase(find(user2->client_followers.begin(), user2->client_followers.end(), user1));
       reply->set_msg("Leave Successful");
     }
+    write_client_db();
+    Update("unfollow", "n/a", "n/a");
     return Status::OK;
   }
   
@@ -275,6 +450,25 @@ class SNSServiceImpl final : public SNSService::Service {
       c.username = username;
       client_db.push_back(c);
       reply->set_msg("Login Successful!");
+      
+      // update the shared db with the new client
+      std::ofstream outfile;
+      outfile.open("user_list.txt", std::ios::app);
+
+      outfile << "STARTCLIENT\n";
+      // first line is the username
+      outfile << c.username << "\n";
+      // second line is the followers
+      for(Client *x : c.client_followers) {
+        outfile << x->username << ",";
+      }
+      outfile << "\n";
+      // third line is the following
+      for (Client *x : c.client_following) {
+        outfile << x->username << ",";
+      }
+      outfile << "\nENDCLIENT\n";
+      outfile.close();
     }
     else{ 
       Client *user = &client_db[user_index];
@@ -348,6 +542,7 @@ class SNSServiceImpl final : public SNSService::Service {
     std::ofstream user_file(temp_username + ".txt",std::ios::app|std::ios::out|std::ios::in);
           user_file << fileinput;
         }
+      Update("post", fileinput, message.username());
       }
       //If the client disconnected from Chat Mode, set connected to false
       c->connected = false;
@@ -399,13 +594,15 @@ std::map<std::string, int> CheckServers() {
   ClientContext context3;
   std::map<std::string, int> serversInfo;
   
-  Status status;
+  Status status1;
+  Status status1;
+  Status status1;
 
   if(DBG_RTR == 1)
     std::cout << "CheckServers Stop One" << std::endl;
   // Check the status of all of the servers and get the num user connected
-  status = MasterOnestub_->Check(&context1, request, &reply);
-  if(status.ok()) {
+  status1 = MasterOnestub_->Check(&context1, request, &reply);
+  if(status1.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
@@ -415,8 +612,8 @@ std::map<std::string, int> CheckServers() {
   if(DBG_RTR == 1)
     std::cout << "CheckServers Stop Two" << std::endl;
 
-  status = MasterTwostub_->Check(&context2, request, &reply);
-  if(status.ok()) {
+  status2 = MasterTwostub_->Check(&context2, request, &reply);
+  if(status2.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
@@ -425,8 +622,8 @@ std::map<std::string, int> CheckServers() {
 
   if(DBG_RTR == 1)
     std::cout << "CheckServers Stop Three" << std::endl;
-  status = MasterThreestub_->Check(&context3, request, &reply);
-  if(status.ok()) {
+  status3 = MasterThreestub_->Check(&context3, request, &reply);
+  if(status3.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
@@ -459,6 +656,11 @@ void Connect_To() {
     Masterstub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
       grpc::CreateChannel(
         hostname, grpc::InsecureChannelCredentials()))); 
+  }
+  if(server_db.myRole == "master") {
+    Routerstub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
+      grpc::CreateChannel(
+        server_db.routingServer, grpc::InsecureChannelCredentials()))); 
   }
   return;
 }
@@ -501,7 +703,7 @@ void RunServer(std::string port_no) {
         } else if (pid == 0) {
           //We are the child
           char* command = "./tsd";
-          char* args[6];
+          char* args[7];
           args[0] = "./tsd";
           std::string arg = "-p " + server_db.otherPort;
           args[1] = (char*)arg.c_str();
@@ -509,7 +711,9 @@ void RunServer(std::string port_no) {
           std::string arg2 = "-o " + server_db.myPort;
           args[3] = (char*)arg2.c_str();
           args[4] = "&";
-          args[5] = NULL;
+          std::string arg3 = "-s " + server_db.routingServer;
+          args[5] = (char*)arg3.c_str();
+          args[6] = NULL;
           if(execvp(command,args) < 0) {
             //error msg
             //exec failed
@@ -520,6 +724,9 @@ void RunServer(std::string port_no) {
       }
       sleep(SLP_SLV);
     }
+  }
+  if(server_db.myRole == "master") {
+    read_user_list();
   }
 
   server->Wait();

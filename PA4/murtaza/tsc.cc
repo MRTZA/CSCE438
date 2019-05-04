@@ -50,7 +50,7 @@ class Client : public IClient
                const std::string& p)
             :hostname(hname), username(uname), port(p)
             {}
-        
+        virtual IReply processCommand(std::string& input);
     protected:
         virtual int connectTo();
         virtual int connectToBackup();
@@ -75,8 +75,6 @@ class Client : public IClient
         IReply Follow(const std::string& username2);
         IReply UnFollow(const std::string& username2);
         int Timeline(const std::string& username);
-
-        virtual IReply processCommand(std::string& input);
 
 
 };
@@ -121,7 +119,7 @@ int main(int argc, char** argv) {
             else {
                 commands.push_back(line);
             }
-            if(0 == strcmpi(line, "TIMELINE")) {
+            if(0 == std::strcmpi(line, "TIMELINE")) {
                 isPosts = true;
             }
         }

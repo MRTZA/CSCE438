@@ -58,6 +58,7 @@ class IClient
         virtual int connectTo() = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual int processTimeline() = 0;
+        std::string testFile;
 
     private:
 
@@ -77,6 +78,10 @@ void IClient::run()
         exit(1);
     }
     displayTitle();
+    if(this->testFile != "") {
+        
+    }
+
     while (1) {
         std::string cmd = getCommand();
         IReply reply = processCommand(cmd);

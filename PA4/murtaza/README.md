@@ -14,5 +14,5 @@ To run the servers:
 
 To run the client:  
 
-    ./tsc -h host_addr -p 3010 -u user1
+    ./tsc -h host_addr -p 3010 -u user1 -s testcommands.txt
 

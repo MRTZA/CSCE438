@@ -283,7 +283,7 @@ class HealthServiceImpl final : public HealthService::Service {
         Message m;
         m.set_username(request->client());
         m.set_msg(request->post());
-        google::protobuf::Timestamp* timestamp = request->timestamp();
+        google::protobuf::Timestamp* timestamp(request->timestamp());
         m.set_allocated_timestamp(timestamp);
         std::vector<Client*>::const_iterator it;
         for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {

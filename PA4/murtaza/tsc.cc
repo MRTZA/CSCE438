@@ -4,7 +4,9 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <fstream>
 #include <unistd.h>
+#include <boost/algorithm/string.hpp>
 #include <grpc++/grpc++.h>
 #include "client.h"
 
@@ -36,6 +38,8 @@ Message MakeMessage(const std::string& username, const std::string& msg) {
     m.set_allocated_timestamp(timestamp);
     return m;
 }
+
+std::vector<std::string> posts;
 
 class Client : public IClient
 {
@@ -79,8 +83,9 @@ int main(int argc, char** argv) {
     std::string hostname = "localhost";
     std::string username = "default";
     std::string port = "3010";
+    std::string file = "";
     int opt = 0;
-    while ((opt = getopt(argc, argv, "h:u:p:")) != -1){
+    while ((opt = getopt(argc, argv, "h:u:p:s:")) != -1){
         switch(opt) {
             case 'h':
                 hostname = optarg;break;
@@ -88,6 +93,8 @@ int main(int argc, char** argv) {
                 username = optarg;break;
             case 'p':
                 port = optarg;break;
+            case 's':
+                file = optarg;break;
             default:
                 std::cerr << "Invalid Command Line Argument\n";
         }
@@ -97,6 +104,29 @@ int main(int argc, char** argv) {
 
     // You MUST invoke "run_client" function to start business logic
     myc.run_client();
+
+    if(!file.empty()) {
+        std::ifstream input(file);
+        std::vector<std::string> commands;
+
+        bool isPosts = false;
+        while(std::getline(input, line)) {
+            if(isPosts) {
+                posts.push_back(line);
+            }
+            else {
+                commands.push_back(line);
+            }
+            if(boost::iequals(line, "timeline")) {
+                isPosts = true;
+            }
+        }
+
+        input.close();
+        for(std::string c : commands) {
+            myc.processCommand(c);
+        }
+    }
 
     return 0;
 }

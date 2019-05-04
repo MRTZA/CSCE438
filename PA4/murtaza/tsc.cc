@@ -386,16 +386,15 @@ int Client::Timeline(const std::string& username) {
     std::shared_ptr<ClientReaderWriter<Message, Message>> stream(
             stub_SNSS_->Timeline(&context));
 
-    std::vector<std::string> p = posts;
     //Thread used to read chat messages and send them to the server
-    std::thread writer([username, stream, p]() {
+    std::thread writer([username, stream, this]() {
             std::string input = "Set Stream";
             Message m = MakeMessage(username, input);
             stream->Write(m);
             while (1) {
-            if(posts.size() != 0) {
-                input = p[0];
-                p.erase(p.begin()); 
+            if(this->posts.size() != 0) {
+                input = this->posts[0];
+                this->posts.erase(this->posts.begin()); 
             } else {
                 input = getPostMessage();
             }

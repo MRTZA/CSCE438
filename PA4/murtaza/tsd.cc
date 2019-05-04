@@ -726,6 +726,7 @@ void RunServer(std::string port_no) {
     }
   }
   if(server_db.myRole == "master") {
+    Connect_To();
     read_user_list();
   }
 

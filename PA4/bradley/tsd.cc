@@ -81,7 +81,7 @@ using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
 #define DBG_CLI 1
-#define DBG_HBT 0
+#define DBG_HBT 1
 #define DBG_RST 0
 #define DBG_CLT 0
 #define DBG_UDT 1
@@ -605,7 +605,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterOne",-2));
+    serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
   }
 
   if(DBG_RTR == 1)

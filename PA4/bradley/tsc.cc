@@ -131,6 +131,10 @@ int Client::connectTo()
                grpc::CreateChannel(
                     currentConnection, grpc::InsecureChannelCredentials())));
     
+    if(DBG_CON) {
+        std::cout << "Stub to master created" << std::endl;
+    }
+
     IReply ire = Login();
     if(!ire.grpc_status.ok()) {
         return -1;

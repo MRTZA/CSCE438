@@ -219,6 +219,8 @@ void read_user_list() {
             if (ss.peek() == ',') {
               ss.ignore();
             }
+
+            i = "";
         }
 
         for(std::string s : vect) {

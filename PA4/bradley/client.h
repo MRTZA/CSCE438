@@ -1,5 +1,7 @@
 #include <iostream>
 #include <string>
+#include <sstream>
+#include <fstream>
 #include <ctime>
 #include <vector>
 #include <grpc++/grpc++.h>
@@ -79,7 +81,17 @@ void IClient::run()
     }
     displayTitle();
     if(this->testFile != "") {
-        
+        std::vector<std::string> commands;
+        std::ifstream infile(this->testFile);
+        std::string line;
+        int index = 0;
+        int start;
+        while(std::getline(infile, line)) {
+            if(line == "TIMELINE")
+                start = index;
+            commands.push_back(line);
+            index++;
+        }
     }
 
     while (1) {

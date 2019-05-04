@@ -88,7 +88,7 @@ using csce438::ServerInfoResponse;
 #define DBG_RTR 1
 
 #define SLP_SLV 4
-#define SLP_RTR 1
+#define SLP_RTR 0
 
 struct Client {
   std::string username;
@@ -228,6 +228,7 @@ void read_user_list() {
             line.erase(0, pos + 1);
         }
 
+        curr->client_followers.clear();
         for(std::string s : vect) {
           Client *user = &client_db[find_user(s)];
           Client *curr = &client_db[find_user(curr_client)];
@@ -246,6 +247,7 @@ void read_user_list() {
             line.erase(0, pos + 1);
         }
 
+        curr->client_following.clear();
         for(std::string s : vect) {
           Client *user = &client_db[find_user(s)];
           Client *curr = &client_db[find_user(curr_client)];

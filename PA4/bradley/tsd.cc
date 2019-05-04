@@ -152,13 +152,14 @@ class HealthServiceImpl final : public HealthService::Service {
 
 std::string findConnectionInfo() {
   auto serversInfo = CheckServers();
-  std::string master;
-  std::string slave;
+  std::string master = "!";
+  std::string slave = "!";
   int min1 = INT_MAX;
   int min2 = INT_MAX;
   for(auto entry : serversInfo) {
     if(entry.second < min1 && entry.second >= 0) {
       min2 = min1;
+      entry.second = master;
       min1 = entry.second;
       master = entry.first;
     } else if(entry.second < min2 && entry.first != slave && entry.second >= 0) {

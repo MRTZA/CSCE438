@@ -356,6 +356,10 @@ IReply Client::Login() {
     if(!status.ok()) {
         std::cout << "Connection failed, reconnecting..." << std::endl;
     }
+
+    if(DBG_CON) {
+        std::cout << "We were able to connect to master" << std::endl;
+    }
     IReply ire;
     ire.grpc_status = status;
     if (reply.msg() == "you have already joined") {

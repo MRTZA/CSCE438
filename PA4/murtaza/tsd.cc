@@ -260,7 +260,7 @@ class HealthServiceImpl final : public HealthService::Service {
     return Status::OK;
   }
 
-  Status Update(ServerContext* context, UpdateRequest* request, UpdateResponse* response) override {
+  Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
       // router recieved an update that it needs to send out
       // ClientContext contextOne;
@@ -283,7 +283,7 @@ class HealthServiceImpl final : public HealthService::Service {
         Message m;
         m.set_username(request->client());
         m.set_msg(request->post());
-        google::protobuf::Timestamp* timestamp(request->timestamp());
+        const google::protobuf::Timestamp* timestamp(request->timestamp());
         m.set_allocated_timestamp(timestamp);
         std::vector<Client*>::const_iterator it;
         for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {

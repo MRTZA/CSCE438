@@ -147,6 +147,8 @@ int Client::connectToBackup() {
         currentConnection = masterInfo;
     }
 
+    std::cout << "Connecting to server at: " << currentConnection << std::endl;
+
     stub_SNSS_ = std::unique_ptr<SNSService::Stub>(SNSService::NewStub(
                grpc::CreateChannel(
                     currentConnection, grpc::InsecureChannelCredentials())));

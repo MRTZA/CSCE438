@@ -159,7 +159,7 @@ std::string findConnectionInfo() {
   for(auto entry : serversInfo) {
     if(entry.second < min1 && entry.second >= 0) {
       min2 = min1;
-      entry.second = master;
+      slave = master;
       min1 = entry.second;
       master = entry.first;
     } else if(entry.second < min2 && entry.first != slave && entry.second >= 0) {

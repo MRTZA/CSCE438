@@ -605,7 +605,7 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
     //If server is down then we return -1 as the num of users connected
-    serversInfo.insert(std::pair<std::string, int>("masterOne",-2));
+    serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
   }
 
   if(DBG_RTR == 1)

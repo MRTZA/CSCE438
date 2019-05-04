@@ -219,7 +219,7 @@ void read_user_list() {
         }
 
         for(std::string s : vect) {
-          std::cout << s << std::endl;
+          std::cout << "following: " << s << std::endl;
         }
       }
       // following

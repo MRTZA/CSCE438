@@ -165,6 +165,7 @@ void write_client_db() {
 }
 
 void read_user_list() {
+  std::cout << "reading..." << std::endl;
   std::ifstream pFile("user_list.txt");
 
   if(pFile.peek() == std::ifstream::traits_type::eof()) {

@@ -183,7 +183,8 @@ void read_user_list() {
         // add the client to the db
         if(i < 0) {
           Client c;
-          c.username = username;
+          c.username = line;
+          c.connected = false;
           client_db.push_back(c);
         }
       }

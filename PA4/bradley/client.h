@@ -60,6 +60,7 @@ class IClient
         virtual int connectTo() = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual int processTimeline() = 0;
+        virtual int processTimeline(const std::vector<std::string>& commands, int start) = 0;
         std::string testFile;
 
     private:
@@ -93,7 +94,7 @@ void IClient::run()
             index++;
         }
         for(int i = 0; i < start; i++) {
-            cmd = commands.at(i);
+            std::string cmd = commands.at(i);
             IReply reply = processCommand(cmd);
             displayCommandReply(cmd, reply);
             int timelineStatus = 1;

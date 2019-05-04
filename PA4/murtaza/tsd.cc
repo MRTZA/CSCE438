@@ -165,7 +165,6 @@ void write_client_db() {
 }
 
 void read_user_list() {
-  std::cout << "reading..." << std::endl;
   std::ifstream pFile("user_list.txt");
 
   if(pFile.peek() == std::ifstream::traits_type::eof()) {
@@ -262,18 +261,18 @@ class HealthServiceImpl final : public HealthService::Service {
 
   Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
-      // router recieved an update that it needs to send out
-      // ClientContext contextOne;
-      // ClientContext contextTwo;
-      // ClientContext contextThree;
+      //router recieved an update that it needs to send out
+      ClientContext contextOne;
+      ClientContext contextTwo;
+      ClientContext contextThree;
 
-      // UpdateResponse replyOne;
-      // UpdateResponse replyTwo;
-      // UpdateResponse replyThree;
+      UpdateResponse replyOne;
+      UpdateResponse replyTwo;
+      UpdateResponse replyThree;
 
-      // MasterOnestub_->Update(&contextOne, request, &replyOne);
-      // MasterTwostub_->Update(&contextTwo, request, &replyTwo);
-      // MasterThreestub_->Update(&contextThree, request, &replyThree);
+      MasterOnestub_->Update(&contextOne, *request, &replyOne);
+      MasterTwostub_->Update(&contextTwo, *request, &replyTwo);
+      Availablestub_->Update(&contextThree, *request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
@@ -281,10 +280,7 @@ class HealthServiceImpl final : public HealthService::Service {
         int i = find_user(request->client());
         Client *c = &client_db[i];
         Message m;
-        m.set_username(request->client());
         m.set_msg(request->post());
-        google::protobuf::Timestamp* timestamp(const_cast<google::protobuf::Timestam*>request->timestamp());
-        m.set_allocated_timestamp(timestamp);
         std::vector<Client*>::const_iterator it;
         for(it = c->client_followers.begin(); it!=c->client_followers.end(); it++) {
           Client *temp_client = *it;
@@ -303,6 +299,19 @@ class HealthServiceImpl final : public HealthService::Service {
     return Status::OK;
   }
 };
+
+void Update(std::string command, std::string post, std::string client) {
+  UpdateRequest request;
+  request.set_command(command);
+  request.set_post(post);
+  request.set_client(client);
+  UpdateResponse reply;
+  ClientContext context;
+
+  Status status = Routerstub_->Update(&context, request, &reply);
+
+  return;
+}
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
@@ -348,6 +357,7 @@ class SNSServiceImpl final : public SNSService::Service {
       reply->set_msg("Join Successful");
     }
     write_client_db();
+    Update("follow", "n/a", "n/a");
     return Status::OK; 
   }
 
@@ -369,6 +379,7 @@ class SNSServiceImpl final : public SNSService::Service {
       reply->set_msg("Leave Successful");
     }
     write_client_db();
+    Update("unfollow", "n/a", "n/a");
     return Status::OK;
   }
   
@@ -472,6 +483,7 @@ class SNSServiceImpl final : public SNSService::Service {
 	std::ofstream user_file(temp_username + ".txt",std::ios::app|std::ios::out|std::ios::in);
         user_file << fileinput;
       }
+      Update("post", fileinput, message.username());
     }
     //If the client disconnected from Chat Mode, set connected to false
     c->connected = false;

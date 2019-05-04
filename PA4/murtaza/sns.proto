@@ -98,7 +98,6 @@ message UpdateRequest {
   string command = 1;
   string post = 2;
   string client = 3;
-  google.protobuf.Timestamp timestamp = 4;
 }
 
 message UpdateResponse {

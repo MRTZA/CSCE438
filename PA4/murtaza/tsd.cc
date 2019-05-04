@@ -262,18 +262,18 @@ class HealthServiceImpl final : public HealthService::Service {
 
   Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
-      // router recieved an update that it needs to send out
-      // ClientContext contextOne;
-      // ClientContext contextTwo;
-      // ClientContext contextThree;
+      router recieved an update that it needs to send out
+      ClientContext contextOne;
+      ClientContext contextTwo;
+      ClientContext contextThree;
 
-      // UpdateResponse replyOne;
-      // UpdateResponse replyTwo;
-      // UpdateResponse replyThree;
+      UpdateResponse replyOne;
+      UpdateResponse replyTwo;
+      UpdateResponse replyThree;
 
-      // MasterOnestub_->Update(&contextOne, request, &replyOne);
-      // MasterTwostub_->Update(&contextTwo, request, &replyTwo);
-      // MasterThreestub_->Update(&contextThree, request, &replyThree);
+      MasterOnestub_->Update(&contextOne, request, &replyOne);
+      MasterTwostub_->Update(&contextTwo, request, &replyTwo);
+      Availablestub_->Update(&contextThree, request, &replyThree);
     }
     else if(server_db.myRole == "master") {
       // master recieved and update
@@ -476,6 +476,19 @@ class SNSServiceImpl final : public SNSService::Service {
   }
 
 };
+
+void Update(std::string command, std::string post, std::string client) {
+  UpdateRequest request;
+  request.set_command(command);
+  request.set_post(post);
+  request.set_client(client);
+  UpdateResponse reply;
+  ClientContext context;
+
+  Status status = Routerstub_->Update(&context, request, &reply);
+
+  return;
+}
 
 //Returns the status of the server
 int Check(std::string server) {

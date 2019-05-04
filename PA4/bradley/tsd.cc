@@ -161,7 +161,7 @@ std::string findConnectionInfo() {
       min2 = min1;
       min1 = entry.second;
       master = entry.first;
-    } else if(entry.second < min2 && entry.second != min1 && entry.second >= 0) {
+    } else if(entry.second < min2 && entry.first != slave && entry.second >= 0) {
       min2 = entry.second;
       slave = entry.first;
     }

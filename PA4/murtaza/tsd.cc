@@ -216,6 +216,10 @@ void read_user_list() {
               ss.ignore();
             }
         }
+
+        for(std::string s : vect) {
+          std::cout << s << std::endl;
+        }
       }
       // following
       if(row == 3) {

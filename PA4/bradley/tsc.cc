@@ -24,7 +24,7 @@ using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
 
-#define DBG_CON 0
+#define DBG_CON 1
 
 Message MakeMessage(const std::string& username, const std::string& msg) {
     Message m;
@@ -112,9 +112,9 @@ int Client::connectTo()
                     login_info, grpc::InsecureChannelCredentials())));
     
     std::cout << "routing stub created" << std::endl;
-    sleep(1);
+    // sleep(1);
     // Get connection info from the routing server
-    std::cout << SayHi() << std::endl;
+    // std::cout << SayHi() << std::endl;
     std::string serversInfo = GetConnectInfo();
     std::cout << "routing server info retrieved: " << serversInfo << std::endl;
     std::stringstream ss(serversInfo);

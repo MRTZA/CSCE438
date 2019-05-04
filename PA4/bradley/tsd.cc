@@ -479,7 +479,7 @@ void RunServer(std::string port_no) {
     while(1) {
       Status err = Check("master");
       if(DBG_HBT == 1)
-        std::cout << "==> " << err << std::endl;
+        std::cout << "==> " << err.ok() << std::endl;
       // If the status of the check is not okay then we restart master
       if(!err.ok()) {
         pid_t pid;

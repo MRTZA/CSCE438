@@ -165,7 +165,6 @@ void write_client_db() {
 }
 
 void read_user_list() {
-  std::cout << "reading..." << std::endl;
   std::ifstream pFile("user_list.txt");
 
   if(pFile.peek() == std::ifstream::traits_type::eof()) {
@@ -301,6 +300,19 @@ class HealthServiceImpl final : public HealthService::Service {
   }
 };
 
+void Update(std::string command, std::string post, std::string client) {
+  UpdateRequest request;
+  request.set_command(command);
+  request.set_post(post);
+  request.set_client(client);
+  UpdateResponse reply;
+  ClientContext context;
+
+  Status status = Routerstub_->Update(&context, request, &reply);
+
+  return;
+}
+
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     std::string ip = server_db.masterData.find("available")->second;
@@ -345,6 +357,7 @@ class SNSServiceImpl final : public SNSService::Service {
       reply->set_msg("Join Successful");
     }
     write_client_db();
+    Update("follow", "n/a", "n/a");
     return Status::OK; 
   }
 
@@ -366,6 +379,7 @@ class SNSServiceImpl final : public SNSService::Service {
       reply->set_msg("Leave Successful");
     }
     write_client_db();
+    Update("unfollow", "n/a", "n/a");
     return Status::OK;
   }
   
@@ -469,6 +483,7 @@ class SNSServiceImpl final : public SNSService::Service {
 	std::ofstream user_file(temp_username + ".txt",std::ios::app|std::ios::out|std::ios::in);
         user_file << fileinput;
       }
+      Update("post", fileinput, message.username());
     }
     //If the client disconnected from Chat Mode, set connected to false
     c->connected = false;
@@ -476,19 +491,6 @@ class SNSServiceImpl final : public SNSService::Service {
   }
 
 };
-
-void Update(std::string command, std::string post, std::string client) {
-  UpdateRequest request;
-  request.set_command(command);
-  request.set_post(post);
-  request.set_client(client);
-  UpdateResponse reply;
-  ClientContext context;
-
-  Status status = Routerstub_->Update(&context, request, &reply);
-
-  return;
-}
 
 //Returns the status of the server
 int Check(std::string server) {

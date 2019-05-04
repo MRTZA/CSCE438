@@ -46,7 +46,6 @@ class Client : public IClient
                const std::string& testFile)
             :hostname(hname), username(uname), port(p), testFile(testFile)
             {}
-        std::string testFile;
     protected:
         virtual int connectTo();
         virtual int connectToBackup();

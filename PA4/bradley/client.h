@@ -67,6 +67,7 @@ class IClient
         std::string getCommand() const;
         void displayCommandReply(const std::string& comm, const IReply& reply) const;
         void toUpperCase(std::string& str) const;
+        std::string testFile;
 };
 
 void IClient::run()
@@ -77,6 +78,9 @@ void IClient::run()
         exit(1);
     }
     displayTitle();
+    if(this->testFile != "") {
+        
+    }
 
     while (1) {
         std::string cmd = getCommand();

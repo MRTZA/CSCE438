@@ -394,7 +394,7 @@ int Client::Timeline(const std::string& username) {
             while (1) {
             if(this->posts.size() != 0) {
                 input = this->posts[0];
-                std::cout << posts[0] << std::endl;
+                std::cout << this->posts[0] << std::endl;
                 this->posts.erase(this->posts.begin()); 
             } else {
                 input = getPostMessage();

@@ -233,7 +233,7 @@ void read_user_list() {
       row++;
     }
   }
-
+  return;
 }
 
 class HealthServiceImpl final : public HealthService::Service {
@@ -619,6 +619,7 @@ int main(int argc, char** argv) {
   }
   server_db.myPort = port;
   Connect_To();
+  read_user_list();
 
   if(DBG_CLI) {
     std::cout << "Role: " << server_db.myRole << std::endl

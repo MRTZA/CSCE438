@@ -88,7 +88,7 @@ using csce438::ServerInfoResponse;
 #define DBG_RTR 1
 
 #define SLP_SLV 4
-#define SLP_RTR 2
+#define SLP_RTR 4
 
 struct Client {
   std::string username;

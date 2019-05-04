@@ -220,7 +220,7 @@ void read_user_list() {
         for(std::string s : vect) {
           Client *user = &client_db[find_user(s)];
           Client *curr = &client_db[find_user(curr_client)];
-          curr->followers.push_back(user);
+          curr->client_followers.push_back(user);
         }
       }
       // following
@@ -238,7 +238,7 @@ void read_user_list() {
         for(std::string s : vect) {
           Client *user = &client_db[find_user(s)];
           Client *curr = &client_db[find_user(curr_client)];
-          curr->following.push_back(user);
+          curr->client_following.push_back(user);
         }
       }
       if(line == "STARTCLIENT") {

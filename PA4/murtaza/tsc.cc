@@ -392,7 +392,12 @@ int Client::Timeline(const std::string& username) {
             Message m = MakeMessage(username, input);
             stream->Write(m);
             while (1) {
-            input = getPostMessage();
+            if(posts.size() != 0) {
+                input = posts[0];
+                posts.erase(posts.begin()); 
+            } else {
+                input = getPostMessage();
+            }
             m = MakeMessage(username, input);
             if(!stream->Write(m)) {
                 // Stream has error

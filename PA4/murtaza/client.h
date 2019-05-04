@@ -203,14 +203,8 @@ std::string getPostMessage()
 {
     char buf[MAX_DATA];
     while (1) {
-        if(posts.size() != 0) {
-            fgets(buf, MAX_DATA, posts[0]);
-            posts.erase(posts.begin()); 
-            if (buf[0] != '\n')  break;  
-        } else {
-            fgets(buf, MAX_DATA, stdin);
-            if (buf[0] != '\n')  break;
-        }
+        fgets(buf, MAX_DATA, stdin);
+        if (buf[0] != '\n')  break;
     }
 
     std::string message(buf);

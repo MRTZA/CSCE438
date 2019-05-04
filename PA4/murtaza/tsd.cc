@@ -183,7 +183,8 @@ void read_user_list() {
         // add the client to the db
         if(i < 0) {
           Client c;
-          c.username = username;
+          c.username = line;
+          c.connected = false;
           client_db.push_back(c);
         }
       }
@@ -195,10 +196,10 @@ void read_user_list() {
     pFile.close();
 
     // second pass through file updates info
-    pFile.open();
+    std::ifstream p2File("user_list.txt");
     row = 0;
     std::string curr_client;
-    while (std::getline(pFile, line))
+    while (std::getline(p2File, line))
     { 
       // client's name
       if(row == 1) {
@@ -211,7 +212,8 @@ void read_user_list() {
         std::string i;
 
         while (ss >> i)
-        {
+        {   
+            i = i.substr(0, i.size()-1);
             vect.push_back(i);
 
             if (ss.peek() == ',') {
@@ -220,7 +222,7 @@ void read_user_list() {
         }
 
         for(std::string s : vect) {
-          std::cout << "following: " << s << std::endl;
+          std::cout << "following: " << s << "-" << std::endl;
         }
       }
       // following
@@ -232,8 +234,9 @@ void read_user_list() {
       }
       row++;
     }
+    p2File.close();
   }
-
+  return;
 }
 
 class HealthServiceImpl final : public HealthService::Service {

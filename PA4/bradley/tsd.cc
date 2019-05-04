@@ -137,11 +137,13 @@ int find_user(std::string username){
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    // if(client_db.size() == 0) {
-    //   response->set_status(-1);
-    // } else {
-      response->set_status(client_db.size());
-    //}
+    
+    //response->set_status(client_db.size());
+    int clientsConnected = 0;
+    for(auto client : client_db)
+      if(client.connected) 
+        clientsConnected++;
+    response->set_status(clientsConnected);
     
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;

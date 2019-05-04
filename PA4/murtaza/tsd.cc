@@ -262,7 +262,7 @@ class HealthServiceImpl final : public HealthService::Service {
 
   Status Update(ServerContext* context, const UpdateRequest* request, UpdateResponse* response) override {
     if(server_db.myRole == "router") {
-      router recieved an update that it needs to send out
+      //router recieved an update that it needs to send out
       ClientContext contextOne;
       ClientContext contextTwo;
       ClientContext contextThree;

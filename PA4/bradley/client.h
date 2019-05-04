@@ -77,7 +77,7 @@ void IClient::run()
         exit(1);
     }
     displayTitle();
-    if(testFile != "") {
+    if(this->testFile != "") {
         
     }
 

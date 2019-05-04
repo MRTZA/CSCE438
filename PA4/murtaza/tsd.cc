@@ -46,11 +46,8 @@
 #include <string>
 #include <stdlib.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <bits/stdc++.h>
 #include <google/protobuf/util/time_util.h>
 #include <grpc++/grpc++.h>
-#include <chrono>
 
 #include "sns.grpc.pb.h"
 
@@ -81,8 +78,6 @@ using csce438::UpdateResponse;
 using csce438::SNSRouter;
 using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
-
-using namespace std;
 
 /* Debug Toggles */
 #define DBG_CLI 1
@@ -157,88 +152,114 @@ int find_user(std::string username){
 }
 
 void write_client_db() {
-  string filename = "userlist.txt";
-  ofstream user_file(filename, ios::trunc | ios::out | ios::in);
-  for (Client *c : client_db)
-  {
-      user_file << c->username << " " << c->following_file_size << endl;
-      vector<Client *>::const_iterator it;
-      for (it = c->client_followers.begin(); it != c->client_followers.end(); it++)
-      {
-          user_file << (*it)->username << " ";
-      }
-      user_file << endl;
-      for (it = c->client_following.begin(); it != c->client_following.end(); it++)
-      {
-          user_file << (*it)->username << " ";
-      }
-      user_file << endl;
+  std::ofstream out("user_list.txt");
+
+  for(Client c : client_db) {
+    out << "STARTCLIENT\n";
+    // first line is the username
+    out << c.username << "\n";
+
+    // second line is the followers
+    for(Client *x : c.client_followers) {
+      out << x->username << ",";
+    }
+    out << "\n";
+
+    // third line is the following
+    for (Client *x : c.client_following) {
+      out << x->username << ",";
+    }
+
+    out << "\nENDCLIENT\n";
   }
+
+  out.close();
 }
 
 void read_user_list() {
-    ifstream in("userlist.txt");
-    map<string, vector<string>> followers;
-    map<string, vector<string>> followings;
+  std::ifstream pFile("user_list.txt");
 
-    string line1;
-    while (getline(in, line1))
-    {
-        Client *c = new Client();
-        stringstream s_line1(line1);
-        string username;
-        string file_size;
-
-        getline(s_line1, username, ' ');
-        getline(s_line1, file_size, ' ');
-        c->username = username;
-        c->following_file_size = atoi(file_size.c_str());
-        client_db.push_back(c);
-
-        string line2, line3, item;
-        vector<string> v_followers, v_followings;
-        getline(in, line2);
-        stringstream s_line2(line2);
-        while (getline(s_line2, item, ' '))
-        {
-            v_followers.push_back(item);
+  if(pFile.peek() == std::ifstream::traits_type::eof()) {
+    return;
+  }
+  else {
+    std::string line;
+    int row = 0;
+    // first pass checks all clients in local db
+    while (std::getline(pFile, line))
+    { 
+      // client's name
+      if(row == 1) {
+        int i = find_user(line);
+        // add the client to the db
+        if(i < 0) {
+          Client c;
+          c.username = line;
+          c.connected = false;
+          client_db.push_back(c);
         }
-        followers[username] = v_followers;
-
-        getline(in, line3);
-        stringstream s_line3(line3);
-        while (getline(s_line3, item, ' '))
-        {
-            v_followings.push_back(item);
-        }
-        followings[username] = v_followings;
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
     }
+    pFile.close();
 
-    map<string, vector<string>>::iterator it;
-    for (it = followers.begin(); it != followers.end(); it++)
-    {
-        string username = it->first;
-        vector<string> v_followers = it->second;
-        Client *user = client_db[find_user(username)];
+    // second pass through file updates info
+    std::ifstream p2File("user_list.txt");
+    row = 0;
+    std::string curr_client;
+    while (std::getline(p2File, line))
+    { 
+      // client's name
+      if(row == 1) {
+        curr_client = line;
+      }
+      // followers
+      if(row == 2) {
+        std::vector<std::string> vect;
 
-        vector<string>::const_iterator itt;
-        for (itt = v_followers.begin(); itt != v_followers.end(); itt++)
-        {
-            user->client_followers.push_back(client_db[find_user(*itt)]);
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
         }
-    }
-    for (it = followings.begin(); it != followings.end(); it++)
-    {
-        string username = it->first;
-        vector<string> v_followings = it->second;
-        Client *user = client_db[find_user(username)];
 
-        vector<string>::const_iterator itt;
-        for (itt = v_followings.begin(); itt != v_followings.end(); itt++)
-        {
-            user->client_following.push_back(client_db[find_user(*itt)]);
+        for(std::string s : vect) {
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_followers.push_back(user);
         }
+      }
+      // following
+      if(row == 3) {
+        std::vector<std::string> vect;
+
+        size_t pos = 0;
+        std::string token;
+        while ((pos = line.find(",")) != std::string::npos) {
+            token = line.substr(0, pos);
+            vect.push_back(token);
+            line.erase(0, pos + 1);
+        }
+
+        for(std::string s : vect) {
+          Client *user = &client_db[find_user(s)];
+          Client *curr = &client_db[find_user(curr_client)];
+          curr->client_following.push_back(user);
+        }
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
     }
+    p2File.close();
+  }
+  return;
 }
 
 class HealthServiceImpl final : public HealthService::Service {

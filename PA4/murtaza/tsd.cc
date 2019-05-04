@@ -212,7 +212,8 @@ void read_user_list() {
         std::string i;
 
         while (ss >> i)
-        {
+        {   
+            i = i.substr(0, i.size()-1);
             vect.push_back(i);
 
             if (ss.peek() == ',') {
@@ -221,7 +222,7 @@ void read_user_list() {
         }
 
         for(std::string s : vect) {
-          std::cout << "following: " << s << std::endl;
+          std::cout << "following: " << s << "," << std::endl;
         }
       }
       // following

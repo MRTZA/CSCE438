@@ -51,6 +51,7 @@ class Client : public IClient
         virtual int connectToBackup();
         virtual IReply processCommand(std::string& input);
         virtual int processTimeline();
+        virtual int processTimeline(const std::vector<std::string>& commands, int start)
     private:
         std::string hostname;
         std::string username;
@@ -72,6 +73,7 @@ class Client : public IClient
         IReply Follow(const std::string& username2);
         IReply UnFollow(const std::string& username2);
         int Timeline(const std::string& username);
+        int Timeline(const std::string& username, const std::vector<std::string> commands, int start);
 
 
 };

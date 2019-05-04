@@ -42,8 +42,9 @@ class Client : public IClient
     public:
         Client(const std::string& hname,
                const std::string& uname,
-               const std::string& p)
-            :hostname(hname), username(uname), port(p)
+               const std::string& p,
+               const std::string& testFile)
+            :hostname(hname), username(uname), port(p), testFile(testFile)
             {}
     protected:
         virtual int connectTo();
@@ -54,6 +55,7 @@ class Client : public IClient
         std::string hostname;
         std::string username;
         std::string port;
+        std::string testFile;
 
         std::string masterInfo;
         std::string slaveInfo;
@@ -79,8 +81,9 @@ int main(int argc, char** argv) {
     std::string hostname = "localhost";
     std::string username = "default";
     std::string port = "3010";
+    std::string testFile ="";
     int opt = 0;
-    while ((opt = getopt(argc, argv, "h:u:p:")) != -1){
+    while ((opt = getopt(argc, argv, "h:u:p:s:")) != -1){
         switch(opt) {
             case 'h':
                 hostname = optarg;break;
@@ -88,12 +91,14 @@ int main(int argc, char** argv) {
                 username = optarg;break;
             case 'p':
                 port = optarg;break;
+            case 's':
+                testFile = optarg;break;
             default:
                 std::cerr << "Invalid Command Line Argument\n";
         }
     }
 
-    Client myc(hostname, username, port);
+    Client myc(hostname, username, port, testFile);
 
     // You MUST invoke "run_client" function to start business logic
     myc.run_client();

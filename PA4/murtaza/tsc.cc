@@ -119,7 +119,7 @@ int main(int argc, char** argv) {
             else {
                 commands.push_back(line);
             }
-            if(0 == std::strcmpi(line, "TIMELINE")) {
+            if(line == "TIMELINE") {
                 isPosts = true;
             }
         }

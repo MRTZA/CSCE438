@@ -344,7 +344,7 @@ class SNSServiceImpl final : public SNSService::Service {
 };
 
 //Returns the status of the server
-int Check(std::string server) {
+Status Check(std::string server) {
     HealthCheckRequest request;
     request.set_service(server_db.myIp);
     HealthCheckResponse reply;
@@ -373,7 +373,7 @@ int Check(std::string server) {
       std::cout << server_db.masterData.find(server)->second << " => " << s << std::endl; 
     }
 
-    return s;
+    return status;
 }
 
 //Retruns the status of all the servers and the number of users connected
@@ -477,10 +477,10 @@ void RunServer(std::string port_no) {
   }
   if(server_db.myRole == "slave") {
     while(1) {
-      int err = Check("master");
+      Status err = Check("master");
       if(DBG_HBT == 1)
         std::cout << "==> " << err << std::endl;
-      if(!err) {
+      if(err.ok()) {
         pid_t pid;
         if((pid = fork()) < 0) {
           //error

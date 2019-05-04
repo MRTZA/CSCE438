@@ -247,7 +247,7 @@ void read_user_list() {
             line.erase(0, pos + 1);
         }
 
-        curr = &client_db[find_user(curr_client)];
+        Client *curr = &client_db[find_user(curr_client)];
         curr->client_following.clear();
         for(std::string s : vect) {
           Client *user = &client_db[find_user(s)];

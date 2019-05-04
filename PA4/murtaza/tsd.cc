@@ -233,8 +233,8 @@ void read_user_list() {
       }
       row++;
     }
+    p2File.close();
   }
-  p2File.close();
   return;
 }
 

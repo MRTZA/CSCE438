@@ -58,6 +58,7 @@ class IClient
         virtual int connectTo() = 0;
         virtual IReply processCommand(std::string& cmd) = 0;
         virtual int processTimeline() = 0;
+        std::string testFile;
 
     private:
 
@@ -67,7 +68,6 @@ class IClient
         std::string getCommand() const;
         void displayCommandReply(const std::string& comm, const IReply& reply) const;
         void toUpperCase(std::string& str) const;
-        std::string testFile;
 };
 
 void IClient::run()

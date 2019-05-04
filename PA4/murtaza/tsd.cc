@@ -124,6 +124,20 @@ std::unique_ptr<HealthService::Stub> Routerstub_;
 //Vector that stores every client that has been created
 std::vector<Client> client_db;
 
+//Data the server has to store based on its role
+Svr server_db;
+
+//Helper function used to find a Client object given its username
+int find_user(std::string username){
+  int index = 0;
+  for(Client c : client_db){
+    if(c.username == username)
+      return index;
+    index++;
+  }
+  return -1;
+}
+
 void write_client_db() {
   std::ofstream out("user_list.txt");
 
@@ -149,18 +163,71 @@ void write_client_db() {
   out.close();
 }
 
-//Data the server has to store based on its role
-Svr server_db;
+void read_user_list() {
+  std::ifstream pFile("user_list.txt");
 
-//Helper function used to find a Client object given its username
-int find_user(std::string username){
-  int index = 0;
-  for(Client c : client_db){
-    if(c.username == username)
-      return index;
-    index++;
+  if(pFile.peek() == std::ifstream::traits_type::eof()) {
+    return;
   }
-  return -1;
+  else {
+    std::string line;
+    int row = 0;
+    // first pass checks all clients in local db
+    while (std::getline(pFile, line))
+    { 
+      // client's name
+      if(row == 1) {
+        int i = find_user(line);
+        // add the client to the db
+        if(i < 0) {
+          Client c;
+          c.username = username;
+          client_db.push_back(c);
+        }
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
+    }
+    pFile.close();
+
+    // second pass through file updates info
+    pFile.open();
+    row = 0;
+    std::string curr_client;
+    while (std::getline(pFile, line))
+    { 
+      // client's name
+      if(row == 1) {
+        curr_client = line;
+      }
+      // followers
+      if(row == 2) {
+        std::vector<std::string> vect;
+        std::stringstream ss(str);
+        std::string i;
+
+        while (ss >> i)
+        {
+            vect.push_back(i);
+
+            if (ss.peek() == ',') {
+              ss.ignore();
+            }
+        }
+      }
+      // following
+      if(row == 3) {
+
+      }
+      if(line == "STARTCLIENT") {
+        row = 0;
+      }
+      row++;
+    }
+  }
+
 }
 
 class HealthServiceImpl final : public HealthService::Service {
@@ -510,6 +577,9 @@ void RunServer(std::string port_no) {
       }
       sleep(SLP_SLV);
     }
+  }
+  if(server_db.myRole == "master") {
+    read_user_list();
   }
 
   server->Wait();

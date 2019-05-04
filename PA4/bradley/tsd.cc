@@ -77,11 +77,11 @@ using csce438::ServerInfoRequest;
 using csce438::ServerInfoResponse;
 
 /* Debug Toggles */
-#define DBG_CLI 0
+#define DBG_CLI 1
 #define DBG_HBT 0
 #define DBG_RST 0
 #define DBG_CLT 0
-#define DBG_RTR 0
+#define DBG_RTR 1
 
 #define SLP_SLV 4
 #define SLP_RTR 1
@@ -137,7 +137,12 @@ int find_user(std::string username){
 
 class HealthServiceImpl final : public HealthService::Service {
   Status Check(ServerContext* context, const HealthCheckRequest* request, HealthCheckResponse* response) override {
-    response->set_status(client_db.size());
+    if(client_db.size() == 0) {
+      response->set_status(-1);
+    } else {
+      response->set_status(client_db.size());
+    }
+    
     if(DBG_HBT) {
       std::cout << "Heartbeat response sent" << std::endl;
     }
@@ -176,10 +181,18 @@ std::string findConnectionInfo() {
 
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
+    if(DBG_RTR == 1)
+      std::cout << "Client Connecting" << std::endl;
     std::string ips = findConnectionInfo();
     reply->set_msg(ips);
     return Status::OK;
   }
+
+  Status SayHi(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
+    reply->set_msg("Hi");
+    return Status::OK;
+  }
+
 };
 
 class SNSServiceImpl final : public SNSService::Service {
@@ -335,7 +348,7 @@ int Check(std::string server) {
 
     int s = 0;
     Status status;
-    if(server == "available") {
+    if(server == "masterThree") {
       status = MasterThreestub_->Check(&context, request, &reply);
       s = reply.status();
     }
@@ -364,13 +377,17 @@ std::map<std::string, int> CheckServers() {
   HealthCheckRequest request;
   request.set_service(server_db.myIp);
   HealthCheckResponse reply;
-  ClientContext context;
+  ClientContext context1;
+  ClientContext context2;
+  ClientContext context3;
   std::map<std::string, int> serversInfo;
   
   Status status;
 
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop One" << std::endl;
   // Check the status of all of the servers and get the num user connected
-  status = MasterOnestub_->Check(&context, request, &reply);
+  status = MasterOnestub_->Check(&context1, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterOne",reply.status()));
   } else {
@@ -378,7 +395,10 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterOne",-1));
   }
 
-  status = MasterTwostub_->Check(&context, request, &reply);
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Two" << std::endl;
+
+  status = MasterTwostub_->Check(&context2, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",reply.status()));
   } else {
@@ -386,7 +406,9 @@ std::map<std::string, int> CheckServers() {
     serversInfo.insert(std::pair<std::string, int>("masterTwo",-1));
   }
 
-  status = MasterThreestub_->Check(&context, request, &reply);
+  if(DBG_RTR == 1)
+    std::cout << "CheckServers Stop Three" << std::endl;
+  status = MasterThreestub_->Check(&context3, request, &reply);
   if(status.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
   } else {
@@ -436,21 +458,24 @@ void RunServer(std::string port_no) {
   builder.RegisterService(&healthService);
   builder.RegisterService(&routerService);
   std::unique_ptr<Server> server(builder.BuildAndStart());
-  std::cout << "Server listening on " << server_address << std::endl;
+  std::cout << server_db.myRole << " listening on " << server_address << std::endl;
 
   if(server_db.myRole == "router") {
-    // while(1) {
-    //   auto serversInfo = CheckServers(); //Only care if available goes down
+    Connect_To();
+    while(1) {
+      // auto serversInfo = CheckServers(); //Only care if available goes down
       
-    //   for(auto entry : serversInfo) {
-    //     std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-    //   }
-    //   sleep(SLP_RTR);
-    // }
+      // for(auto entry : serversInfo) {
+      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      // }
+      sleep(SLP_RTR);
+    }
   }
   if(server_db.myRole == "slave") {
     while(1) {
       int err = Check("master");
+      if(DBG_HBT == 1)
+        std::cout << "==> " << err << std::endl;
       if(!err) {
         pid_t pid;
         if((pid = fork()) < 0) {

@@ -1,0 +1,11 @@
+ssh csce438@127.0.0.1 -p PORT GOES HERE
+
+
+//To do
+Remove SayHi Calls from client
+Maybe added the router checks of the number of clients in client_db
+Do more testing to make sure that the election works
+    esp need to make sure that checkservers is functioning properly
+        it may be return -1 on all calls even when a client is connected
+    if I client disconnects and then reconnects with the same name it looked like it crashed
+Add the client functionality for stress testing the servers

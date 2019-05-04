@@ -88,7 +88,7 @@ using csce438::ServerInfoResponse;
 #define DBG_RTR 1
 
 #define SLP_SLV 4
-#define SLP_RTR 1
+#define SLP_RTR 2
 
 struct Client {
   std::string username;
@@ -366,7 +366,6 @@ std::string findConnectionInfo() {
 
 }
 
-
 class SNSRouterImpl final : public SNSRouter::Service {
   Status GetConnectInfo(ServerContext* context, const ServerInfoRequest* request, Reply* reply) override {
     if(DBG_RTR == 1)
@@ -595,11 +594,11 @@ std::map<std::string, int> CheckServers() {
   std::map<std::string, int> serversInfo;
   
   Status status1;
-  Status status1;
-  Status status1;
+  Status status2;
+  Status status3;
 
   if(DBG_RTR == 1)
-    std::cout << "CheckServers Stop One" << std::endl;
+    std::cout << "Checking Server 1" << std::endl;
   // Check the status of all of the servers and get the num user connected
   status1 = MasterOnestub_->Check(&context1, request, &reply);
   if(status1.ok()) {
@@ -610,7 +609,7 @@ std::map<std::string, int> CheckServers() {
   }
 
   if(DBG_RTR == 1)
-    std::cout << "CheckServers Stop Two" << std::endl;
+    std::cout << "Checking Server 2" << std::endl;
 
   status2 = MasterTwostub_->Check(&context2, request, &reply);
   if(status2.ok()) {
@@ -621,7 +620,7 @@ std::map<std::string, int> CheckServers() {
   }
 
   if(DBG_RTR == 1)
-    std::cout << "CheckServers Stop Three" << std::endl;
+    std::cout << "Checking Server 3" << std::endl;
   status3 = MasterThreestub_->Check(&context3, request, &reply);
   if(status3.ok()) {
     serversInfo.insert(std::pair<std::string, int>("masterThree",reply.status()));
@@ -638,7 +637,7 @@ void Connect_To() {
 
   if(server_db.myRole == "router") {
     if(DBG_RTR == 1) {
-      std::cout << "Attempting to connect to masters as router" << std::endl;
+      std::cout << "Router Connecting to master servers" << std::endl;
     }
 
     MasterThreestub_ = std::unique_ptr<HealthService::Stub>(HealthService::NewStub(
@@ -682,11 +681,10 @@ void RunServer(std::string port_no) {
   if(server_db.myRole == "router") {
     Connect_To();
     while(1) {
-      // auto serversInfo = CheckServers();
-      
-      // for(auto entry : serversInfo) {
-      //   std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
-      // }
+      auto serversInfo = CheckServers();
+      for(auto entry : serversInfo) {
+        std::cout << "Server: " << entry.first << " ---Status: " << entry.second << std::endl;
+      }
       sleep(SLP_RTR);
     }
   }

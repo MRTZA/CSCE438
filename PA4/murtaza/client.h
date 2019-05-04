@@ -50,13 +50,12 @@ class IClient
 {
     public:
         void run_client() { run(); }
-
+        virtual IReply processCommand(std::string& cmd) = 0;
     protected:
         /*
          * Pure virtual functions to be implemented by students
          */
         virtual int connectTo() = 0;
-        virtual IReply processCommand(std::string& cmd) = 0;
         virtual int processTimeline() = 0;
 
     private:
